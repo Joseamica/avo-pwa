@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:10.3
+    restart: always
+    environment:
+      - POSTGRES_USER=joseamica
+      - POSTGRES_PASSWORD=aloha1993
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '5434:5434'
+volumes:
+  postgres:
+
