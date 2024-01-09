@@ -1,3 +1,5 @@
-import Page3 from './Page3';
+import Page3, { loader as page3Loader, action as page3action } from './Page3'
 
-export default Page3;
+export { page3Loader, page3action }
+
+export default Page3

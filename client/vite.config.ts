@@ -1,9 +1,9 @@
-import * as path from 'path';
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import * as path from 'path'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
-import manifest from './manifest.json';
+import manifest from './manifest.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,9 +21,17 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      '/socket.io': {
+        target: 'http://localhost:5000',
+        ws: true,
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-});
+})
