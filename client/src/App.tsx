@@ -32,7 +32,7 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Fragment>
-        <Route path="/" element={<Layout />} errorElement={<NotFound />} action={layoutAction} loader={layoutLoader}>
+        <Route path="/" element={<Layout />} action={layoutAction} loader={layoutLoader}>
           <Route path="venues" element={<Venues.Venues />}>
             <Route path=":venueId" element={<Venues.VenueId />} />
           </Route>

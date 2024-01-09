@@ -21,9 +21,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState(null)
 
   const login = (username: string, password: string) => {
-    // Aquí va la lógica para iniciar sesión
-    // Por ejemplo, una llamada a una API y luego establecer el usuario
-    setUser({ username }) // Esto es solo un ejemplo
+    // const res = fetch('http://localhost:5000/api/login', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ username: username, password: password }),
+    // })
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     console.log(data)
+    //     setUser(data)
+    //   })
   }
 
   const logout = () => {

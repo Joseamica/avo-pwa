@@ -1,8 +1,8 @@
-import { FC, Suspense, lazy, useEffect, useState } from 'react';
+import { FC, Suspense, lazy, useEffect, useState } from 'react'
 
-import sleep from '@/utils/sleep';
+import sleep from '@/utils/sleep'
 
-import { AnyProps, LoadComponent, LoaderDefaultOptions } from './types';
+import { AnyProps, LoadComponent, LoaderDefaultOptions } from './types'
 
 // a little bit complex staff is going on here
 // let me explain it
@@ -27,16 +27,16 @@ import { AnyProps, LoadComponent, LoaderDefaultOptions } from './types';
 
 function getDelayedFallback(Fallback: FC, delay: number) {
   return function DelayedFallback(props: AnyProps) {
-    const [isDelayPassed, setIsDelayPassed] = useState(false);
+    const [isDelayPassed, setIsDelayPassed] = useState(false)
 
     useEffect(() => {
-      const timerId = setTimeout(() => setIsDelayPassed(true), delay);
+      const timerId = setTimeout(() => setIsDelayPassed(true), delay)
 
-      return () => clearTimeout(timerId);
-    }, []);
+      return () => clearTimeout(timerId)
+    }, [])
 
-    return isDelayPassed ? <Fallback {...props} /> : null;
-  };
+    return isDelayPassed ? <Fallback {...props} /> : null
+  }
 }
 
 /* ================================================================================== */
@@ -55,12 +55,12 @@ function getDelayedFallback(Fallback: FC, delay: number) {
 const getLazyComponent = (loadComponent: LoadComponent, loaderOptions: LoaderDefaultOptions) =>
   lazy(() => {
     // fix the moment of starting loading
-    const start = performance.now();
+    const start = performance.now()
     // start loading
-    return loadComponent().then((moduleExports) => {
+    return loadComponent().then(moduleExports => {
       // loading is finished
-      const end = performance.now();
-      const diff = end - start;
+      const end = performance.now()
+      const diff = end - start
 
       // first of all, let's remember that we also have `loaderOptions` optionally
       // provided by user, it has `delay` and `minimumLoading`:
@@ -83,15 +83,15 @@ const getLazyComponent = (loadComponent: LoadComponent, loaderOptions: LoaderDef
       // so, in the 1) and 3) cases we return the result immediately, and in 2) case we have to wait
       // at least for `delay + minimumLoading - diff` amount of time
 
-      const { delay, minimumLoading } = loaderOptions;
+      const { delay, minimumLoading } = loaderOptions
 
       if (diff < delay || (diff > delay && diff > delay + minimumLoading)) {
-        return moduleExports;
+        return moduleExports
       }
 
-      return sleep(delay + minimumLoading - diff).then(() => moduleExports);
-    });
-  });
+      return sleep(delay + minimumLoading - diff).then(() => moduleExports)
+    })
+  })
 
 /* ================================================================================== */
 
@@ -107,21 +107,27 @@ function asyncComponentLoader(
   loaderOptions: LoaderDefaultOptions,
   FallbackWaiting: FC,
 ) {
-  const Fallback = loaderOptions.delay
-    ? getDelayedFallback(FallbackWaiting, loaderOptions.delay)
-    : FallbackWaiting;
+  const Fallback = loaderOptions.delay ? getDelayedFallback(FallbackWaiting, loaderOptions.delay) : FallbackWaiting
 
-  const LazyComponent = getLazyComponent(loadComponent, loaderOptions);
+  const LazyComponent = getLazyComponent(loadComponent, loaderOptions)
 
   return function AsyncComponent(props: AnyProps) {
     return (
       <Suspense fallback={<Fallback />}>
         <LazyComponent {...additionalProps} {...props} />
       </Suspense>
-    );
-  };
+    )
+  }
 }
 
-export { getDelayedFallback };
+function getPathname(request) {
+  const url = new URL(request.url)
 
-export default asyncComponentLoader;
+  // Extraer el pathname de la URL
+  const pathname = url.pathname
+  return pathname
+}
+
+export { getDelayedFallback, getPathname }
+
+export default asyncComponentLoader

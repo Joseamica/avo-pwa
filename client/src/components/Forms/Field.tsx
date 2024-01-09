@@ -6,11 +6,13 @@ export function Field({
   labelProps,
   inputProps,
   errors,
+  errorSize,
   className,
 }: {
   labelProps: Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'className'>
   inputProps: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'>
   errors?: any
+  errorSize?: 'sm' | 'md' | 'lg'
   className?: string
 }) {
   const fallbackId = useId()
@@ -27,7 +29,7 @@ export function Field({
         aria-describedby={errorId}
         {...inputProps}
       />
-      <div className="min-h-[32px] px-4 pb-3 pt-1">{errorId ? <ErrorList id={errorId} errors={errors} /> : null}</div>
+      <div className="min-h-[32px] pb-3 pt-1">{errorId ? <ErrorList id={errorId} errors={errors} size={errorSize} /> : null}</div>
     </div>
   )
 }

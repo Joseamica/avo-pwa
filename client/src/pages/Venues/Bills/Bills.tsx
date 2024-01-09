@@ -8,11 +8,6 @@ import { FullSizeCenteredFlexBox } from '@/components/styled'
 import { useAuth } from '@/auth/AuthProvider'
 
 function Bills() {
-  const { user } = useAuth()
-  if (!user) {
-    console.log('PENE')
-  }
-
   return (
     <>
       <h1>bills</h1>

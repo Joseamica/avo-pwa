@@ -1,47 +1,50 @@
 // Layout.js
-import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
-import { Outlet, useFetcher, useLoaderData, useNavigation } from 'react-router-dom'
+import { Outlet, json, redirect, useLoaderData, useLocation, useNavigation } from 'react-router-dom'
 import Modal from './components/Modal'
 
-import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { Button } from './components/Button'
 import Form from './components/Form'
+import { Field } from './components/Forms/Field'
+import { getRandomColor } from './utils/misc'
 
 const IncognitoUser = z.object({
   name: z.string().min(3, "That's not a real name"),
   color: z.string().min(3, "That's not a real color").default('##2e8857'),
+  createdAt: z.number().default(Date.now()).optional(),
 })
 
 type IncognitoUser = z.infer<typeof IncognitoUser>
 
-export async function loader() {
-  const name = localStorage.getItem('name')
-  const color = localStorage.getItem('color')
+export async function loader({ request }) {
+  //   const { user, login, logout } = useAuth()
+  //TODO Implementar que verifique si el usuario esta registrado o no
+  const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
-  if (name && color) {
-    return { name, color }
+  if (localStorageUser) {
+    return json({ user: localStorageUser.user })
+  } else {
+    return json({ user: null })
   }
-
-  return {}
 }
 
 export async function action({ request }) {
   const formData = Object.fromEntries(await request.formData())
-  localStorage.setItem('name', formData.name)
-  localStorage.setItem('color', formData.color)
-  return { success: true }
+
+  localStorage.setItem('persist:user', JSON.stringify({ user: { name: formData.name, color: getRandomColor(), createdAt: Date.now() } }))
+
+  return redirect(formData.redirectTo || '/')
 }
 
 const Layout = ({}) => {
-  const data = useLoaderData() as { name: string; color: string }
-  const fetcher = useFetcher()
+  const data = useLoaderData() as { user: IncognitoUser }
+  const navigation = useNavigation()
+  const location = useLocation()
 
   const [showModal, setShowModal] = React.useState(true)
-  //   const { user } = useAuth()
-  const user = data.color && data.name
-  const navigation = useNavigation()
+  const user = data.user
   const isSubmitting = navigation.state !== 'idle'
 
   if (!user) {
@@ -50,14 +53,22 @@ const Layout = ({}) => {
         <Form validator={IncognitoUser}>
           {(register, errors) => (
             <>
-              <input type="text" placeholder="Name..." name="name" className="border" {...register('name')} />
-              <p className="text-black">{errors.name?.message}</p>
-              <input type="color" placeholder="color..." name="color" className="border" {...register('color')} defaultValue={'##2e8857'} />
-              <p className="text-black">{errors.color?.message}</p>
+              <Field
+                labelProps={{ children: 'hola' }}
+                inputProps={{
+                  placeholder: 'Name...',
+                  name: 'name',
+                  type: 'text',
+                  ...register('name'),
+                }}
+                errorSize="lg"
+                errors={errors.name?.message}
+              />
 
-              <button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
+              <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
                 Send
-              </button>
+              </Button>
+              <input type="hidden" name="redirectTo" value={location.pathname} />
             </>
           )}
         </Form>
@@ -67,7 +78,7 @@ const Layout = ({}) => {
 
   return (
     <>
-      <p>layout</p>
+      <p>name: {data.user.name}</p>
       <Outlet />
     </>
   )
