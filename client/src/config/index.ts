@@ -6,7 +6,7 @@ const title = 'Avo PWA'
 
 const email = 'hola@avoqado.io'
 
-const repository = 'https://github.com/suren-atoyan/react-pwa'
+const repository = 'https://github.com/Joseamica/avo-pwa'
 
 const messages = {
   app: {
@@ -51,5 +51,6 @@ const defaultMetaTags = {
   description: 'Starter kit for modern web applications',
 }
 const giphy404 = 'https://giphy.com/embed/xTiN0L7EW5trfOvEk0'
+// const giphy404 = 'https://giphy.com/embed/EFXGvbDPhLoWs'
 
 export { loader, notifications, dateFormat, messages, repository, email, title, defaultMetaTags, giphy404 }

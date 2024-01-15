@@ -7,6 +7,7 @@ const socket = io('/')
 export default function Chat() {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState([])
+  const [test, setTest] = useState('second')
 
   // MANDAS EL MENSAJE AL SERVIDOR
   const handleSubmit = e => {
@@ -26,11 +27,17 @@ export default function Chat() {
     }
 
     socket.on('messageClient', messageListener)
+    socket.on('update', () => {
+      console.log('Evento update recibido en el cliente')
+      setTest('pene')
+    })
 
     return () => {
       socket.off('messageClient', messageListener)
+      socket.off('update')
     }
-  }, [])
+  }, [test])
+
   return (
     <Form onSubmit={handleSubmit} method="POST">
       <input type="text" placeholder="Write..." onChange={e => setMessage(e.target.value)} className="border" />

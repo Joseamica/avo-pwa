@@ -12,15 +12,15 @@ const root = createRoot(container)
 function render(App: ComponentType) {
   root.render(
     <StrictMode>
-      <AuthProvider>
-        <RecoilRoot>
-          <HelmetProvider>
-            <ThemeProvider>
-              <App />
-            </ThemeProvider>
-          </HelmetProvider>
-        </RecoilRoot>
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      <RecoilRoot>
+        <HelmetProvider>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </HelmetProvider>
+      </RecoilRoot>
+      {/* </AuthProvider> */}
     </StrictMode>,
   )
 }

@@ -1,5 +1,5 @@
 // src/context/AuthProvider.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react'
 
 // Define el tipo para el contexto de autenticación
 interface AuthContextType {
@@ -18,29 +18,27 @@ interface AuthProviderProps {
 
 // Componente proveedor
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [loggedIn, setLoggedIn] = useState(null)
   const [user, setUser] = useState(null)
+  const checkLoginState = useCallback(async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/auth/status`)
+      const data = await response.json()
+      if (data.loggedIn) {
+        setUser(data.user)
+      } else {
+        setUser(null)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
 
-  const login = (username: string, password: string) => {
-    // const res = fetch('http://localhost:5000/api/login', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({ username: username, password: password }),
-    // })
-    //   .then(res => res.json())
-    //   .then(data => {
-    //     console.log(data)
-    //     setUser(data)
-    //   })
-  }
+  useEffect(() => {
+    checkLoginState()
+  }, [checkLoginState])
 
-  const logout = () => {
-    // Aquí va la lógica para cerrar sesión
-    setUser(null)
-  }
-
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ loggedIn, checkLoginState, user }}>{children}</AuthContext.Provider>
 }
 
 // Hook personalizado para usar el contexto de autenticación

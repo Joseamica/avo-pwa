@@ -10,7 +10,6 @@ import { useAuth } from '@/auth/AuthProvider'
 function Bills() {
   return (
     <>
-      <h1>bills</h1>
       {/* <Meta title="Bills" />
       <FullSizeCenteredFlexBox flexDirection="column">
         <Typography variant="h3">Bills</Typography>

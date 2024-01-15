@@ -1,0 +1,34 @@
+
+GET http://localhost:5000/do-something
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9zZSIsImlhdCI6MTcwNDkzNjgwMywiZXhwIjoxNzA0OTM2ODE4fQ.yaC4_b1XsSthZXAyKT6rtB3nI9HiGEU1-VyJEpu_lzs
+
+
+###
+
+# gets new token
+POST http://localhost:5000/token
+Content-Type: application/json
+
+{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9zZSIsImlhdCI6MTcwNDkzNjc3Nn0._sUlq1lNaRTuv0GqBQL83G2Z5_FI5Uj4_-cLKf97Lk8"
+}
+
+###
+
+DELETE http://localhost:5000/logout
+Content-Type: application/json
+
+{
+"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9zZSIsImlhdCI6MTcwNDkzNjE4MX0.6AADPqEG1G1SYF1HS9MjMk7RLo8hMtvEPbs4e4nfCCc"
+}
+
+###
+# returns a token and refresh token
+POST http://localhost:5000/login 
+Content-Type: application/json
+
+{
+"username": "Jose",
+"password": "Jose"
+
+}

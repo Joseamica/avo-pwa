@@ -21,18 +21,25 @@ import NotFound from './pages/NotFound'
 import Chat from './pages/Page2/Page2'
 import Venues from './pages/Venues'
 import Tables, { tableIdLoader } from './pages/Venues/Tables'
-import Bills from './pages/Venues/Bills'
+import Bills, { billIdLoader } from './pages/Venues/Bills'
 
 import './index.css'
 import HeaderAvo from './sections/Header/HeaderAvo'
 import Page3, { page3Loader, page3action } from './pages/Page3'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
+import Error from './pages/Error'
+import { Socket } from 'socket.io-client'
+import Sockets from './pages/Socket/Socket'
+import Login, { action as loginAction } from './pages/Auth/Login'
+import Auth from './pages/Auth'
+import Register, { action as registerAction } from './pages/Auth/Register'
+import { loader as authLoader } from './pages/Auth/loader'
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Fragment>
-        <Route path="/" element={<Layout />} action={layoutAction} loader={layoutLoader}>
+        <Route path="/" element={<Layout />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="venues" element={<Venues.Venues />}>
             <Route path=":venueId" element={<Venues.VenueId />} />
           </Route>
@@ -40,10 +47,16 @@ function App() {
             <Route path=":tableId" element={<Tables.TableId />} loader={tableIdLoader} />
           </Route>
           <Route path="venues/:venueId/bills" element={<Bills.Bills />}>
-            <Route path=":billId" element={<Bills.BillId />} loader={tableIdLoader} />
+            <Route path=":billId" element={<Bills.BillId />} loader={billIdLoader} />
           </Route>
           <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
+        <Route path="sockets" element={<Sockets />} />
+        <Route path="chat" element={<Page2 />} />
+        <Route path="auth" index element={<Auth />}></Route>
+        <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction}></Route>
+        <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction}></Route>
       </Fragment>,
 
       // <>
