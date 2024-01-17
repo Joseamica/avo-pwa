@@ -4,7 +4,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { RecoilRoot } from 'recoil'
 
 import ThemeProvider from '@/theme/Provider'
-import { AuthProvider } from './auth/AuthProvider'
+// import { AuthProvider } from './auth/AuthProvider'
 
 const container = document.getElementById('root') as HTMLElement
 const root = createRoot(container)

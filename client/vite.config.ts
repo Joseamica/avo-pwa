@@ -12,7 +12,6 @@ export default defineConfig({
     VitePWA({
       manifest,
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      // switch to "true" to enable sw on development
       devOptions: {
         enabled: true,
       },
@@ -24,8 +23,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/socket.io': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5000/',
         ws: true,
+      },
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
       },
     },
   },

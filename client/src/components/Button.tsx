@@ -2,6 +2,48 @@ import clsx from 'clsx'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+const IconButton = ({
+  icon,
+  text,
+  onClick,
+  className,
+}: {
+  icon: React.ReactNode
+  text: string
+  onClick: () => void
+  className?: string
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      className={clsx(
+        'flex items-center justify-between w-full px-10 py-5 text-white bg-black border-2 border-gray rounded-2xl',
+        className,
+      )}
+    >
+      <span className="flex justify-start ">{icon}</span>
+      <span className="flex justify-center text-xl ">{text}</span>
+      <span className="flex "></span> {/* Espacio invisible */}
+    </button>
+  )
+}
+
+export function Button({ text, onClick, className }: { text: string; onClick: () => void; className?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={clsx(
+        'flex items-center justify-center w-full px-10 py-5 text-white bg-black border-2 rounded-2xl border-gray text-xl',
+        className,
+      )}
+    >
+      {text}
+    </button>
+  )
+}
+
+export default IconButton
+
 interface ButtonProps {
   fullWith?: boolean
   variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
@@ -91,7 +133,7 @@ function Buttosn({
   )
 }
 
-function Button({
+function Button2({
   children,
   variant = 'primary',
   size = 'large',
@@ -142,4 +184,4 @@ function LinkButton({
 //   )
 // })
 
-export { Button, LinkButton }
+export { Button2, LinkButton }

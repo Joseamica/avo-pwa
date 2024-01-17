@@ -34,6 +34,10 @@ import Login, { action as loginAction } from './pages/Auth/Login'
 import Auth from './pages/Auth'
 import Register, { action as registerAction } from './pages/Auth/Register'
 import { loader as authLoader } from './pages/Auth/loader'
+import Me, { action as meAction } from './pages/Auth/Me'
+import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import Checkout from './pages/Stripe/Checkout'
+import Success from './pages/Stripe/Success'
 
 function App() {
   const router = createBrowserRouter(
@@ -42,6 +46,7 @@ function App() {
         <Route path="/" element={<Layout />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="venues" element={<Venues.Venues />}>
             <Route path=":venueId" element={<Venues.VenueId />} />
+            <Route path=":venueId/menus" element={<Menus />} loader={menusLoader} />
           </Route>
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
             <Route path=":tableId" element={<Tables.TableId />} loader={tableIdLoader} />
@@ -54,9 +59,12 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="sockets" element={<Sockets />} />
         <Route path="chat" element={<Page2 />} />
-        <Route path="auth" index element={<Auth />}></Route>
-        <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction}></Route>
-        <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction}></Route>
+        <Route path="auth" index element={<Auth />} />
+        <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction} />
+        <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction} />
+        <Route path="me" element={<Me />} action={meAction} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="success" element={<Success />} />
       </Fragment>,
 
       // <>

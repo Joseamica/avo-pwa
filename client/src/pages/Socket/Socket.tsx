@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 
-const URL = process.env.NODE_ENV === 'production' ? undefined : '/'
+// const URL = process.env.NODE_ENV === 'production' ? undefined : '/'
+const URL = '/'
 
 export const socket = io(URL, {
   autoConnect: true,

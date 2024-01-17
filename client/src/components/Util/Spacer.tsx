@@ -9,7 +9,7 @@ const spacerSizes = {
 function Spacer({
   className = '',
   children,
-  spaceY = '2',
+  spaceY,
   size,
 }: {
   className?: string

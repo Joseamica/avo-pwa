@@ -1,100 +1,84 @@
 // Layout.js
-import React from 'react'
-import { Outlet, json, redirect, useLoaderData, useLocation, useNavigation } from 'react-router-dom'
-import Modal from './components/Modal'
+import { Link, Outlet, json, useLoaderData } from 'react-router-dom'
 
 import { z } from 'zod'
 
-import { Button } from './components/Button'
-import Form from './components/Form'
-import { Field } from './components/Forms/Field'
-import { getRandomColor } from './utils/misc'
+import { Person } from '@mui/icons-material'
+import { getRandomPastelHex } from './utils/misc'
+import { IncognitoUser } from './utils/types/user'
 
-const IncognitoUser = z.object({
-  name: z.string().min(3, "That's not a real name"),
-  color: z.string().min(3, "That's not a real color").default('##2e8857'),
-  createdAt: z.number().default(Date.now()).optional(),
-})
-
-type IncognitoUser = z.infer<typeof IncognitoUser>
+const User = IncognitoUser
 
 export async function loader({ request }) {
-  //   const { user, login, logout } = useAuth()
-  //TODO Implementar que verifique si el usuario esta registrado o no
-  // try {
-  //   // Realizar una solicitud al endpoint que verifica el estado de autenticación
-  //   const response = await fetch('http://localhost:5000/auth/status', {
-  //     credentials: 'include', // Importante para incluir las cookies en la solicitud
-  //   })
-
-  //   if (!response.ok) {
-  //     // Si la respuesta no es OK, significa que el usuario no está autenticado
-  //     return { isAuthenticated: false }
-  //   } else {
-  //     return redirect('/')
-  //   }
-  // } catch (error) {
-  //   console.error('Error al verificar el estado de autenticación Login.tsx linea 48:', error)
-  //   return { isAuthenticated: false }
-  // }
   const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
   if (localStorageUser) {
     return json({ user: localStorageUser.user })
   } else {
-    return json({ user: null })
+    const randomColor = getRandomPastelHex()
+    const user = {
+      color: randomColor,
+      createdAt: Date.now(),
+    }
+    localStorage.setItem('persist:user', JSON.stringify({ user }))
+
+    return json({ user })
   }
 }
 
 export async function action({ request }) {
-  const formData = Object.fromEntries(await request.formData())
+  // const formData = Object.fromEntries(await request.formData())
 
-  localStorage.setItem('persist:user', JSON.stringify({ user: { name: formData.name, color: getRandomColor(), createdAt: Date.now() } }))
+  // localStorage.setItem('persist:user', JSON.stringify({ user: { name: formData.name, color: getRandomColor(), createdAt: Date.now() } }))
 
-  return redirect(formData.redirectTo || '/')
+  // return redirect(formData.redirectTo || '/')
+  return json({ user: null })
 }
 
 const Layout = ({}) => {
   const data = useLoaderData() as { user: IncognitoUser }
-  const navigation = useNavigation()
-  const location = useLocation()
 
-  const [showModal, setShowModal] = React.useState(true)
-  const user = data.user
-  const isSubmitting = navigation.state !== 'idle'
+  // const navigation = useNavigation()
+  // const location = useLocation()
+  // console.log('data', data)
+  // const [showModal, setShowModal] = React.useState(true)
+  // const user = data.user
+  // const isSubmitting = navigation.state !== 'idle'
 
-  if (!user) {
-    return (
-      <Modal isOpen={showModal} onClose={user ? () => setShowModal(false) : null}>
-        <Form validator={IncognitoUser}>
-          {(register, errors) => (
-            <>
-              <Field
-                labelProps={{ children: 'hola' }}
-                inputProps={{
-                  placeholder: 'Name...',
-                  name: 'name',
-                  type: 'text',
-                  ...register('name'),
-                }}
-                errorSize="lg"
-                errors={errors.name?.message}
-              />
+  // if (!user) {
+  //   return (
+  //     // <Modal isOpen={showModal} onClose={user ? () => setShowModal(false) : null}>
+  //     //   <Form validator={IncognitoUser}>
+  //     //     {(register, errors) => (
+  //     //       <>
+  //     //         <Field
+  //     //           labelProps={{ children: 'hola' }}
+  //     //           inputProps={{
+  //     //             placeholder: 'Name...',
+  //     //             name: 'name',
+  //     //             type: 'text',
+  //     //             ...register('name'),
+  //     //           }}
+  //     //           errorSize="lg"
+  //     //           errors={errors.name?.message}
+  //     //         />
 
-              <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
-                Send
-              </Button>
-              <input type="hidden" name="redirectTo" value={location.pathname} />
-            </>
-          )}
-        </Form>
-      </Modal>
-    )
-  }
+  //     //         <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
+  //     //           Send
+  //     //         </Button>
+  //     //         <input type="hidden" name="redirectTo" value={location.pathname} />
+  //     //       </>
+  //     //     )}
+  //     //   </Form>
+  //     // </Modal>
+  //   )
+  // }
 
   return (
     <>
-      <p>name: {data.user.name}</p>
+      {/* <Link to="/me" className="flex items-center justify-center w-12 h-12 border rounded-full">
+        <Person style={{ color: data.user.color }} />
+      </Link> */}
       <Outlet />
     </>
   )

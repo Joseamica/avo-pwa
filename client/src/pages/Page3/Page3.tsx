@@ -1,4 +1,4 @@
-import { useAuth } from '@/auth/AuthProvider'
+// import { useAuth } from '@/auth/AuthProvider'
 import { useEffect, useState } from 'react'
 import { Form, redirect, useActionData, useLoaderData } from 'react-router-dom'
 import io from 'socket.io-client'
@@ -31,8 +31,8 @@ export async function action({ request }) {
 
 export default function Page3() {
   const data = useLoaderData() as { users: any[] }
-  const { user, login, logout } = useAuth()
-  console.log('user', user)
+  // const { user, login, logout } = useAuth()
+  // console.log('user', user)
 
   const [users, setUsers] = useState(data.users)
 

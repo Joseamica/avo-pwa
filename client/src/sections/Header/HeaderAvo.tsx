@@ -19,9 +19,9 @@ import useTheme from '@/store/theme'
 import { HotKeysButton } from './styled'
 import { getRandomJoke } from './utils'
 import { Link } from 'react-router-dom'
-import { PersonPinCircleOutlined } from '@mui/icons-material'
+import { Person, PersonPinCircleOutlined } from '@mui/icons-material'
 
-function HeaderAvo() {
+function HeaderAvo({ iconColor }) {
   const [, sidebarActions] = useSidebar()
   const [, themeActions] = useTheme()
   const [, notificationsActions] = useNotifications()
@@ -40,21 +40,21 @@ function HeaderAvo() {
         src="https://fastly.picsum.photos/id/591/200/300.jpg?hmac=GBnqheK8f8NgGoZ-JQIGl0uYMejcmT4gvw4PsBmUWPY"
         alt="Header Background"
         loading="lazy"
-        className="max-h-44 w-full rounded-b-3xl bg-day-bg_principal object-cover brightness-50"
+        className="object-cover w-full max-h-44 rounded-b-3xl bg-day-bg_principal brightness-50"
       />
-      <div className="absolute right-7 top-7 flex flex-row">
-        <UserProfileLink />
+      <div className="absolute flex flex-row right-7 top-7">
+        <UserProfileLink iconColor={iconColor} />
         <IconButton color="info" edge="end" size="large" onClick={themeActions.toggle}>
           <ThemeIcon />
         </IconButton>
       </div>
-      <div className="absolute -bottom-5 w-full justify-center flex flex-row space-x-4 items-center">
-        <div className="flex items-center justify-center h-24 w-24 rounded-full shadow-sm bg-white border-4">
+      <div className="absolute flex flex-row items-center justify-center w-full space-x-4 -bottom-5">
+        <div className="flex items-center justify-center w-24 h-24 bg-white border-4 rounded-full shadow-sm">
           {/* <span>
-              <FaThumbsDown className="h-4 w-4" />
+              <FaThumbsDown className="w-4 h-4" />
             </span> */}
           <img
-            className="object-cover max-w-full"
+            className="object-cover max-w-full max-h-full rounded-full"
             src={'https://fastly.picsum.photos/id/474/200/300.jpg?hmac=ujW-ONkfEKNYQaIt8c6e2WaF1LWjpave8A5pHryyQs0'}
             alt="src"
           />
@@ -64,12 +64,11 @@ function HeaderAvo() {
   )
 }
 
-const UserProfileLink = () => (
-  <Link to="user/" className="flex flex-col text-center">
-    <div className="bg-white h-10 w-10 rounded-full flex justify-center items-center border-2 border-white">
-      <PersonPinCircleOutlined />
+const UserProfileLink = ({ iconColor }) => (
+  <Link to="/me" className="flex flex-col text-center">
+    <div className="flex items-center justify-center w-10 h-10 bg-white border-2 border-white rounded-full">
+      <Person style={{ color: iconColor }} />
     </div>
-    <h6 className="text-white">"jose"</h6>
   </Link>
 )
 

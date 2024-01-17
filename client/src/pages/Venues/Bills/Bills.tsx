@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 
 import Meta from '@/components/Meta'
 import { FullSizeCenteredFlexBox } from '@/components/styled'
-import { useAuth } from '@/auth/AuthProvider'
+// import { useAuth } from '@/auth/AuthProvider'
 
 function Bills() {
   return (
