@@ -1,43 +1,32 @@
-import { Fragment, Suspense } from 'react'
-import { BrowserRouter, Route, RouterProvider, Routes, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import { Fragment } from 'react'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline'
 
 import { withErrorHandler } from '@/error-handling'
 import AppErrorBoundaryFallback from '@/error-handling/fallbacks/App'
-import Pages from '@/routes/Pages'
-import Header from '@/sections/Header'
 import HotKeys from '@/sections/HotKeys'
 import Notifications from '@/sections/Notifications'
 import SW from '@/sections/SW'
-import Sidebar from '@/sections/Sidebar'
-import Welcome from './pages/Welcome'
-import Page2 from './pages/Page2'
-import Loading from './components/Loading'
-import configuredAsyncComponentLoader from './utils/loader'
-import asyncComponentLoader from './utils/loader/loader'
-import routes from './routes'
 import NotFound from './pages/NotFound'
-import Chat from './pages/Page2/Page2'
+import Page2 from './pages/Page2'
 import Venues from './pages/Venues'
+import Bills from './pages/Venues/Bills'
 import Tables, { tableIdLoader } from './pages/Venues/Tables'
-import Bills, { billIdLoader } from './pages/Venues/Bills'
 
-import './index.css'
-import HeaderAvo from './sections/Header/HeaderAvo'
-import Page3, { page3Loader, page3action } from './pages/Page3'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
-import Error from './pages/Error'
-import { Socket } from 'socket.io-client'
-import Sockets from './pages/Socket/Socket'
-import Login, { action as loginAction } from './pages/Auth/Login'
+import './index.css'
 import Auth from './pages/Auth'
+import Login, { action as loginAction } from './pages/Auth/Login'
+import Me, { action as meAction } from './pages/Auth/Me'
 import Register, { action as registerAction } from './pages/Auth/Register'
 import { loader as authLoader } from './pages/Auth/loader'
-import Me, { action as meAction } from './pages/Auth/Me'
-import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import Error from './pages/Error'
+import Page3, { page3Loader, page3action } from './pages/Page3'
+import Sockets from './pages/Socket/Socket'
 import Checkout from './pages/Stripe/Checkout'
 import Success from './pages/Stripe/Success'
+import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
 
 function App() {
   const router = createBrowserRouter(
@@ -52,7 +41,7 @@ function App() {
             <Route path=":tableId" element={<Tables.TableId />} loader={tableIdLoader} />
           </Route>
           <Route path="venues/:venueId/bills" element={<Bills.Bills />}>
-            <Route path=":billId" element={<Bills.BillId />} loader={billIdLoader} />
+            <Route path=":billId" element={<Bills.BillId />} />
           </Route>
           <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} />
         </Route>

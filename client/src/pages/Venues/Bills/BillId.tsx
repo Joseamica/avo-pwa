@@ -1,13 +1,19 @@
 import { Flex } from '@/components'
-import IconButton, { Button } from '@/components/Button'
+import { Button, IconButton } from '@/components/Button'
 import Modal from '@/components/Modal'
+import ByProduct from '@/components/Payments/ByProduct'
 import { Spacer } from '@/components/Util/Spacer'
+import { H1, H2 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
+import { Currency } from '@/utils/currency'
 import { IncognitoUser } from '@/utils/types/user'
-import { CallSplit, Fullscreen, JoinFull, ListAlt, OpenInFull, Payment, Splitscreen } from '@mui/icons-material'
-import { Fragment, useState } from 'react'
-import { Link, json, useLoaderData, useParams } from 'react-router-dom'
+import { CallSplit, Edit, ListAlt, Payment, SafetyDivider } from '@mui/icons-material'
+import { useQuery } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import axios from 'axios'
+import { Fragment } from 'react'
+import { Link, useParams } from 'react-router-dom'
 
 interface Tip {
   id: number
@@ -50,49 +56,30 @@ interface Bill {
   orderedProducts: OrderedProduct[]
   payments: Payment[]
   users: User[]
-}
-
-async function fetchBill(venueId, billId) {
-  const url = `http://localhost:5000/api/venues/${venueId}/bills/${billId}`
-
-  try {
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error('Error al realizar la solicitud:', error)
-  }
-}
-
-export async function loader({ request, params }) {
-  const { venueId, tableId, billId } = params
-  // const searchParams = await request.
-
-  const bill = await fetchBill(venueId, billId)
-
-  const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
-
-  return json({ bill, user: localStorageUser.user })
+  total: number
+  amount_left: number
 }
 
 function BillId() {
-  const data = useLoaderData() as { bill: Bill; user: IncognitoUser }
-  const params = useParams()
-  const tableNumber = data.bill.tableId
+  const params = useParams<{ venueId: string; billId: string; tableId: string }>()
+
+  const { isPending, error, data, isFetching } = useQuery<Bill>({
+    queryKey: ['bill_data'],
+    queryFn: async () => await axios.get(`http://localhost:5000/api/venues/${params.venueId}/bills/${params.billId}`).then(res => res.data),
+  })
 
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
+
+  if (isPending) return 'Loading...'
+  if (error) return 'An error has occurred: ' + error.message
+  const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
   return (
     <Fragment>
       <div className="h-full ">
-        <HeaderAvo iconColor={data.user.color} />
+        <HeaderAvo iconColor={user.user.color} />
         <Spacer size="xl" />
-        <h3 className="flex justify-center w-full">{`Mesa ${tableNumber}`}</h3>
+        {/* <h3 className="flex justify-center w-full">{`Mesa ${tableNumber}`}</h3> */}
         <div className="flex justify-center w-full">
           <Link
             to={`/venues/${params.venueId}/menus`}
@@ -110,8 +97,19 @@ function BillId() {
 
         <Flex align="center" direction="col">
           <h1>Orden</h1>
+          <Flex direction="row" align="center" space="sm">
+            <H1>Total</H1>
+            <H2>${data.total / 100}</H2>
+          </Flex>
+          <Flex direction="row" align="center" space="sm">
+            <H1>Por Pagar</H1>
+            <H2>${data.amount_left / 100}</H2>
+          </Flex>
+
+          <Spacer size="xl" />
+
           <Flex direction="col" space="xs" className="border">
-            {data.bill.orderedProducts.map(product => {
+            {data.orderedProducts.map(product => {
               return (
                 <div key={product.id}>
                   <span>{product.quantity}</span> <span>{product.name}</span> <span>${product.price / 100}</span>
@@ -133,11 +131,16 @@ function BillId() {
         <Modal isOpen={isModalOpen.split_bill} closeModal={() => closeModal('split_bill')} title="Dividir cuenta">
           <IconButton icon={<ListAlt />} onClick={() => openInnerModal('by_product')} text={'Pagar por producto'} />
           <Spacer size="sm" />
-          <IconButton icon={<ListAlt />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
+          <IconButton icon={<SafetyDivider />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
           <Spacer size="sm" />
-          <IconButton icon={<ListAlt />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
-          <Modal isOpen={isInnerModalOpen.by_product} closeModal={() => closeInnerModal('by_product')} title="Pagar por producto">
-            <h1>By product</h1>
+          <IconButton icon={<Edit />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
+          <Modal
+            isFullScreen={true}
+            isOpen={isInnerModalOpen.by_product}
+            closeModal={() => closeInnerModal('by_product')}
+            title="Pagar por producto"
+          >
+            <ByProduct orderedProducts={data.orderedProducts} />
           </Modal>
           <Modal isOpen={isInnerModalOpen.equal_parts} closeModal={() => closeInnerModal('equal_parts')} title="Pagar partes iguales">
             <h1>Equal parts</h1>
@@ -151,6 +154,7 @@ function BillId() {
           <h1>Pay full bill</h1>
         </Modal>
       </Modal>
+      <ReactQueryDevtools initialIsOpen />
     </Fragment>
   )
 }

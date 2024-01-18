@@ -1,8 +1,5 @@
-import Bills from './Bills'
 import BillId from './BillId'
-import { loader as billIdLoader } from './BillId'
-
-export { billIdLoader }
+import Bills from './Bills'
 
 export default {
   Bills,
