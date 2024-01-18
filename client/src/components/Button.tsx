@@ -17,7 +17,7 @@ const IconButton = ({
     <button
       onClick={onClick}
       className={clsx(
-        'flex items-center justify-between w-full px-10 py-5 text-white bg-black border-2 border-gray rounded-2xl',
+        'flex items-center justify-between w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button rounded-2xl',
         className,
       )}
     >
@@ -33,7 +33,7 @@ export function Button({ text, onClick, className }: { text: string; onClick: ()
     <button
       onClick={onClick}
       className={clsx(
-        'flex items-center justify-center w-full px-10 py-5 text-white bg-black border-2 rounded-2xl border-gray text-xl',
+        'flex items-center justify-center w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
         className,
       )}
     >
@@ -41,8 +41,6 @@ export function Button({ text, onClick, className }: { text: string; onClick: ()
     </button>
   )
 }
-
-export default IconButton
 
 interface ButtonProps {
   fullWith?: boolean
@@ -184,4 +182,4 @@ function LinkButton({
 //   )
 // })
 
-export { Button2, LinkButton }
+export { Button2, LinkButton, IconButton }
