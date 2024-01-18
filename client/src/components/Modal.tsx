@@ -22,6 +22,7 @@ const Modal = ({
   title,
   description,
   scrollable,
+  isFullScreen,
 }: {
   isOpen: boolean
   closeModal: () => void
@@ -29,6 +30,7 @@ const Modal = ({
   title: string
   description?: string
   scrollable?: boolean
+  isFullScreen?: boolean
 }) => {
   if (!isOpen) return null
 
@@ -37,8 +39,8 @@ const Modal = ({
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
-        <div className={`fixed inset-x-0 bottom-0 ${scrollable === true ? 'overflow-y-auto' : null}`}>
-          <div className="flex items-center justify-center min-h-full text-center">
+        <div className={`fixed inset-x-0 bottom-0  ${scrollable === true ? 'overflow-y-auto' : null}`}>
+          <div className="flex items-center justify-center min-h-full text-center ">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -48,7 +50,11 @@ const Modal = ({
               leaveFrom="opacity-100 translate-y-0 scale-100"
               leaveTo="opacity-0 translate-y-full scale-95"
             >
-              <Dialog.Panel className="w-full overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-t-2xl">
+              <Dialog.Panel
+                className={`w-full overflow-hidden text-left align-middle transition-all transform ${
+                  isFullScreen ? 'fixed inset-0 bg-white' : 'bg-white shadow-xl rounded-t-2xl'
+                }`}
+              >
                 <Dialog.Title
                   as="div"
                   className="sticky flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 border"
@@ -59,9 +65,8 @@ const Modal = ({
                     <CloseRounded className="self-end" />
                   </button>
                 </Dialog.Title>
-                <div className="px-5 my-2">
+                <div className="px-5 my-2 bg-background-primary">
                   <Dialog.Description className="mt-2 text-sm text-gray-500">{description}</Dialog.Description>
-
                   <div>{children}</div>
                 </div>
               </Dialog.Panel>
