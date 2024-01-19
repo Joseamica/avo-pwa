@@ -21,7 +21,7 @@ function Venues() {
           <li>cargar todos los venues existentes y mostrarlos con un boton</li>
         </ol> */}
         <nav className="">
-          <Link to={`/venues/${state.venueId}/bills/${state.billId}`} className="flex flex-row h-8 px-2 border">
+          <Link to={`/venues/${state?.venueId}/bills/${state?.billId}`} className="flex flex-row h-8 px-2 border">
             <ChevronLeft />
             <p>Atras</p>
           </Link>

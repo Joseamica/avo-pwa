@@ -6,7 +6,7 @@ import { CounterButton } from '../Button'
 import { Spacer } from '../Util/Spacer'
 import { H2, H4 } from '../Util/Typography'
 
-export default function EqualParts({ amountLeft, payingFor, setPayingFor, partySize, setPartySize, totalAmount, setTotalAmount }) {
+export default function EqualParts({ amountLeft, payingFor, setPayingFor, partySize, setPartySize }) {
   // Cálculos para la animación del círculo
   let circlePathLength = 100
   let gapSize = 2
