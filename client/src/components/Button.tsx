@@ -28,12 +28,38 @@ const IconButton = ({
   )
 }
 
-export function Button({ text, onClick, className }: { text: string; onClick: () => void; className?: string }) {
+export function Button({
+  text,
+  onClick,
+  className,
+  ...buttonProps
+}: { text: string; onClick: () => void; className?: string } & JSX.IntrinsicElements['button']) {
   return (
     <button
+      {...buttonProps}
       onClick={onClick}
       className={clsx(
-        'flex items-center justify-center w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+        'flex items-center disabled:bg-buttons-disabled disabled:border-0 justify-center w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+        className,
+      )}
+    >
+      {text}
+    </button>
+  )
+}
+
+export function CounterButton({
+  text,
+  onClick,
+  className,
+  ...buttonProps
+}: { text: string; onClick: () => void; className?: string } & JSX.IntrinsicElements['button']) {
+  return (
+    <button
+      {...buttonProps}
+      onClick={onClick}
+      className={clsx(
+        ' cursor-pointer flex box-border relative w-8 h-8  items-center disabled:bg-buttons-disabled disabled:border-0 justify-center   text-white bg-buttons-main border-2 border-borders-button  rounded-2xl text-xl',
         className,
       )}
     >

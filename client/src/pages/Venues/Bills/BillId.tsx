@@ -1,18 +1,20 @@
-import { Flex } from '@/components'
+import { Flex, StripeCheckoutForm } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import Modal from '@/components/Modal'
 import ByProduct from '@/components/Payments/ByProduct'
+import EqualParts from '@/components/Payments/EqualParts'
 import { Spacer } from '@/components/Util/Spacer'
 import { H1, H2 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
+import Checkout from '@/pages/Stripe/Checkout'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
 import { Currency } from '@/utils/currency'
 import { IncognitoUser } from '@/utils/types/user'
 import { CallSplit, Edit, ListAlt, Payment, SafetyDivider } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import axios from 'axios'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 interface Tip {
@@ -68,10 +70,42 @@ function BillId() {
     queryFn: async () => await axios.get(`http://localhost:5000/api/venues/${params.venueId}/bills/${params.billId}`).then(res => res.data),
   })
 
+  // const mutation = useMutation({
+  //   mutationFn: formData => {
+  //     return axios.post('http://localhost:5000/create-payment-intent', formData)
+  //   },
+  //   onSuccess: data => {
+  //     console.log(data)
+  //   },
+  // })
+
+  // const onSubmit = async event => {
+  //   event.preventDefault()
+  //   const formData = new FormData(event.currentTarget)
+  //   mutation.mutate(Object.fromEntries(formData))
+  // }
+
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
+
+  // NOTE - Per product
+  const [selectedProducts, setSelectedProducts] = useState([])
+  const totalSelectedProducts = selectedProducts.reduce((acc, curr) => acc + curr.price, 0)
+
+  const handleSelectProducts = (id, price) => {
+    const isSelected = selectedProducts.some(product => product.id === id)
+    setSelectedProducts(isSelected ? selectedProducts.filter(product => product.id !== id) : [...selectedProducts, { id, price }])
+  }
+
+  // NOTE - Equal parts
+  const [payingFor, setPayingFor] = useState(1) // Total de personas que pagan
+  const [partySize, setPartySize] = useState(2) // Total de personas en la mesa
+  const [totalAmount, setTotalAmount] = useState(data.amount_left) // Cantidad total a dividir
+  const amountPerPerson = totalAmount / partySize
+  const perPerson = amountPerPerson * payingFor
 
   if (isPending) return 'Loading...'
   if (error) return 'An error has occurred: ' + error.message
+
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
   return (
@@ -139,11 +173,56 @@ function BillId() {
             isOpen={isInnerModalOpen.by_product}
             closeModal={() => closeInnerModal('by_product')}
             title="Pagar por producto"
+            footer={
+              <Flex direction="col">
+                <Flex direction="row" justify="between" align="center" className="mb-4">
+                  <span>Total seleccionado</span>
+                  <span> {Currency(totalSelectedProducts)}</span>
+                </Flex>
+                <Button
+                  onClick={() => openInnerModal('checkout')}
+                  disabled={isPending || selectedProducts.length <= 0}
+                  text={'Confirmar'}
+                />
+              </Flex>
+            }
           >
-            <ByProduct orderedProducts={data.orderedProducts} />
+            <ByProduct
+              orderedProducts={data.orderedProducts}
+              handleSelectProducts={handleSelectProducts}
+              selectedProducts={selectedProducts}
+            />
+            <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
+              <Checkout amount={{ amount: totalSelectedProducts }} />
+            </Modal>
           </Modal>
-          <Modal isOpen={isInnerModalOpen.equal_parts} closeModal={() => closeInnerModal('equal_parts')} title="Pagar partes iguales">
-            <h1>Equal parts</h1>
+          <Modal
+            isOpen={isInnerModalOpen.equal_parts}
+            closeModal={() => closeInnerModal('equal_parts')}
+            title="Pagar partes iguales"
+            footer={
+              <Flex direction="col">
+                <Flex direction="row" justify="between" align="center" className="mb-4">
+                  <span>Total seleccionado</span>
+                  <span> {Currency(perPerson)}</span>
+                </Flex>
+                <Button
+                  onClick={() => openInnerModal('checkout')}
+                  disabled={isPending || selectedProducts.length <= 0}
+                  text={'Confirmar'}
+                />
+              </Flex>
+            }
+          >
+            <EqualParts
+              amountLeft={data.amount_left}
+              payingFor={payingFor}
+              setPayingFor={setPayingFor}
+              partySize={partySize}
+              setPartySize={setPartySize}
+              totalAmount={totalAmount}
+              setTotalAmount={setTotalAmount}
+            />
           </Modal>
           <Modal isOpen={isInnerModalOpen.custom} closeModal={() => closeInnerModal('custom')} title="Pagar monto personalizado">
             <h1>Custom</h1>
@@ -154,6 +233,7 @@ function BillId() {
           <h1>Pay full bill</h1>
         </Modal>
       </Modal>
+
       <ReactQueryDevtools initialIsOpen />
     </Fragment>
   )

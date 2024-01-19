@@ -6,6 +6,7 @@ export default {
       colors: {
         buttons: {
           main: '#1a593b',
+          disabled: '#9798A1',
         },
         borders: {
           button: '#2e8857',

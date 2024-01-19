@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 // Definiendo los tipos para los nombres de los modales
 type ModalName = 'payment_methods' | 'split_bill' | 'pay_full_bill'
-type InnerModalName = 'by_product' | 'equal_parts' | 'custom'
+type InnerModalName = 'by_product' | 'equal_parts' | 'custom' | 'checkout'
 
 function useModal() {
   const [isModalOpen, setIsModalOpen] = useState<Record<ModalName, boolean>>({
@@ -14,6 +14,7 @@ function useModal() {
     by_product: false,
     equal_parts: false,
     custom: false,
+    checkout: false,
   })
 
   const openModal = (modalName: ModalName) => {
@@ -27,6 +28,7 @@ function useModal() {
       by_product: false,
       equal_parts: false,
       custom: false,
+      checkout: false,
     })
   }
 

@@ -3,14 +3,7 @@ import { Flex } from '../Util/Flex'
 import { Currency } from '@/utils/currency'
 import clsx from 'clsx'
 
-export default function ByProduct({ orderedProducts }) {
-  const [selectedProducts, setSelectedProducts] = useState([])
-
-  const handleSelect = (id, price) => {
-    const isSelected = selectedProducts.some(product => product.id === id)
-    setSelectedProducts(isSelected ? selectedProducts.filter(product => product.id !== id) : [...selectedProducts, { id, price }])
-  }
-
+export default function ByProduct({ orderedProducts, handleSelectProducts, selectedProducts }) {
   return (
     <Flex direction="col" space="xs">
       {orderedProducts.map(product => {
@@ -24,7 +17,7 @@ export default function ByProduct({ orderedProducts }) {
                 <div className="flex items-center flex-shrink-0 ml-3">
                   <span className="relative">{Currency(product.price)}</span>
                   <button
-                    onClick={() => handleSelect(product.id, product.price)}
+                    onClick={() => handleSelectProducts(product.id, product.price)}
                     className={clsx(
                       'box-border relative flex items-center justify-center flex-shrink-0 w-8 h-8 ml-3 border rounded-full cursor-pointer',
                       selectedProducts.some(p => p.id === product.id)

@@ -4,6 +4,13 @@ const align_items = {
   end: 'items-end',
 }
 
+const justify_items = {
+  center: 'justify-center',
+  start: 'justify-start',
+  end: 'justify-end',
+  between: 'justify-between',
+}
+
 const spacer = {
   xs: { x: 'space-x-2', y: 'space-y-2' },
   sm: { x: 'space-x-3', y: 'space-y-3' },
@@ -32,17 +39,23 @@ function Flex({
   className = '',
   children,
   align,
+  justify,
   space,
 }: {
   direction?: 'row' | 'col'
   className?: string
   children?: React.ReactNode
   align?: keyof typeof align_items
+  justify?: keyof typeof justify_items
   space?: keyof typeof spacer
 }) {
   const spacingStyle = direction === 'row' ? spacer[space]?.x : spacer[space]?.y
 
-  return <div className={`flex ${directions[direction]} ${align_items[align]} ${spacingStyle} ${className}`}>{children}</div>
+  return (
+    <div className={`flex ${directions[direction]} ${justify_items[justify]} ${align_items[align]} ${spacingStyle} ${className}`}>
+      {children}
+    </div>
+  )
 }
 
 export { Flex }

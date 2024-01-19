@@ -23,6 +23,7 @@ const Modal = ({
   description,
   scrollable,
   isFullScreen,
+  footer,
 }: {
   isOpen: boolean
   closeModal: () => void
@@ -31,6 +32,7 @@ const Modal = ({
   description?: string
   scrollable?: boolean
   isFullScreen?: boolean
+  footer?: React.ReactNode
 }) => {
   if (!isOpen) return null
 
@@ -51,8 +53,8 @@ const Modal = ({
               leaveTo="opacity-0 translate-y-full scale-95"
             >
               <Dialog.Panel
-                className={`w-full overflow-hidden text-left align-middle transition-all transform ${
-                  isFullScreen ? 'fixed inset-0 bg-white' : 'bg-white shadow-xl rounded-t-2xl'
+                className={`w-full overflow-hidden text-left align-middle transition-all transform flex flex-col ${
+                  isFullScreen ? 'fixed inset-0  bg-background-primary' : ' bg-background-primary shadow-xl rounded-t-2xl'
                 }`}
               >
                 <Dialog.Title
@@ -65,10 +67,13 @@ const Modal = ({
                     <CloseRounded className="self-end" />
                   </button>
                 </Dialog.Title>
-                <div className="px-5 my-2 bg-background-primary">
+                <div className="flex-grow px-5 my-2 overflow-y-auto">
                   <Dialog.Description className="mt-2 text-sm text-gray-500">{description}</Dialog.Description>
                   <div>{children}</div>
                 </div>
+
+                {/* <div className="flex flex-row justify-end w-full p-4 space-x-4 bg-white"> */}
+                {footer && <div className="sticky bottom-0 p-4 bg-white border-t rounded-t-xl">{footer}</div>}
               </Dialog.Panel>
             </Transition.Child>
           </div>
