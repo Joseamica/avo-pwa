@@ -1,25 +1,14 @@
-import GitHubIcon from '@mui/icons-material/GitHub'
 import ThemeIcon from '@mui/icons-material/InvertColors'
-import MenuIcon from '@mui/icons-material/Menu'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
-import Toolbar from '@mui/material/Toolbar'
-import Tooltip from '@mui/material/Tooltip'
 
-import { CenteredFlexBox, FlexBox } from '@/components/styled'
-import { repository, title } from '@/config'
 import useHotKeysDialog from '@/store/hotkeys'
 import useNotifications from '@/store/notifications'
 import useSidebar from '@/store/sidebar'
 import useTheme from '@/store/theme'
 
-import { HotKeysButton } from './styled'
-import { getRandomJoke } from './utils'
+import Person from '@mui/icons-material/Person'
 import { Link } from 'react-router-dom'
-import { Person, PersonPinCircleOutlined } from '@mui/icons-material'
+import { getRandomJoke } from './utils'
 
 function HeaderAvo({ iconColor }) {
   const [, sidebarActions] = useSidebar()

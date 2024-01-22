@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 
 import Meta from '@/components/Meta'
 import { FullSizeCenteredFlexBox } from '@/components/styled'
-import { ChevronLeft } from '@mui/icons-material'
+import ChevronLeft from '@mui/icons-material/ChevronLeft'
 
 function Venues() {
   let { state } = useLocation()

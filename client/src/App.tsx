@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, lazy, Suspense } from 'react'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline'
@@ -28,10 +28,13 @@ import Checkout from './pages/Stripe/Checkout'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
 
+// const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
+
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Fragment>
+        {/* <Suspense fallback={<div>Cargando...</div>}> */}
         <Route path="/" element={<Layout />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="venues" element={<Venues.Venues />}>
             <Route path=":venueId" element={<Venues.VenueId />} />
@@ -43,7 +46,7 @@ function App() {
           <Route path="venues/:venueId/bills" element={<Bills.Bills />}>
             <Route path=":billId" element={<Bills.BillId />} />
           </Route>
-          <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} />
+          {/* <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="sockets" element={<Sockets />} />
@@ -52,8 +55,9 @@ function App() {
         <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction} />
         <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction} />
         <Route path="me" element={<Me />} action={meAction} />
-        <Route path="checkout" element={<Checkout />} />
         <Route path="success" element={<Success />} />
+        <Route path="checkout" element={<Checkout />} />
+        {/* </Suspense> */}
       </Fragment>,
 
       // <>

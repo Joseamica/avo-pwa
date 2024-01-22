@@ -1,6 +1,6 @@
 // Modal.jsx
 import { Dialog, Transition } from '@headlessui/react'
-import { CloseRounded } from '@mui/icons-material'
+import CloseRounded from '@mui/icons-material/CloseRounded'
 import { Fragment } from 'react'
 
 /**
@@ -28,7 +28,7 @@ const Modal = ({
   isOpen: boolean
   closeModal: () => void
   children: React.ReactNode
-  title: string
+  title?: string
   description?: string
   scrollable?: boolean
   isFullScreen?: boolean
@@ -59,7 +59,7 @@ const Modal = ({
               >
                 <Dialog.Title
                   as="div"
-                  className="sticky flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 border"
+                  className="sticky flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 bg-white border"
                 >
                   <div />
                   <h3 className="">{title}</h3>

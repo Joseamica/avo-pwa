@@ -37,8 +37,8 @@ export function Paragraph({ className, prose = true, as = 'p', textColorClassNam
 }
 
 type TitleProps = {
-  variant?: 'primary' | 'secondary' | 'bold' | 'button' | 'price' | 'error'
-  boldVariant?: 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'bolder'
+  variant?: 'primary' | 'secondary' | 'disabled'
+  bold?: 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'bolder'
 
   as?: React.ElementType
   className?: string
@@ -53,7 +53,7 @@ type TitleProps = {
     }
 )
 
-const fontSize = {
+const sizes = {
   h1: 'leading-tight text-2xl md:text-2xl',
   h2: 'leading-tight text-xl md:text-xl',
   h3: 'text-lg  sm:text-base',
@@ -62,36 +62,51 @@ const fontSize = {
   h6: 'text-xs sm:text-[10px]',
 }
 
-const titleColors = {
-  primary: 'text-principal dark:text-mainTextDark ',
-  secondary: 'text-principal dark:text-button-textNotSelected ',
-  semibold: 'font-semibold dark:text-mainTextDark ',
-  price: 'font-semibold text-button-outline  ',
-  button: 'text-white dark:text-mainTextDark font-medium',
-  error: 'text-warning',
+const variants = {
+  primary: 'text-texts-primary',
+  secondary: 'text-texts-secondary',
+  disabled: 'text-texts-disabled',
 }
 
-const bolding = {
+const boldness = {
   extralight: 'font-extraLight',
   light: 'font-light',
   normal: 'font-normal',
   medium: 'font-medium',
   semibold: 'font-semibold',
   bold: 'font-bold',
-  bolder: 'font-extrabold',
+  extrabold: 'font-extrabold',
 }
 
-function Title({
+function Title({ variant = 'primary', bold = 'normal', size, as, className, htmlFor, ...rest }: TitleProps & { size: keyof typeof sizes }) {
+  const Tag = as ?? size
+  return <Tag htmlFor={htmlFor} className={clsx(sizes[size], boldness[bold], variants[variant], className)} {...rest} />
+}
+
+export function JumboTitle({
   variant = 'primary',
-  boldVariant = 'normal',
+  bold = 'normal',
   size,
   as,
   className,
-  htmlFor,
+  children,
   ...rest
-}: TitleProps & { size: keyof typeof fontSize }) {
-  const Tag = as ?? size
-  return <Tag htmlFor={htmlFor} className={clsx(fontSize[size], bolding[boldVariant], titleColors[variant], className)} {...rest} />
+}: {
+  variant?: 'primary' | 'secondary' | 'disabled'
+  bold?: 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'bolder'
+
+  as?: React.ElementType
+  className?: string
+  id?: string
+  htmlFor?: 'string'
+  children: React.ReactNode
+  size?: keyof typeof sizes
+}) {
+  return (
+    <h1 className={clsx('text-4xl', boldness[bold], variants[variant], className)} {...rest}>
+      {children}
+    </h1>
+  )
 }
 
 export function H1(props: TitleProps) {

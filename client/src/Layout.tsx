@@ -1,9 +1,6 @@
 // Layout.js
-import { Link, Outlet, json, useLoaderData } from 'react-router-dom'
+import { Outlet, json, useLoaderData } from 'react-router-dom'
 
-import { z } from 'zod'
-
-import { Person } from '@mui/icons-material'
 import { getRandomPastelHex } from './utils/misc'
 import { IncognitoUser } from './utils/types/user'
 

@@ -122,9 +122,7 @@ const Login = () => {
               </div>
             </div> */}
             {actionData?.res?.error && <p className="text-red-500">{actionData.res.error}</p>}
-            <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
-              Send
-            </Button>
+            <Button className="p-2 bg-blue-400 border" disabled={isSubmitting} text="Send" />
           </>
         )}
       </Form>

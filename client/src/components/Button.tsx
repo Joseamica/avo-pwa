@@ -2,6 +2,46 @@ import clsx from 'clsx'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+function InnerButton({
+  children,
+  variant,
+  size = 'large',
+  className,
+}: {
+  children: React.ReactNode | React.ReactNode[]
+  variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
+  size?: 'small' | 'medium' | 'large' | 'icon'
+  className?: string
+} & Pick<ButtonProps, 'children' | 'variant' | 'size'>) {
+  return (
+    <>
+      <div
+        className={clsx(
+          'flex items-center disabled:bg-buttons-disabled disabled:border-0 justify-center  px-10 py-5 ',
+          { 'bg-buttons-main border-4 border-borders-button text-white rounded-2xl text-xl': variant === 'primary' },
+          { 'bg-white border-4 border-borders-button text-buttons-main rounded-2xl text-xl': variant === 'secondary' },
+          { 'bg-buttons-main border-4 border-borders-button text-white rounded-2xl text-xl': variant === 'danger' },
+
+          className,
+        )}
+      />
+      <div
+        className={clsx(`relative flex h-full w-full items-center justify-center whitespace-nowrap`, {
+          'text-primary': variant === 'secondary',
+          'text-white': variant === 'primary' || variant === 'payment',
+          'text-red-500': variant === 'danger',
+          'space-x-5 px-11 py-6 ': size === 'large',
+          'space-x-3 px-8 py-4': size === 'medium',
+          'space-x-1 px-5 py-2 text-sm ': size === 'small',
+          'space-x-1 p-3 px-5 text-sm ': size === 'icon',
+        })}
+      >
+        {children}
+      </div>
+    </>
+  )
+}
+
 const IconButton = ({
   icon,
   text,
@@ -30,20 +70,23 @@ const IconButton = ({
 
 export function Button({
   text,
-  onClick,
+  size = 'lg',
   className,
+  variant = 'primary',
   ...buttonProps
-}: { text: string; onClick: () => void; className?: string } & JSX.IntrinsicElements['button']) {
+}: { text: string; className?: string; variant?: string; size?: string } & JSX.IntrinsicElements['button']) {
   return (
     <button
       {...buttonProps}
-      onClick={onClick}
       className={clsx(
-        'flex items-center disabled:bg-buttons-disabled disabled:border-0 justify-center w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+        'flex items-center disabled:bg-buttons-disabled disabled:border-0 justify-center w-full  text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+        { 'px-11 py-6 ': size === 'lg' },
+        { 'px-8 py-4': size === 'md' },
+        { ' px-5 py-2 ': size === 'sm' },
         className,
       )}
     >
-      {text}
+      <span className={clsx('', { 'text-xl': size === 'lg' }, { 'text-lg': size === 'md' }, { 'text-base': size === 'sm' })}>{text}</span>
     </button>
   )
 }
@@ -57,7 +100,6 @@ export function CounterButton({
   return (
     <button
       {...buttonProps}
-      onClick={onClick}
       className={clsx(
         ' cursor-pointer flex box-border relative w-8 h-8  items-center disabled:bg-buttons-disabled disabled:border-0 justify-center   text-white bg-buttons-main border-2 border-borders-button  rounded-2xl text-xl',
         className,

@@ -65,9 +65,7 @@ const Register = () => {
               }}
               errors={errors.password?.message}
             />
-            <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting}>
-              Send
-            </Button>
+            <Button type="submit" className="p-2 bg-blue-400 border" disabled={isSubmitting} text="send" />
           </>
         )}
       </Form>

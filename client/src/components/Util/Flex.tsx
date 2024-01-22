@@ -41,6 +41,7 @@ function Flex({
   align,
   justify,
   space,
+  ...props
 }: {
   direction?: 'row' | 'col'
   className?: string
@@ -48,11 +49,14 @@ function Flex({
   align?: keyof typeof align_items
   justify?: keyof typeof justify_items
   space?: keyof typeof spacer
-}) {
+} & JSX.IntrinsicElements['div']) {
   const spacingStyle = direction === 'row' ? spacer[space]?.x : spacer[space]?.y
 
   return (
-    <div className={`flex ${directions[direction]} ${justify_items[justify]} ${align_items[align]} ${spacingStyle} ${className}`}>
+    <div
+      {...props}
+      className={`flex ${directions[direction]} ${justify_items[justify]} ${align_items[align]} ${spacingStyle} ${className}`}
+    >
       {children}
     </div>
   )

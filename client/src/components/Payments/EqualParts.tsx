@@ -7,7 +7,6 @@ import { Spacer } from '../Util/Spacer'
 import { H2, H4 } from '../Util/Typography'
 
 export default function EqualParts({ amountLeft, payingFor, setPayingFor, partySize, setPartySize }) {
-  // Cálculos para la animación del círculo
   let circlePathLength = 100
   let gapSize = 2
   let percentForOne = circlePathLength / partySize
@@ -34,7 +33,7 @@ export default function EqualParts({ amountLeft, payingFor, setPayingFor, partyS
         {/* Add more circles with decreasing radius and increasing stroke width */}
 
         <AnimatePresence>
-          <div className="relative w-56 h-56 md:h-32 md:w-32 xs:h-16 xs:w-16 ">
+          <div className="relative w-56 h-56 xs:h-16 xs:w-16 ">
             <svg className="-rotate-90 fill-none" viewBox="0 0 36 36">
               <motion.circle
                 initial={{ strokeDashoffset: 0, opacity: 0 }}
@@ -47,7 +46,7 @@ export default function EqualParts({ amountLeft, payingFor, setPayingFor, partyS
                 r="15.9155"
                 strokeWidth="2"
                 pathLength="100"
-                className=" stroke-black"
+                className=" stroke-buttons-disabled"
               />
 
               <motion.circle
@@ -78,22 +77,23 @@ export default function EqualParts({ amountLeft, payingFor, setPayingFor, partyS
           </div>
         </AnimatePresence>
       </div>
-
-      <Flex space="sm" align="center" className="p-2 bg-white border-2 rounded-full" justify="between">
-        <H4 className="pl-2">Personas en la mesa</H4>
-        <Flex direction="row" align="center" space="xs">
-          <CounterButton onClick={decrementPartySize} disabled={partySize >= payingFor && partySize > 2 ? false : true} text="-" />
-          <p>{partySize}</p>
-          <CounterButton onClick={incrementPartySize} text="+" />
+      <Flex direction="col" justify="end">
+        <Flex space="sm" align="center" className="p-2 bg-white border-2 rounded-full" justify="between">
+          <H4 className="pl-2">Personas en la mesa</H4>
+          <Flex direction="row" align="center" space="xs">
+            <CounterButton onClick={decrementPartySize} disabled={partySize >= payingFor && partySize > 2 ? false : true} text="-" />
+            <p>{partySize}</p>
+            <CounterButton onClick={incrementPartySize} text="+" />
+          </Flex>
         </Flex>
-      </Flex>
-      <Spacer size="md" />
-      <Flex space="sm" align="center" className="p-2 bg-white border-2 rounded-full " justify="between">
-        <H4 className="pl-2">Pagando por</H4>
-        <Flex direction="row" align="center" space="xs">
-          <CounterButton onClick={decrementPayingFor} disabled={payingFor <= 1} text="-" />
-          <p>{payingFor}</p>
-          <CounterButton onClick={incrementPayingFor} disabled={payingFor >= partySize} text="+" />
+        <Spacer size="md" />
+        <Flex space="sm" align="center" className="p-2 bg-white border-2 rounded-full " justify="between">
+          <H4 className="pl-2">Pagando por</H4>
+          <Flex direction="row" align="center" space="xs">
+            <CounterButton onClick={decrementPayingFor} disabled={payingFor <= 1} text="-" />
+            <p>{payingFor}</p>
+            <CounterButton onClick={incrementPayingFor} disabled={payingFor >= partySize} text="+" />
+          </Flex>
         </Flex>
       </Flex>
     </div>

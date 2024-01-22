@@ -2,6 +2,7 @@ import { Link, Outlet, useParams } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import { Audio, ThreeDots } from 'react-loader-spinner'
 
 import Meta from '@/components/Meta'
 import { FullSizeCenteredFlexBox } from '@/components/styled'
@@ -62,7 +63,20 @@ function Bills() {
     queryFn: async () => await axios.get(`http://localhost:5000/api/venues/${params.venueId}/bills/${params.billId}`).then(res => res.data),
   })
 
-  if (isPending) return 'Loading...'
+  if (isPending)
+    return (
+      <ThreeDots
+        visible={true}
+        height="80"
+        width="80"
+        color="#4fa94d"
+        radius="9"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+      />
+    )
+
   if (error) return 'An error has occurred: ' + error.message
   return (
     <>

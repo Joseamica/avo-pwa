@@ -1,21 +1,24 @@
 import { Flex } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import Modal from '@/components/Modal'
-import ByProduct from '@/components/Payments/ByProduct'
-import EqualParts from '@/components/Payments/EqualParts'
 import { Spacer } from '@/components/Util/Spacer'
 import { H1, H2 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
-import { Currency } from '@/utils/currency'
 import { IncognitoUser } from '@/utils/types/user'
-import { CallSplit, Edit, ListAlt, Payment, SafetyDivider } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
+
+import ByProductModal from '@/components/Modals/ByProductModal'
+import CustomModal from '@/components/Modals/CustomModal'
+import EqualPartsModal from '@/components/Modals/EqualPartsModal'
+import CallSplit from '@mui/icons-material/CallSplit'
+import Edit from '@mui/icons-material/Edit'
+import ListAlt from '@mui/icons-material/ListAlt'
+import Payment from '@mui/icons-material/Payment'
+import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import axios from 'axios'
-import { Fragment, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Fragment } from 'react'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 
 interface Tip {
   id: number
@@ -62,27 +65,17 @@ interface Bill {
   amount_left: number
 }
 
-function BillId({ data, isPending }) {
+function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
+  const location = useLocation()
 
-  const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
-
-  // NOTE - Per product
-  const [selectedProducts, setSelectedProducts] = useState([])
-  const totalSelectedProducts = selectedProducts.reduce((acc, curr) => acc + curr.price, 0)
-  const handleSelectProducts = (id, price) => {
-    const isSelected = selectedProducts.some(product => product.id === id)
-    setSelectedProducts(isSelected ? selectedProducts.filter(product => product.id !== id) : [...selectedProducts, { id, price }])
-  }
-
-  // NOTE - Equal parts
-  const [payingFor, setPayingFor] = useState(1) // Total de personas que pagan
-  const [partySize, setPartySize] = useState(2) // Total de personas en la mesa
-  const [totalAmount, setTotalAmount] = useState(data.amount_left)
-  const amountEach = totalAmount / partySize
-  const totalEqualParts = amountEach * payingFor
+  //TODO - use searchParams to open also modals if the user go back from
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
+
+  //TODO -  convert to useReducer
+  const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
 
   return (
     <Fragment>
@@ -144,66 +137,47 @@ function BillId({ data, isPending }) {
           <IconButton icon={<SafetyDivider />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
           <Spacer size="sm" />
           <IconButton icon={<Edit />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
-          <Modal
-            isFullScreen={true}
-            isOpen={isInnerModalOpen.by_product}
-            closeModal={() => closeInnerModal('by_product')}
-            title="Pagar por producto"
-            footer={
-              <Flex direction="col">
-                <Flex direction="row" justify="between" align="center" className="mb-4">
-                  <span>Total seleccionado</span>
-                  <span> {Currency(totalSelectedProducts)}</span>
-                </Flex>
-                <Button
-                  onClick={() => openInnerModal('checkout')}
-                  disabled={isPending || selectedProducts.length <= 0}
-                  text={'Confirmar'}
-                />
-              </Flex>
-            }
-          >
-            <ByProduct
-              orderedProducts={data.orderedProducts}
-              handleSelectProducts={handleSelectProducts}
-              selectedProducts={selectedProducts}
-            />
-            <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
-              <Checkout amount={{ amount: totalSelectedProducts }} />
-            </Modal>
-          </Modal>
-          <Modal
-            isOpen={isInnerModalOpen.equal_parts}
-            closeModal={() => closeInnerModal('equal_parts')}
-            title="Pagar partes iguales"
-            footer={
-              <Flex direction="col">
-                <Flex direction="row" justify="between" align="center" className="mb-4">
-                  <span>Total seleccionado</span>
-                  <span> {Currency(totalEqualParts)}</span>
-                </Flex>
-                <Button onClick={() => openInnerModal('checkout')} disabled={isPending} text={'Confirmar'} />
-              </Flex>
-            }
-          >
-            <EqualParts
-              amountLeft={data.amount_left}
-              payingFor={payingFor}
-              setPayingFor={setPayingFor}
-              partySize={partySize}
-              setPartySize={setPartySize}
-            />
-            <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
-              <Checkout amount={{ amount: totalEqualParts }} />
-            </Modal>
-          </Modal>
-          <Modal isOpen={isInnerModalOpen.custom} closeModal={() => closeInnerModal('custom')} title="Pagar monto personalizado">
-            <h1>Custom</h1>
-          </Modal>
+          {/* ANCHOR innerModal - ByProduct */}
+          <ByProductModal
+            isInnerModalOpen={isInnerModalOpen}
+            closeInnerModal={closeInnerModal}
+            openInnerModal={openInnerModal}
+            orderedProducts={data.orderedProducts}
+            isPending={isPending}
+          />
+          {/* ANCHOR innerModal - EqualParts */}
+          <EqualPartsModal
+            isInnerModalOpen={isInnerModalOpen}
+            closeInnerModal={closeInnerModal}
+            openInnerModal={openInnerModal}
+            amountLeft={data.amount_left}
+            isPending={isPending}
+          />
+          {/* ANCHOR innerModal - Custom */}
+          <CustomModal
+            isInnerModalOpen={isInnerModalOpen}
+            closeInnerModal={closeInnerModal}
+            openInnerModal={openInnerModal}
+            isPending={isPending}
+          />
         </Modal>
         {/* ANCHOR FullBill */}
         <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
-          <h1>Pay full bill</h1>
+          {/* NOTE - TODO - Decide what approach is better, to go to checkout route or render directly on childModal */}
+          {/* <Link
+            to="/checkout"
+            state={{
+              amount: { amount: data.amount_left },
+              venueId: params.venueId,
+              tableId: params.tableId,
+              billId: params.billId,
+              redirectTo: location.pathname,
+            }}
+          >
+            
+            Checkout
+          </Link> */}
+          <Checkout amount={{ amount: data.amount_left }} />
         </Modal>
       </Modal>
 
