@@ -37,7 +37,7 @@ export function Paragraph({ className, prose = true, as = 'p', textColorClassNam
 }
 
 type TitleProps = {
-  variant?: 'primary' | 'secondary' | 'disabled'
+  variant?: 'primary' | 'secondary' | 'disabled' | 'avoqado'
   bold?: 'extralight' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'bolder'
 
   as?: React.ElementType
@@ -66,6 +66,7 @@ const variants = {
   primary: 'text-texts-primary',
   secondary: 'text-texts-secondary',
   disabled: 'text-texts-disabled',
+  avoqado: 'text-texts-avoqado',
 }
 
 const boldness = {

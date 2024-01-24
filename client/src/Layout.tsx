@@ -3,6 +3,9 @@ import { Outlet, json, useLoaderData } from 'react-router-dom'
 
 import { getRandomPastelHex } from './utils/misc'
 import { IncognitoUser } from './utils/types/user'
+import axios from 'axios'
+import { initStripe } from './utils/stripe'
+import { v4 as uuidv4 } from 'uuid'
 
 const User = IncognitoUser
 
@@ -17,7 +20,11 @@ export async function loader({ request }) {
       color: randomColor,
       createdAt: Date.now(),
     }
-    localStorage.setItem('persist:user', JSON.stringify({ user }))
+    const stripeCustomer = await axios.post('http://localhost:5000/create-incognito-customer', {
+      name: user.color + ' ' + uuidv4(),
+    })
+
+    localStorage.setItem('persist:user', JSON.stringify({ user: { ...user, stripeCustomerId: stripeCustomer.data.id } }))
 
     return json({ user })
   }
@@ -33,8 +40,6 @@ export async function action({ request }) {
 }
 
 const Layout = ({}) => {
-  const data = useLoaderData() as { user: IncognitoUser }
-
   // const navigation = useNavigation()
   // const location = useLocation()
   // console.log('data', data)

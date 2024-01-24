@@ -5,12 +5,12 @@ import { Link } from 'react-router-dom'
 function InnerButton({
   children,
   variant,
-  size = 'large',
+  size = 'lg',
   className,
 }: {
   children: React.ReactNode | React.ReactNode[]
   variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
-  size?: 'small' | 'medium' | 'large' | 'icon'
+  size?: 'sm' | 'md' | 'lg' | 'icon'
   className?: string
 } & Pick<ButtonProps, 'children' | 'variant' | 'size'>) {
   return (
@@ -30,10 +30,9 @@ function InnerButton({
           'text-primary': variant === 'secondary',
           'text-white': variant === 'primary' || variant === 'payment',
           'text-red-500': variant === 'danger',
-          'space-x-5 px-11 py-6 ': size === 'large',
-          'space-x-3 px-8 py-4': size === 'medium',
-          'space-x-1 px-5 py-2 text-sm ': size === 'small',
-          'space-x-1 p-3 px-5 text-sm ': size === 'icon',
+          'px-11 py-6 ': size === 'lg',
+          'space-x-3 px-8 py-4': size === 'md',
+          'space-x-1 px-5 py-2 text-sm ': size === 'sm',
         })}
       >
         {children}
@@ -86,7 +85,9 @@ export function Button({
         className,
       )}
     >
+      {/* <InnerButton> */}
       <span className={clsx('', { 'text-xl': size === 'lg' }, { 'text-lg': size === 'md' }, { 'text-base': size === 'sm' })}>{text}</span>
+      {/* </InnerButton> */}
     </button>
   )
 }
@@ -113,7 +114,7 @@ export function CounterButton({
 interface ButtonProps {
   fullWith?: boolean
   variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
-  size?: 'small' | 'medium' | 'large' | 'icon'
+  size?: 'sm' | 'md' | 'lg'
   children: React.ReactNode | React.ReactNode[]
   to?: string
   custom?: string
@@ -122,7 +123,7 @@ interface ButtonProps {
 interface LinkProps {
   fullWith?: boolean
   variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
-  size?: 'small' | 'medium' | 'large' | 'icon'
+  size?: 'sm' | 'md' | 'lg' | 'icon'
   children: React.ReactNode | React.ReactNode[]
   to: string
   custom?: string
@@ -138,7 +139,7 @@ function getClassName({ className, fullWith }: { className?: string; fullWith?: 
   )
 }
 
-function ButtonInner({ children, variant, size = 'large' }: ButtonProps & Pick<ButtonProps, 'children' | 'variant' | 'size'>) {
+function ButtonInner({ children, variant, size = 'lg' }: ButtonProps & Pick<ButtonProps, 'children' | 'variant' | 'size'>) {
   return (
     <>
       <div
@@ -156,10 +157,9 @@ function ButtonInner({ children, variant, size = 'large' }: ButtonProps & Pick<B
           'text-primary': variant === 'secondary',
           'text-white': variant === 'primary' || variant === 'payment',
           'text-red-500': variant === 'danger',
-          'space-x-5 px-11 py-6 ': size === 'large',
-          'space-x-3 px-8 py-4': size === 'medium',
-          'space-x-1 px-5 py-2 text-sm ': size === 'small',
-          'space-x-1 p-3 px-5 text-sm ': size === 'icon',
+          'space-x-5 px-11 py-6 ': size === 'lg',
+          'space-x-3 px-8 py-4': size === 'md',
+          'space-x-1 px-5 py-2 text-sm ': size === 'sm',
         })}
       >
         {children}
@@ -185,7 +185,7 @@ function Buttosn({
   children,
   fullWith,
   variant = 'primary',
-  size = 'large',
+  size = 'lg',
   className,
   custom,
   ...buttonProps
@@ -199,13 +199,7 @@ function Buttosn({
   )
 }
 
-function Button2({
-  children,
-  variant = 'primary',
-  size = 'large',
-  className,
-  ...buttonProps
-}: ButtonProps & JSX.IntrinsicElements['button']) {
+function Button2({ children, variant = 'primary', size = 'lg', className, ...buttonProps }: ButtonProps & JSX.IntrinsicElements['button']) {
   return (
     <button {...buttonProps} className={getClassName({ className })}>
       <ButtonInner variant={variant} size={size}>
@@ -219,7 +213,7 @@ function LinkButton({
   children,
   fullWith,
   variant = 'primary',
-  size = 'large',
+  size = 'lg',
   className,
   custom,
   to = '/',
@@ -238,7 +232,7 @@ function LinkButton({
  * A link that looks like a button
  */
 // const ButtonLink = React.forwardRef<HTMLAnchorElement, React.ComponentPropsWithRef<typeof AnchorOrLink> & ButtonProps>(function ButtonLink(
-//   { children, variant = 'primary', className, size = 'large', fullWith, ...rest },
+//   { children, variant = 'primary', className, size = 'lg', fullWith, ...rest },
 //   ref,
 // ) {
 //   return (

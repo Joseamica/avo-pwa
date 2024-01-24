@@ -18,6 +18,7 @@ export default {
         borders: {
           button: '#2e8857',
           selected: '#4B5563',
+          disabled: '#EBECF1',
         },
         background: {
           primary: '#F6F6F9',
