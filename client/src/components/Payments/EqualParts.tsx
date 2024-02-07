@@ -7,8 +7,9 @@ import { Spacer } from '../Util/Spacer'
 import { H2, H4 } from '../Util/Typography'
 
 export default function EqualParts({ amountLeft, payingFor, setPayingFor, partySize, setPartySize }) {
+  // Cálculos para la animación del círculo
   let circlePathLength = 100
-  let gapSize = 2
+  let gapSize = 2.5
   let percentForOne = circlePathLength / partySize
   let greenedPercent = percentForOne * payingFor - gapSize
   let notGreenedPercent = circlePathLength - greenedPercent - gapSize
@@ -46,6 +47,7 @@ export default function EqualParts({ amountLeft, payingFor, setPayingFor, partyS
                 r="15.9155"
                 strokeWidth="2"
                 pathLength="100"
+                strokeLinecap="round"
                 className=" stroke-buttons-disabled"
               />
 
@@ -62,7 +64,7 @@ export default function EqualParts({ amountLeft, payingFor, setPayingFor, partyS
                 id="myPath"
                 pathLength="100"
                 strokeWidth="2"
-                stroke="#10b981"
+                stroke="#003366"
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center p-8 text-center md:text-xs xs:hidden ">

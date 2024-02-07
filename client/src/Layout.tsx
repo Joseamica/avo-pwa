@@ -1,11 +1,10 @@
 // Layout.js
-import { Outlet, json, useLoaderData } from 'react-router-dom'
+import { Outlet, json } from 'react-router-dom'
 
+import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 import { getRandomPastelHex } from './utils/misc'
 import { IncognitoUser } from './utils/types/user'
-import axios from 'axios'
-import { initStripe } from './utils/stripe'
-import { v4 as uuidv4 } from 'uuid'
 
 const User = IncognitoUser
 

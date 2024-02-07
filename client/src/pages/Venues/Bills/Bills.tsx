@@ -1,11 +1,7 @@
-import { Link, Outlet, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import { Audio, ThreeDots } from 'react-loader-spinner'
+import { ThreeDots } from 'react-loader-spinner'
 
-import Meta from '@/components/Meta'
-import { FullSizeCenteredFlexBox } from '@/components/styled'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import BillId from './BillId'

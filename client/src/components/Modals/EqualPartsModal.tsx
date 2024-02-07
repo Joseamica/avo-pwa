@@ -41,6 +41,7 @@ export default function EqualPartsModal({
 }: EqualPartsModalProps) {
   const [payingFor, setPayingFor] = useState(1) // Total de personas que pagan
   const [partySize, setPartySize] = useState(2) // Total de personas en la mesa
+
   const amountEach = amountLeft / partySize
   const totalEqualParts = amountEach * payingFor
 

@@ -17,8 +17,9 @@ import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { atom, useRecoilState, useSetRecoilState } from 'recoil'
 
 interface Tip {
   id: number
@@ -67,10 +68,6 @@ interface Bill {
 
 function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-  const location = useLocation()
-
-  //TODO - use searchParams to open also modals if the user go back from
-  const [searchParams, setSearchParams] = useSearchParams()
 
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
@@ -99,7 +96,7 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
-          <h1>Orden</h1>
+          <h1 className="font-neue">Orden</h1>
           <Flex direction="row" align="center" space="sm">
             <H1>Total</H1>
             <H2>${data.total / 100}</H2>

@@ -2,7 +2,7 @@ import { Flex } from '@/components'
 import { Button } from '@/components/Button'
 import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
-import { H4, JumboTitle, H3 } from '@/components/Util/Typography'
+import { H3, H4, JumboTitle } from '@/components/Util/Typography'
 import { Currency } from '@/utils/currency'
 
 import clsx from 'clsx'

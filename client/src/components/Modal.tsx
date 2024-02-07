@@ -35,13 +35,14 @@ const Modal = ({
   footer?: React.ReactNode
 }) => {
   if (!isOpen) return null
+  const modalContentMaxHeight = '100vh' // Adjust as needed
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
 
-        <div className={`fixed inset-x-0 bottom-0  ${scrollable === true ? 'overflow-y-auto' : null}`}>
+        <div className={`fixed inset-x-0 bottom-0    ${scrollable ? 'overflow-y-auto' : null}`}>
           <div className="flex items-center justify-center min-h-full text-center ">
             <Transition.Child
               as={Fragment}
@@ -52,29 +53,32 @@ const Modal = ({
               leaveFrom="opacity-100 translate-y-0 scale-100"
               leaveTo="opacity-0 translate-y-full scale-95"
             >
-              <Dialog.Panel
-                className={`w-full overflow-hidden text-left align-middle transition-all transform flex flex-col ${
-                  isFullScreen ? 'fixed inset-0  bg-background-primary' : ' bg-background-primary shadow-xl rounded-t-2xl'
-                }`}
-              >
-                <Dialog.Title
-                  as="div"
-                  className="sticky flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 bg-white border"
+              <div className={`fixed inset-x-0 bottom-0 ${scrollable ? 'overflow-hidden' : ''}`}>
+                <Dialog.Panel
+                  className={`w-full text-left align-middle transition-all transform flex flex-col ${
+                    isFullScreen ? 'fixed inset-0 bg-background-primary' : 'bg-background-primary shadow-xl rounded-t-2xl'
+                  }`}
+                  style={{ maxHeight: modalContentMaxHeight }}
                 >
-                  <div />
-                  <h3 className="">{title}</h3>
-                  <button onClick={closeModal}>
-                    <CloseRounded className="self-end" />
-                  </button>
-                </Dialog.Title>
-                <div className="flex-grow px-5 my-2 overflow-y-auto">
-                  <Dialog.Description className="mt-2 text-sm text-gray-500">{description}</Dialog.Description>
-                  <div>{children}</div>
-                </div>
+                  <Dialog.Title
+                    as="div"
+                    className="sticky top-0 z-10 flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 bg-white border"
+                  >
+                    <div />
+                    <h3 className="">{title}</h3>
+                    <button onClick={closeModal}>
+                      <CloseRounded className="self-end" />
+                    </button>
+                  </Dialog.Title>
 
-                {/* <div className="flex flex-row justify-end w-full p-4 space-x-4 bg-white"> */}
-                {footer && <div className="sticky bottom-0 p-4 bg-white border-t rounded-t-xl">{footer}</div>}
-              </Dialog.Panel>
+                  <div className="flex-grow overflow-y-auto">
+                    <Dialog.Description className="px-5 mt-2 text-sm text-gray-500">{description}</Dialog.Description>
+                    <div className="px-5">{children}</div>
+                  </div>
+
+                  {footer && <div className="p-4 bg-white border-t rounded-t-xl">{footer}</div>}
+                </Dialog.Panel>
+              </div>
             </Transition.Child>
           </div>
         </div>

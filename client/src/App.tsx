@@ -1,5 +1,5 @@
-import { Fragment, lazy, Suspense } from 'react'
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+import React, { Fragment } from 'react'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline'
 
@@ -12,25 +12,51 @@ import NotFound from './pages/NotFound'
 import Page2 from './pages/Page2'
 import Venues from './pages/Venues'
 import Bills from './pages/Venues/Bills'
-import Tables, { tableIdLoader } from './pages/Venues/Tables'
+import Tables from './pages/Venues/Tables'
 
-import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
 import './index.css'
+import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
 import Auth from './pages/Auth'
+import { loader as authLoader } from './pages/Auth/loader'
 import Login, { action as loginAction } from './pages/Auth/Login'
 import Me, { action as meAction } from './pages/Auth/Me'
 import Register, { action as registerAction } from './pages/Auth/Register'
-import { loader as authLoader } from './pages/Auth/loader'
 import Error from './pages/Error'
-import Page3, { page3Loader, page3action } from './pages/Page3'
 import Sockets from './pages/Socket/Socket'
 import Checkout from './pages/Stripe/Checkout'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import { getToken } from 'firebase/messaging'
+import messaging from './firebase'
+import { registerSW } from 'virtual:pwa-register'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
 
 function App() {
+  if ('serviceWorker' in navigator) {
+    // && !/localhost/.test(window.location)) {
+    console.log('registering service worker')
+
+    registerSW()
+  }
+  // React.useEffect(() => {
+  //   Notification.requestPermission().then(permission => {
+  //     if (permission === 'granted') {
+  //       getToken(messaging, { vapidKey: 'BIAgTUPuvSK0qso2fxF58_ZrjThR7LTZfqjJPf_wT809n5d_yiSZLRjW_k72Pu5KII8aRAtZzG86rg7FWsYRFiQ        ' })
+  //         .then(currentToken => {
+  //           if (currentToken) {
+  //             console.log('Token:', currentToken)
+  //             // Send this token to your server for push notifications
+  //           } else {
+  //             console.log('No registration token available. Request permission to generate one.')
+  //           }
+  //         })
+  //         .catch(err => {
+  //           console.log('An error occurred while retrieving token. ', err)
+  //         })
+  //     }
+  //   })
+  // }, [])
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Fragment>
@@ -41,11 +67,12 @@ function App() {
             <Route path=":venueId/menus" element={<Menus />} loader={menusLoader} />
           </Route>
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
-            <Route path=":tableId" element={<Tables.TableId />} loader={tableIdLoader} />
+            <Route path=":tableId" element={<Tables.TableId />} />
           </Route>
           <Route path="venues/:venueId/bills" element={<Bills.Bills />}>
             <Route path=":billId" element={<Bills.BillId />} />
           </Route>
+          <Route path="success" element={<Success />} />
           {/* <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
@@ -55,7 +82,7 @@ function App() {
         <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction} />
         <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction} />
         <Route path="me" element={<Me />} action={meAction} />
-        <Route path="success" element={<Success />} />
+
         <Route path="checkout" element={<Checkout />} />
         {/* </Suspense> */}
       </Fragment>,
@@ -67,6 +94,7 @@ function App() {
       // </>,
     ),
   )
+
   return (
     <Fragment>
       <CssBaseline />

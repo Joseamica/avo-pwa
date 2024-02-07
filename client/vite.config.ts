@@ -8,6 +8,21 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 import manifest from './manifest.json'
 
+const getCache = ({ name, pattern }: any) => ({
+  urlPattern: pattern,
+  handler: 'CacheFirst' as const,
+  options: {
+    cacheName: name,
+    expiration: {
+      maxEntries: 500,
+      maxAgeSeconds: 60 * 60 * 24 * 365 * 2, // 2 years
+    },
+    cacheableResponse: {
+      statuses: [200],
+    },
+  },
+})
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -19,19 +34,31 @@ export default defineConfig({
         enabled: true,
       },
       workbox: {
+        runtimeCaching: [
+          getCache({
+            pattern: /^https?:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o/,
+            name: 'local-images1',
+          }),
+          getCache({
+            pattern: /^https:\/\/my-library-cover-uploads.s3.amazonaws.com/,
+            name: 'local-images2',
+          }),
+        ],
         globPatterns: ['**/*.{js,css,html}', '**/*.{svg,png,jpg,gif}'],
       },
     }),
   ],
   server: {
+    port: 5173,
     proxy: {
-      '/socket.io': {
-        target: 'http://localhost:5000/',
-        ws: true,
-      },
+      // '/socket.io': {
+      //   target: 'http://localhost:5000/',
+      //   ws: true,
+      // },
       '/api': {
-        target: 'http://localhost:5173',
+        target: 'http://localhost:5000/',
         changeOrigin: true,
+        secure: false,
         rewrite: path => path.replace(/^\/api/, ''),
       },
     },

@@ -1,19 +1,12 @@
-import { Flex } from '@/components'
 import { Button } from '@/components/Button'
-import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
-import { H4, JumboTitle, H3 } from '@/components/Util/Typography'
-import { Currency } from '@/utils/currency'
 import { getUserLS } from '@/utils/localStorage/user'
-import { IncognitoUser } from '@/utils/types/user'
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import axios from 'axios'
-import clsx from 'clsx'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import TipModal from './TipModal'
 
-const CheckoutForm = ({ paymentMethods, amounts, tipPercentage, setTipPercentage, loading, setLoading, setErrorMessage }) => {
+const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLoading, setErrorMessage }) => {
   const stripe = useStripe()
   const elements = useElements()
 
@@ -55,19 +48,15 @@ const CheckoutForm = ({ paymentMethods, amounts, tipPercentage, setTipPercentage
       const response = await axios.post('http://localhost:5000/create-payment-intent', {
         amount: amounts.total,
         currency: 'mxn',
-
         customerId: user.stripeCustomerId,
       })
-
-      const { client_secret: clientSecret } = response.data
+      const { client_secret: clientSecret, id } = response.data
 
       const { error } = await stripe.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
-          return_url: 'http://localhost:5173/success',
-          //NOTE sirve?
-          // payment_method: paymentMethodId,
+          return_url: `http://localhost:5173/success`,
         },
       })
 
@@ -95,7 +84,11 @@ const CheckoutForm = ({ paymentMethods, amounts, tipPercentage, setTipPercentage
 
   return (
     <form onSubmit={handleSubmit}>
-      <PaymentElement />
+      <div className="p-3 bg-white border-2 rounded-xl">
+        <PaymentElement />
+        {/* <h1>guardar tarjeta</h1>
+        <input type="checkbox" checked={saveCard} onChange={() => setSaveCard(!saveCard)} /> */}
+      </div>
       <TipModal
         amounts={amounts}
         tipPercentage={tipPercentage}
@@ -107,7 +100,13 @@ const CheckoutForm = ({ paymentMethods, amounts, tipPercentage, setTipPercentage
         stripe={stripe}
       />
       <Spacer size="md" />
-      <Button size="md" className="p-4 rounded-full disabled:bg-zinc-400" type="submit" disabled={!stripe || loading} text="Confirmar" />
+      <Button
+        size="md"
+        className="sticky bottom-0 p-4 rounded-full disabled:bg-zinc-400"
+        type="submit"
+        disabled={!stripe || loading}
+        text="Confirmar"
+      />
     </form>
   )
 }

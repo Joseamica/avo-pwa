@@ -1,7 +1,9 @@
 import { Flex } from '@/components'
+import { Check } from '@/components/Icons'
 import Meta from '@/components/Meta'
 import { Spacer } from '@/components/Util/Spacer'
 import { H2, H4 } from '@/components/Util/Typography'
+import getIcon from '@/utils/get-icon'
 import { getUserLS } from '@/utils/localStorage/user'
 import { initStripe } from '@/utils/stripe'
 import { Elements } from '@stripe/react-stripe-js'
@@ -11,9 +13,6 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
-import { CheckCircle } from '@mui/icons-material'
-import { Amex, Check, Visa } from '@/components/Icons'
-import getIcon from '@/utils/get-icon'
 
 const stripePromise = initStripe('http://localhost:5000/publishable-key')
 
@@ -76,11 +75,11 @@ const Checkout = ({
           appearance: {
             theme: 'stripe',
             variables: {
-              // colorBackground: '#1e1e1e',
+              colorBackground: '#F6F6F9',
               // colorText: '#30313d',
               // colorDanger: '#df1b41',
               fontFamily: 'Ideal Sans, system-ui, sans-serif',
-              spacingUnit: '6px',
+              spacingUnit: '5px',
               colorPrimary: '#4fa94d',
               borderRadius: '20px',
               fontSmooth: 'auto',
@@ -149,7 +148,6 @@ const Checkout = ({
             setLoading={setLoading}
             tipPercentage={tipPercentage}
             setTipPercentage={setTipPercentage}
-            paymentMethods={data.paymentMethods}
           />
         ) : (
           <CheckoutCard
@@ -185,7 +183,7 @@ const PaymentSummary = ({ amount, avoFee }) => {
           Subtotal (Iva incluido):
         </H4>
         <H4 variant="secondary" as="span">
-          ${amount / 100}
+          ${(amount / 100).toFixed(2)}
         </H4>
       </Flex>
       <Flex space="sm" align="center" justify="between">
@@ -193,14 +191,14 @@ const PaymentSummary = ({ amount, avoFee }) => {
           Tasa Avoqado:
         </H4>
         <H4 variant="avoqado" as="span">
-          ${avoFee / 100}
+          ${(avoFee / 100).toFixed(2)}
         </H4>
       </Flex>
       <Flex space="sm" align="center" justify="between">
         <H4 bold="normal" as="span">
           Total:
         </H4>
-        <H4 as="span">${amount / 100 + avoFee / 100}</H4>
+        <H4 as="span">${(amount / 100 + avoFee / 100).toFixed(2)}</H4>
       </Flex>
     </div>
   )

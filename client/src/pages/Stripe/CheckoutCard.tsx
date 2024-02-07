@@ -6,12 +6,12 @@ import { H4, JumboTitle } from '@/components/Util/Typography'
 import { getRandomJoke } from '@/sections/Header/utils'
 import useNotifications from '@/store/notifications'
 import { Currency } from '@/utils/currency'
-import { useStripe, useElements } from '@stripe/react-stripe-js'
+import { getRandomPaymentMsg } from '@/utils/get-msgs'
+import { useStripe } from '@stripe/react-stripe-js'
 import axios from 'axios'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { set } from 'zod'
 
 export default function CheckoutCard({
   paymentMethodId,
@@ -38,9 +38,9 @@ export default function CheckoutCard({
         // `message` accepts string as well as ReactNode
         // If you want to show a fully customized notification, you can define
         // your own `variant`s, see @/sections/Notifications/Notifications.tsx
-        variant: 'customNotification',
+        variant: 'paymentNotification',
       },
-      message: getRandomJoke(),
+      message: getRandomPaymentMsg(),
     })
   }
 
@@ -59,7 +59,7 @@ export default function CheckoutCard({
       // Confirma el pago con el método de pago guardado
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: 'http://localhost:5173/success',
+        return_url: `http://localhost:5173/success`,
       })
 
       if (error) {
@@ -67,7 +67,7 @@ export default function CheckoutCard({
       } else {
         // Maneja el éxito del pago aquí
         // TODO redirigir a success o cerrar todos los modales y mostrar notificacion
-        // navigate('/success')
+        navigate(`/success?payment_intent=${paymentIntent.id}`)
         showNotification()
       }
     } catch (error) {

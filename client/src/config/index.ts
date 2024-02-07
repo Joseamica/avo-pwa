@@ -32,8 +32,8 @@ const dateFormat = 'MMMM DD, YYYY'
 const notifications: Notifications = {
   options: {
     anchorOrigin: {
-      vertical: 'bottom',
-      horizontal: 'left',
+      vertical: 'top',
+      horizontal: 'center',
     },
     autoHideDuration: 6000,
   },

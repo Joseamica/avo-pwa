@@ -1,5 +1,4 @@
 export { ErrorList } from './Forms/ErrorsList'
 export { Input } from './Forms/Input'
 export { Field } from './Forms/Field'
-export { StripeCheckoutForm } from './Forms/StripeCheckoutForm'
 export { Flex } from './Util/Flex'

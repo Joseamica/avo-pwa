@@ -78,7 +78,7 @@ export function Button({
     <button
       {...buttonProps}
       className={clsx(
-        'flex items-center disabled:bg-buttons-disabled disabled:border-0 justify-center w-full  text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+        'flex items-center disabled:bg-buttons-disabled disabled:border-4 justify-center w-full  text-white bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
         { 'px-11 py-6 ': size === 'lg' },
         { 'px-8 py-4': size === 'md' },
         { ' px-5 py-2 ': size === 'sm' },
@@ -94,10 +94,10 @@ export function Button({
 
 export function CounterButton({
   text,
-  onClick,
+
   className,
   ...buttonProps
-}: { text: string; onClick: () => void; className?: string } & JSX.IntrinsicElements['button']) {
+}: { text: string; className?: string } & JSX.IntrinsicElements['button']) {
   return (
     <button
       {...buttonProps}
@@ -123,7 +123,7 @@ interface ButtonProps {
 interface LinkProps {
   fullWith?: boolean
   variant?: 'primary' | 'secondary' | 'danger' | 'icon' | 'payment' | 'custom'
-  size?: 'sm' | 'md' | 'lg' | 'icon'
+  size?: 'sm' | 'md' | 'lg'
   children: React.ReactNode | React.ReactNode[]
   to: string
   custom?: string

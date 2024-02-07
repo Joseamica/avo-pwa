@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 // Definiendo los tipos para los nombres de los modales
-type ModalName = 'payment_methods' | 'split_bill' | 'pay_full_bill' | 'assign_tip'
+type ModalName = 'payment_methods' | 'split_bill' | 'pay_full_bill' | 'assign_tip' | 'receipt'
 type InnerModalName = 'by_product' | 'equal_parts' | 'custom' | 'checkout'
 
 function useModal() {
@@ -10,6 +10,7 @@ function useModal() {
     split_bill: false,
     pay_full_bill: false,
     assign_tip: false,
+    receipt: false,
   })
   const [isInnerModalOpen, setIsInnerModalOpen] = useState<Record<InnerModalName, boolean>>({
     by_product: false,

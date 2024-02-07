@@ -1,5 +1,4 @@
 import { Amex, MasterCard, Visa } from '@/components/Icons'
-import React from 'react'
 
 export default function getIcon(type) {
   switch (type) {

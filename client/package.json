@@ -18,7 +18,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview --port 5173",
     "https-preview": "serve dist",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "vite": "vite"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -38,6 +39,7 @@
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.5",
     "clsx": "^2.1.0",
+    "firebase": "^10.7.2",
     "framer-motion": "^10.18.0",
     "invariant": "^2.2.4",
     "is-mobile": "^4.0.0",
@@ -89,9 +91,9 @@
     ]
   },
   "author": {
-    "name": "Suren Atoyan",
-    "email": "contact@surenatoyan.com",
-    "url": "http://surenatoyan.com/"
+    "name": "Jos",
+    "email": "hola@avoqado.io",
+    "url": "http://avoqado.io"
   },
   "keywords": [
     "react",
