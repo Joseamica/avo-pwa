@@ -92,8 +92,6 @@ router.get('/venues/:venueId/tables/:tableId', async (req, res) => {
     },
   })
 
-  // const table = tables.find(table => table.id === parseInt(tableId))
-  console.log('table', table)
   if (!table) return res.status(404).json({ error: 'Table not found' })
   if (!table.billId) {
     //TODO - Hacer alguna acción si la mesa no está activa
@@ -103,109 +101,109 @@ router.get('/venues/:venueId/tables/:tableId', async (req, res) => {
   }
 })
 
-router.get('/api/venues/:venueId/bills/:billId', async (req, res) => {
-  const bill = {
-    id: 1,
-    venueId: 1,
-    tableId: 1,
-    status: 'pending',
-    orderedProducts: [
-      {
-        id: 1,
-        name: 'Coca Cola',
-        price: 10000,
-        comments: 'Sin hielo',
-        quantity: 1,
-        description: 'Bebida de 80oz',
-        visible: true,
-        status: 'delivered', // 'pending' | 'delivered' | 'cancelled
-        userId: 1,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      },
-      {
-        id: 2,
-        name: 'Papas Fritas',
-        price: 10000,
-        comments: 'Sin sal',
-        quantity: 1,
-        description: 'Unas papitas ricas',
-        visible: true,
-        status: 'pending',
-        userId: 1,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      },
-      {
-        id: 3,
-        name: 'Hamburguesa',
-        price: 50000,
-        comments: 'Sin cebolla',
-        quantity: 2,
-        description: 'Una hamburguesa rica',
-        visible: true,
-        status: 'pending',
-        userId: 2,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      },
-    ],
-    payments: [
-      {
-        id: 1,
-        method: 'Efectivo',
-        amount: 10000,
-        userId: 1,
+// router.get('/api/venues/:venueId/bills/:billId', async (req, res) => {
+//   const bill = {
+//     id: 1,
+//     venueId: 1,
+//     tableId: 1,
+//     status: 'pending',
+//     orderedProducts: [
+//       {
+//         id: 1,
+//         name: 'Coca Cola',
+//         price: 10000,
+//         comments: 'Sin hielo',
+//         quantity: 1,
+//         description: 'Bebida de 80oz',
+//         visible: true,
+//         status: 'delivered', // 'pending' | 'delivered' | 'cancelled
+//         userId: 1,
+//         createdAt: Date.now(),
+//         updatedAt: Date.now(),
+//       },
+//       {
+//         id: 2,
+//         name: 'Papas Fritas',
+//         price: 10000,
+//         comments: 'Sin sal',
+//         quantity: 1,
+//         description: 'Unas papitas ricas',
+//         visible: true,
+//         status: 'pending',
+//         userId: 1,
+//         createdAt: Date.now(),
+//         updatedAt: Date.now(),
+//       },
+//       {
+//         id: 3,
+//         name: 'Hamburguesa',
+//         price: 50000,
+//         comments: 'Sin cebolla',
+//         quantity: 2,
+//         description: 'Una hamburguesa rica',
+//         visible: true,
+//         status: 'pending',
+//         userId: 2,
+//         createdAt: Date.now(),
+//         updatedAt: Date.now(),
+//       },
+//     ],
+//     payments: [
+//       {
+//         id: 1,
+//         method: 'Efectivo',
+//         amount: 10000,
+//         userId: 1,
 
-        tips: [
-          {
-            id: 1,
-            amount: 100,
-          },
-          {
-            id: 2,
-            amount: 200,
-          },
-        ],
-      },
-      {
-        id: 2,
-        method: 'Tarjeta',
-        amount: 1000,
-        userId: 1,
-        tips: [
-          {
-            id: 4,
-            amount: 241,
-          },
-        ],
-      },
-    ],
-    users: [
-      {
-        id: 1,
-        name: 'Juan',
-        color: '#FF0000',
-      },
-      {
-        id: 2,
-        name: 'Pedro',
-        color: '#00FF00',
-      },
-    ],
-  }
-  const total = bill.orderedProducts.reduce((acc, product) => {
-    return acc + product.price * product.quantity
-  }, 0)
-  const amount_paid = bill.payments.reduce((acc, payment) => {
-    return acc + payment.amount
-  }, 0)
+//         tips: [
+//           {
+//             id: 1,
+//             amount: 100,
+//           },
+//           {
+//             id: 2,
+//             amount: 200,
+//           },
+//         ],
+//       },
+//       {
+//         id: 2,
+//         method: 'Tarjeta',
+//         amount: 1000,
+//         userId: 1,
+//         tips: [
+//           {
+//             id: 4,
+//             amount: 241,
+//           },
+//         ],
+//       },
+//     ],
+//     users: [
+//       {
+//         id: 1,
+//         name: 'Juan',
+//         color: '#FF0000',
+//       },
+//       {
+//         id: 2,
+//         name: 'Pedro',
+//         color: '#00FF00',
+//       },
+//     ],
+//   }
+//   const total = bill.orderedProducts.reduce((acc, product) => {
+//     return acc + product.price * product.quantity
+//   }, 0)
+//   const amount_paid = bill.payments.reduce((acc, payment) => {
+//     return acc + payment.amount
+//   }, 0)
 
-  const amount_left = total - amount_paid
-  res.json({ ...bill, total, amount_left })
-})
+//   const amount_left = total - amount_paid
+//   res.json({ ...bill, total, amount_left })
+// })
 
-router.get('/api/menus', async (req, res) => {
+router.get('/menus', async (req, res) => {
   const menus = [
     {
       id: 1,

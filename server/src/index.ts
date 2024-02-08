@@ -50,7 +50,7 @@ socketUtils.connection(io)
 // app.use('/stripe', stripeRouter)
 
 app.use('/', router)
-app.use('/', stripeRouter)
+app.use('/v1/stripe', stripeRouter)
 app.use('/v1/bills', billRouter)
 
 // app.use('/api', socketIOMiddleware, (req, res) => {
