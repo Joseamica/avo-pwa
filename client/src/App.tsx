@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 
 import CssBaseline from '@mui/material/CssBaseline'
@@ -14,6 +14,7 @@ import Venues from './pages/Venues'
 import Bills from './pages/Venues/Bills'
 import Tables from './pages/Venues/Tables'
 
+import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
 import Auth from './pages/Auth'
@@ -26,9 +27,6 @@ import Sockets from './pages/Socket/Socket'
 import Checkout from './pages/Stripe/Checkout'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
-import { getToken } from 'firebase/messaging'
-import messaging from './firebase'
-import { registerSW } from 'virtual:pwa-register'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
 

@@ -58,12 +58,15 @@ interface Bill {
   id: number
   venueId: number
   tableId: number
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' // Asumiendo posibles estados
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | any
   orderedProducts: OrderedProduct[]
   payments: Payment[]
   users: User[]
   total: number
   amount_left: number
+  createdAt: number
+  updatedAt: number
+  tableNumber: number
 }
 
 function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
@@ -96,14 +99,18 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
-          <h1 className="font-neue">Orden</h1>
+          <h1 className="font-neue">Mesa {data.tableNumber} </h1>
+          {/* TODO - definir los estados y segun el estado ponerlo */}
+          <H2>Status: {data.status === 4 ? 'Abierta' : 'Cerrada'}</H2>
           <Flex direction="row" align="center" space="sm">
             <H1>Total</H1>
             <H2>${data.total / 100}</H2>
           </Flex>
           <Flex direction="row" align="center" space="sm">
             <H1>Por Pagar</H1>
-            <H2>${data.amount_left / 100}</H2>
+            <H2>
+              ${data.amount_left / 100} {`<- hardcoded`}
+            </H2>
           </Flex>
 
           <Spacer size="xl" />

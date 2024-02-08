@@ -1,3 +1,4 @@
+import { IncognitoUser } from '@/utils/types/user'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -15,6 +16,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 //   return { params }
 // }
 
+/**
+ * NOTE
+ * 1. se usa como middleware para verificar si el usuario tiene permisos para acceder a la mesa
+ * 2. se usa para obtener la información de la mesa
+ */
+
 function TableId() {
   const params = useParams()
   const navigate = useNavigate()
@@ -22,6 +29,10 @@ function TableId() {
     queryKey: ['table_data'],
     queryFn: async () => {
       const response = await axios.get(`/api/venues/${params.venueId}/tables/${params.tableId}?todo=yes`)
+      // const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
+      // if (localStorageUser.user.tableNumber === undefined) {
+      //   localStorageUser.user.tableNumber = response.data.tableNumber
+      // }
 
       response.data.redirect && navigate(response.data.url, { replace: true })
       return response.data
