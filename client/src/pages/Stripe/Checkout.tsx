@@ -14,7 +14,7 @@ import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
 
-const stripePromise = initStripe('http://localhost:5000/publishable-key')
+const stripePromise = initStripe('/api/v1/stripe/publishable-key')
 
 const Checkout = ({
   amount,
@@ -38,7 +38,7 @@ const Checkout = ({
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['paymentMethods'],
     queryFn: async () => {
-      const response = await axios.post(`http://localhost:5000/payment-methods`, {
+      const response = await axios.post(`/api/v1/stripe/payment-methods`, {
         customerId: user.stripeCustomerId,
       })
       return response.data

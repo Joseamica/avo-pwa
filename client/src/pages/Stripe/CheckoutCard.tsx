@@ -47,7 +47,7 @@ export default function CheckoutCard({
   const completePayment = async () => {
     try {
       setLoading(true)
-      const response = await axios.post('http://localhost:5000/create-payment-intent', {
+      const response = await axios.post('/api/v1/stripe/create-payment-intent', {
         amount: amounts.total,
         currency: 'mxn',
         customerId: customerId,

@@ -13,7 +13,7 @@ export default function Receipt({ isOpen, closeModal, paymentIntentId }) {
 
   const onSubmitEmail = async e => {
     e.preventDefault()
-    await axios.post(`http://localhost:5000/update-payment-intent`, {
+    await axios.post(`/api/v1/stripe/update-payment-intent`, {
       id: paymentIntentId,
       email: email,
     })

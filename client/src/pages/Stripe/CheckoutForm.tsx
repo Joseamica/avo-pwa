@@ -45,7 +45,7 @@ const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLo
 
       const { user } = getUserLS()
 
-      const response = await axios.post('http://localhost:5000/create-payment-intent', {
+      const response = await axios.post('/api/v1/stripe/create-payment-intent', {
         amount: amounts.total,
         currency: 'mxn',
         customerId: user.stripeCustomerId,

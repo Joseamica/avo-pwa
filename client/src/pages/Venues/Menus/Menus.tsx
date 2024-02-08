@@ -11,7 +11,7 @@ interface LoaderData {
 }
 
 export async function loader({ request, params }) {
-  const res = await fetch('http://localhost:5000/api/menus')
+  const res = await fetch('/api/menus')
   const menus = await res.json()
   return json({ menus })
 }

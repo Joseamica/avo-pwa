@@ -17,9 +17,8 @@ import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Fragment, useEffect } from 'react'
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
-import { atom, useRecoilState, useSetRecoilState } from 'recoil'
+import { Fragment } from 'react'
+import { Link, useParams } from 'react-router-dom'
 
 interface Tip {
   id: number

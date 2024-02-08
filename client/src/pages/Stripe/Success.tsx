@@ -14,7 +14,7 @@ const Success: React.FC = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['paymentIntent', paymentIntentId],
     queryFn: async () => {
-      const response = await axios.get(`http://localhost:5000/payment-intent/${paymentIntentId}`)
+      const response = await axios.get(`/api/v1/stripe/payment-intent/${paymentIntentId}`)
       return response.data
     },
   })

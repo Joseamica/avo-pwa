@@ -20,6 +20,7 @@ export default {
           secondary: '#4B5563',
           disabled: '#9CA3AF',
           avoqado: '#2e8857',
+          error: '#E57373',
         },
         borders: {
           button: '#D3D3D3',

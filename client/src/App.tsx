@@ -27,6 +27,7 @@ import Sockets from './pages/Socket/Socket'
 import Checkout from './pages/Stripe/Checkout'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import Page4 from './pages/Page4'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
 
@@ -67,10 +68,12 @@ function App() {
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
             <Route path=":tableId" element={<Tables.TableId />} />
           </Route>
-          <Route path="venues/:venueId/bills" element={<Bills.Bills />}>
+          <Route path="venues/:venueId/bills" element={<Bills.Bills />} errorElement={<Error />}>
             <Route path=":billId" element={<Bills.BillId />} />
           </Route>
           <Route path="success" element={<Success />} />
+          <Route path="*" element={<NotFound />} />
+
           {/* <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
@@ -80,6 +83,7 @@ function App() {
         <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction} />
         <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction} />
         <Route path="me" element={<Me />} action={meAction} />
+        <Route path="page-4" element={<Page4 />} />
 
         <Route path="checkout" element={<Checkout />} />
         {/* </Suspense> */}

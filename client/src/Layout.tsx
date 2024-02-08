@@ -19,7 +19,7 @@ export async function loader({ request }) {
       color: randomColor,
       createdAt: Date.now(),
     }
-    const stripeCustomer = await axios.post('http://localhost:5000/create-incognito-customer', {
+    const stripeCustomer = await axios.post('/api/v1/stripe/create-incognito-customer', {
       name: user.color + ' ' + uuidv4(),
     })
 

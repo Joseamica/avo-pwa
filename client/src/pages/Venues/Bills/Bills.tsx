@@ -58,21 +58,20 @@ function Bills() {
 
   const { isPending, error, data, isError, status } = useQuery<Bill>({
     queryKey: ['bill_data'],
-    // queryFn: async () => await axios.get(`http://localhost:5000/api/venues/${params.venueId}/bills/${params.billId}`).then(res => res.data),
+
     queryFn: async () => {
       try {
         const response = await axios.get(`/api/v1/bills/${params.billId}`)
         return response.data
       } catch (error) {
-        throw new Error('Error fetching bill')
+        throw new Error('No existe la mesa o la cuenta no está disponible en este momento.')
       }
     },
   })
 
-  if (isError) return 'An error has occurred: ' + error?.message
   if (isPending) return <Loading message="Buscando tu mesa" />
+  if (isError) return 'An error has occurrsed: ' + error?.message
 
-  if (error) return 'An error has occurred: ' + error.message
   return (
     <>
       {/* <Meta title="Bills" />

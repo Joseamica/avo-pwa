@@ -1,3 +1,5 @@
+import Loading from '@/components/Loading'
+import { H3 } from '@/components/Util/Typography'
 import { IncognitoUser } from '@/utils/types/user'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -28,27 +30,25 @@ function TableId() {
   const { isPending, error, data, isError, isLoading } = useQuery<any>({
     queryKey: ['table_data'],
     queryFn: async () => {
-      const response = await axios.get(`/api/venues/${params.venueId}/tables/${params.tableId}?todo=yes`)
-      // const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
-      // if (localStorageUser.user.tableNumber === undefined) {
-      //   localStorageUser.user.tableNumber = response.data.tableNumber
-      // }
+      try {
+        const response = await axios.get(`/api/venues/${params.venueId}/tables/${params.tableId}?todo=yes`)
+        // const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
+        // if (localStorageUser.user.tableNumber === undefined) {
+        //   localStorageUser.user.tableNumber = response.data.tableNumber
+        // }
 
-      response.data.redirect && navigate(response.data.url, { replace: true })
-      return response.data
+        response.data.redirect && navigate(response.data.url, { replace: true })
+        return response.data
+      } catch (error) {
+        throw new Error('No existe la mesa')
+      }
     },
   })
-  if (isLoading) return <span>Loading...</span>
-  if (isPending) {
-    return <span>Loading...</span>
-  }
-
-  if (isError) {
-    return <span>Error: {error.message}</span>
-  }
+  if (isPending) return <Loading message="Buscando tu mesa" />
+  if (isError) return <H3 variant="error">Error: {error?.message}</H3>
 
   return (
-    <h3>
+    <h3 className="border">
       TableId <p>{data.message}</p>
     </h3>
   )
