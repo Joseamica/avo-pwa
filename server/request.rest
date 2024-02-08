@@ -22,7 +22,7 @@ Content-Type: application/json
 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9zZSIsImlhdCI6MTcwNDkzNjE4MX0.6AADPqEG1G1SYF1HS9MjMk7RLo8hMtvEPbs4e4nfCCc"
 }
 
-###
+
 # returns a token and refresh token
 POST http://localhost:5000/login 
 Content-Type: application/json
@@ -32,3 +32,16 @@ Content-Type: application/json
 "password": "Jose"
 
 }
+
+
+###
+
+GET http://localhost:5000/venues/1/tables/2?todo=yes
+Content-Type: application/json
+
+###
+
+POST http://localhost:5000/bills 
+Content-Type: application/json
+
+{"tableNumber": "2"}

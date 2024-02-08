@@ -13,37 +13,43 @@ datasource db {
 model Chain {
   id        String    @id @default(cuid())
   name      String
-  branches  Branch[]
+  venues    Venue[]
   updatedAt DateTime? @updatedAt
   createdAt DateTime  @default(now())
 }
 
-model Branch {
-  id             String          @id @default(cuid())
-  name           String
-  address        String
-  extraAddress   String?
-  city           String
-  country        String?
-  timezone       String?
-  phone          String?
-  email          String          @unique
-  language       String?         @default("en")
-  image          String?
-  logo           String?
-  cuisine        String
-  wifiName       String?
-  wifiPwd        String?
-  social         String[]        @default([])
-  tables         Table[]
-  products       Product[]
-  notifications  Notification[]
-  chain          Chain?          @relation(fields: [chainId], references: [id])
-  chainId        String?
-  users          User[]
-  modifierGroups ModifierGroup[]
-  updatedAt      DateTime?       @updatedAt
-  createdAt      DateTime        @default(now())
+model Venue {
+  id              String         @id @default(cuid())
+  name            String
+  chain           Chain?         @relation(fields: [chainId], references: [id])
+  chainId         String?
+  address         String
+  city            String
+  country         String?
+  utc             String?        @default("-6")
+  phone           String?
+  email           String         @unique
+  language        String?        @default("es")
+  image           String
+  logo            String?
+  rating          Float?
+  rating_quantity Int?
+  cuisine         String
+  wifiName        String?
+  wifiPassword    String?
+  tipPercentage1  String         @default("0.10")
+  tipPercentage2  String         @default("0.15")
+  tipPercentage3  String         @default("0.20")
+  paymentMethods  String[]       @default(["card"])
+  tables          Table[]
+  users           User[]
+  feedbacks       Feedback[]
+  payments        Payment[]
+  notifications   Notification[]
+
+  stripeAccountId String?
+  updatedAt       DateTime? @updatedAt
+  createdAt       DateTime  @default(now())
 }
 
 model Role {
@@ -79,17 +85,18 @@ model User {
   token             String?
   username          String?            @unique
   email             String?            @unique
+  allergens         Allergens[]
   image             String?
   phone             String?
   password          String?
   color             String?
-  tip               Decimal?
+  tips              Tip[]
   paid              Decimal?
   roleId            String?
   roles             Role?              @relation(fields: [roleId], references: [id])
-  branch            Branch?            @relation(fields: [branchId], references: [id])
-  branchId          String?
-  Payments          Payments[]
+  venue             Venue?             @relation(fields: [venueId], references: [id])
+  venueId           String?
+  payments          Payment[]
   usertables        UserTable[]
   sessions          Session[]
   preferencesclient PreferenceClient[]
@@ -97,6 +104,15 @@ model User {
   updatedAt         DateTime?          @updatedAt
   createdAt         DateTime           @default(now())
   Password          Password?
+}
+
+model Allergens {
+  id        String    @id @default(cuid())
+  name      String
+  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
 }
 
 model Session {
@@ -119,26 +135,28 @@ model Password {
 }
 
 model Table {
-  id         String      @id @default(cuid())
-  number     Int
-  floorId    String?
-  locationId String?
-  seats      Int?
-  active     Boolean?
-  branch     Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  branchId   String
-  usertables UserTable[]
-  updatedAt  DateTime?   @updatedAt
-  createdAt  DateTime    @default(now())
+  tableNumber Int
+  floorId     String?
+  locationId  String?
+  seats       Int?
+  venue       Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  venueId     String
+  // usertables  UserTable[]
+  bill        Bill?     @relation(fields: [billId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  billId      String?   @unique
+  updatedAt   DateTime? @updatedAt
+  createdAt   DateTime  @default(now())
+
+  @@id(name: "tableId", [tableNumber, venueId])
 }
 
 model UserTable {
   id            String         @id @default(cuid())
-  table         Table          @relation(fields: [tableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tableId       String
+  // table         Table          @relation(fields: [tableId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // tableId       String
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId        String
-  fedbacks      Feedback[]
+  feedbacks     Feedback[]
   notifications Notification[]
   bills         Bill[]
   updatedAt     DateTime?      @updatedAt
@@ -175,10 +193,9 @@ model Product {
   billdetails    BillDetails[]
   combodetails   ComboDetails[]
   availabilities Availabilities[]
-  branch         Branch?          @relation(fields: [branchId], references: [id])
-  branchId       String?
-  updatedAt      DateTime?        @updatedAt
-  createdAt      DateTime         @default(now())
+
+  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
 }
 
 model Availabilities {
@@ -198,17 +215,18 @@ model Availabilities {
 
 model Bill {
   id            String         @id @default(cuid())
-  status        StatusBills?   @default(pending)
-  tip           Decimal?
-  paid          Boolean?
+  key           String?
+  status        StatusBills?   @default(PENDING)
+  tableNumber   Int?
   total         Decimal?
   active        Boolean?
   usertable     UserTable?     @relation(fields: [usertableId], references: [id])
   usertableId   String?
-  tableNumber   Int?
   billdetails   BillDetails[]
-  payments      Payments[]
+  payments      Payment[]
   notifications Notification[]
+  table         Table[]
+  tips          Tip[]
   updatedAt     DateTime?      @updatedAt
   createdAt     DateTime       @default(now())
 }
@@ -231,24 +249,38 @@ model BillDetails {
   createdAt        DateTime          @default(now())
 }
 
-model Payments {
+model Payment {
   id            String          @id @default(cuid())
   method        PaymentMethod
-  status        StatusPayments? @default(pending)
+  status        StatusPayments? @default(PENDING)
   amount        Decimal
-  tip           Decimal?
-  total         Decimal?
   avoFee        Decimal?
-  active        Boolean?
+  tips          Tip[]
   billId        String?
   bill          Bill?           @relation(fields: [billId], references: [id])
   userId        String?
   user          User?           @relation(fields: [userId], references: [id])
   notifications Notification[]
+  venue         Venue?          @relation(fields: [venueId], references: [id])
+  venueId       String?
   updatedAt     DateTime?       @updatedAt
   createdAt     DateTime        @default(now())
 }
 
+model Tip {
+  id         String    @id @default(cuid())
+  amount     Decimal
+  percentage Decimal
+  billId     String?
+  bill       Bill?     @relation(fields: [billId], references: [id])
+  updatedAt  DateTime? @updatedAt
+  createdAt  DateTime  @default(now())
+  payment    Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId  String?
+  users      User[]
+}
+
+//NOTE - MODIFIY
 model Notification {
   id          String              @id @default(cuid())
   method      NotificationMethod?
@@ -256,14 +288,14 @@ model Notification {
   type_temp   NotificationType?
   status      StatusNotification?
   message     String?
-  branchId    String?
-  branch      Branch?             @relation(fields: [branchId], references: [id])
+  venueId     String?
+  venue       Venue?              @relation(fields: [venueId], references: [id])
   usertableId String?
   usertable   UserTable?          @relation(fields: [usertableId], references: [id])
   billId      String?
   bill        Bill?               @relation(fields: [billId], references: [id])
   paymentId   String?
-  payment     Payments?           @relation(fields: [paymentId], references: [id])
+  payment     Payment?            @relation(fields: [paymentId], references: [id])
   updatedAt   DateTime?           @updatedAt
   createdAt   DateTime            @default(now())
 }
@@ -301,6 +333,8 @@ model Feedback {
   usertable    UserTable?    @relation(fields: [usertableId], references: [id])
   updatedAt    DateTime?     @updatedAt
   createdAt    DateTime      @default(now())
+  venue        Venue?        @relation(fields: [venueId], references: [id])
+  venueId      String?
 }
 
 model PreferenceClient {
@@ -325,10 +359,9 @@ model ModifierGroup {
   multiply  Int?        @default(0)
   active    Boolean?
   modifiers Modifiers[]
-  branch    Branch?     @relation(fields: [branchId], references: [id])
-  branchId  String?
-  updatedAt DateTime?   @updatedAt
-  createdAt DateTime    @default(now())
+
+  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
 }
 
 model Modifiers {
@@ -392,28 +425,23 @@ enum NotificationType {
 }
 
 enum PaymentMethod {
-  cash
-  card
-  debitCard
-  paypal
-  applePay
-  terminal
-  other
+  CASH
+  CARD
+  STRIPE
 }
 
 enum StatusPayments {
-  pending
-  accepted
-  rejected
-  received
-  completed
-  disputed
+  ACCEPTED
+  REJECTED
+  PENDING
 }
 
 enum StatusBills {
-  pending
-  rejected
-  completed
+  OPEN
+  PAID
+  PENDING
+  CLOSED
+  CANCELED
 }
 
 enum StatusNotification {
