@@ -3,7 +3,6 @@ import cors from 'cors'
 import http from 'http'
 import path from 'path'
 import cookieParser from 'cookie-parser'
-
 // ANCHOR ROUTERS
 import router from './routes/router'
 import stripeRouter from './routes/StripeRoutes'
@@ -14,7 +13,6 @@ const app = express()
 // const socketUtils = require('./utils/socketUtils')
 
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.json())
 app.use(cookieParser())
 app.use(
   cors({
@@ -24,6 +22,15 @@ app.use(
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   }),
 )
+
+// NOTE - This is a middleware that allows us to parse the body of a request
+app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
+  if (req.originalUrl.includes('/v1/stripe/webhooks/')) {
+    next()
+  } else {
+    express.json()(req, res, next)
+  }
+})
 
 const server = http.createServer(app)
 
