@@ -1,29 +1,18 @@
-const express = require('express')
-const cors = require('cors')
-const http = require('http')
-const path = require('path')
-const cookieParser = require('cookie-parser')
+import express from 'express'
+import cors from 'cors'
+import http from 'http'
+import path from 'path'
+import cookieParser from 'cookie-parser'
 
 // ANCHOR ROUTERS
-const router = require('./routes/router')
-const stripeRouter = require('./routes/StripeRoutes')
-const billRouter = require('./routes/BillRoutes')
-
-// ANCHOR CONFIG
-const dbConfig = require('./config/DbConfig')
+import router from './routes/router'
+import stripeRouter from './routes/StripeRoutes'
+import billRouter from './routes/BillRoutes'
+import venueRouter from './routes/VenuesRoutes'
 
 const app = express()
-const socketUtils = require('./utils/socketUtils')
+// const socketUtils = require('./utils/socketUtils')
 
-// sql.connect(dbConfig).then(pool => {
-//   pool.query`SELECT TOP 1 * FROM NetSilver.dbo.OrdenPendiente WHERE MESA = 20 ORDER BY HoraAbrir DESC
-// `.then(result => {
-//     const r = result.recordset[0]
-
-//     console.dir(r)
-//     sql.close()
-//   })
-// })
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json())
 app.use(cookieParser())
@@ -37,26 +26,11 @@ app.use(
 )
 
 const server = http.createServer(app)
-const io = socketUtils.sio(server)
-socketUtils.connection(io)
-
-// const socketIOMiddleware = (req, res, next) => {
-//   req.io = io
-//   next()
-// }
-
-// ROUTES
-// TODO: change '/' to '/stripe'
-// app.use('/stripe', stripeRouter)
 
 app.use('/', router)
+app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)
 app.use('/v1/bills', billRouter)
-
-// app.use('/api', socketIOMiddleware, (req, res) => {
-//   req.io.emit('message', `Hello, ${req.originalUrl}`)
-//   res.send('hello world!')
-// })
 
 // LISTEN
 const port = process.env.PORT || 5000

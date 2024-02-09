@@ -1,8 +1,11 @@
-const dbConfig = require('../config/DbConfig')
-const sql = require('mssql')
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
-sql.on('error', err => {
+import dbConfig from '../config/DbConfig'
+import { getOrderWithTableNumber } from '../utils/sqlQueries'
+import prisma from '../utils/prisma'
+import sql from 'mssql'
+import { ConnectionPool } from 'mssql'
+const pool = new ConnectionPool(dbConfig)
+
+pool.on('error', err => {
   console.error('Error al conectar a MSSQL', err)
 })
 
@@ -13,89 +16,135 @@ const getTest = async (req, res) => {
 
 const getBillInfo = async (req, res) => {
   const { billId } = req.params
+  const { venueId } = req.query
 
-  const bill = await prisma.bill.findUnique({
-    where: {
-      id: billId,
-    },
-    select: {
-      tableNumber: true,
-      payments: {
-        select: {
-          amount: true,
+  try {
+    const bill = await prisma.bill.findUnique({
+      where: {
+        id: billId,
+      },
+      include: {
+        payments: {
+          select: {
+            amount: true,
+          },
+        },
+        table: {
+          select: {
+            tableNumber: true,
+          },
+        },
+        products: {
+          select: {
+            name: true,
+            quantity: true,
+            price: true,
+          },
         },
       },
-    },
-  })
-
-  if (!bill) {
-    res.status(404).json({ message: 'No existe una cuenta con este Id' })
-    return
-  }
-  const amount_paid = bill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
-  sql.connect(dbConfig).then(pool => {
-    pool.query`SELECT TOP 1
-        op.Orden AS bill,
-        op.Mesa as tableNumber,
-        op.Personas,
-        op.HoraAbrir,
-        (op.Total * 100) as total,  -- Multiplicamos por 100
-        op.Impresa,
-        op.status,
-        -- Construcción manual de JSON para los platillos
-        (
-          SELECT 
-            '[' + STUFF((
-              SELECT 
-                ',{"id":' + CAST(c.Id_Platillo AS NVARCHAR(10)) +
-                ',"createdAt":"' + CONVERT(VARCHAR(8), c.Hora, 108) +
-                '","name":"' + c.Descripcion +
-                '","quantity":' + CAST(c.Cantidad AS NVARCHAR(10)) +
-                ',"punitario":' + CAST(c.Punitario  * 100 AS NVARCHAR(20)) +
-                ',"iva":' + CAST(c.IVACobrado * 100 AS NVARCHAR(20)) + -- Asumiendo un 16% de IVA
-                ',"price":' + CAST((c.SubTotal * c.Cantidad * 100) AS NVARCHAR(20)) + '}' -- Total como Decimal
-              FROM 
-                NetSilver.dbo.Comanda AS c
-              WHERE 
-                c.Orden = op.Orden -- Solo platillos de la orden específica
-                AND c.Modificador = 0 -- Solo platillos sin modificadores
-                AND CONVERT(DATE, c.Hora) = CONVERT(DATE, GETDATE()) -- Solo platillos de hoy
-              FOR XML PATH(''), TYPE
-            ).value('.', 'NVARCHAR(MAX)'), 1, 1, '') + ']'
-        ) AS orderedProducts
-      FROM 
-        NetSilver.dbo.OrdenPendiente AS op
-      INNER JOIN 
-        NetSilver.dbo.Comanda AS c ON c.Orden = op.Orden
-      WHERE 
-        op.Mesa = ${bill.tableNumber} -- Número de mesa deseado
-        AND CONVERT(DATE, op.HoraAbrir) = CONVERT(DATE, GETDATE()) -- Filtra por la fecha de hoy
-        AND c.Modificador = 0
-      ORDER BY 
-        op.HoraAbrir DESC`.then(r => {
-      const result = r.recordset[0]
-      if (result === undefined) {
-        res.status(404).json({ message: 'No hay ordenes activas en esta mesa' })
-        sql.close()
-        return
-      }
-      if (result.orderedProducts === null) {
-        res.status(404).json({ message: 'No hay productos en esta mesa' })
-        sql.close()
-        return
-      }
-      result.orderedProducts = JSON.parse(result.orderedProducts)
-      result.amount_left = result.total - amount_paid
-      console.dir(result)
-
-      res.json(result)
-      return sql.close()
     })
-  })
+
+    if (!bill) {
+      return res.status(404).json({ message: 'No existe una cuenta con este Id' })
+    }
+    if (bill.status === 'CLOSED') {
+      console.log('🔒 La cuenta está cerrada y no se reactivará.')
+
+      const data = {
+        ...bill,
+      }
+      return res.status(200).json(data)
+    }
+    const amount_paid = bill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+
+    // Asegúrate de manejar la conexión a la base de datos de forma adecuada
+    const pool = await sql.connect(dbConfig)
+    const query = getOrderWithTableNumber(bill.tableNumber)
+    const r = await pool.request().query(query)
+    const result = r.recordset[0]
+
+    if (result === undefined) {
+      return res.status(404).json({ message: 'No hay ordenes activas en esta mesa' })
+    }
+
+    if (result.products === null) {
+      return res.status(404).json({ message: 'No hay productos en esta mesa' })
+    }
+
+    result.products = JSON.parse(result.products)
+    result.amount_left = result.total - amount_paid
+
+    /**NOTE -
+     * Result = 0, significa que la cuenta esta cerrada
+     * Result = 4, significa que la cuenta esta abierta
+     **/
+    if (bill.table.length === 0) {
+      await prisma.table.update({
+        where: {
+          tableId: {
+            venueId: venueId,
+            tableNumber: parseInt(result.tableNumber),
+          },
+        },
+        data: {
+          billId: bill.id,
+        },
+      })
+    }
+
+    if (result.status === 4) {
+      if (Number(bill.total) === Number(result.total)) {
+        return res.json(result)
+      }
+      console.log('✅ Cambiando status de cuenta a OPEN y actualizando total')
+
+      await prisma.table.update({
+        where: {
+          tableId: {
+            venueId: venueId,
+            tableNumber: parseInt(result.tableNumber),
+          },
+        },
+        data: {
+          status: 'ACTIVE',
+        },
+      })
+    } else {
+      console.log('🔌❌ Desconectando mesa, cambiando status de cuenta a CLOSED y agregando platillos')
+      await prisma.table.update({
+        where: {
+          tableId: {
+            venueId: venueId,
+            tableNumber: parseInt(result.tableNumber),
+          },
+        },
+        data: {
+          status: 'INACTIVE',
+          bill: {
+            update: {
+              total: result.total,
+              products: {
+                create: result.products.map(({ id, createdAt, iva, name, ...rest }) => ({
+                  ...rest, // Esto copia todas las propiedades del producto excepto el id
+                  tax: iva,
+                  name: name.replace('.,', ''),
+                })),
+              },
+              status: 'CLOSED',
+            },
+            disconnect: true,
+          },
+        },
+      })
+    }
+
+    res.json(result)
+  } catch (error) {
+    console.error('Error al obtener información de la cuenta:', error)
+    res.status(500).json({ message: 'Error interno del servidor.' })
+  } finally {
+    await pool.close() // Considera manejar la conexión de forma más global si es posible
+  }
 }
 
-module.exports = {
-  getBillInfo,
-  getTest,
-}
+export { getTest, getBillInfo }

@@ -1,12 +1,19 @@
-const express = require('express')
+import express from 'express'
 const stripeRouter = express.Router()
-const stripeController = require('../controller/StripeController')
+import {
+  getPaymentIntent,
+  getPublishableKey,
+  createPaymentIntent,
+  getPaymentMethods,
+  createIncognitoCustomer,
+  updatePaymentIntent,
+} from '../controller/StripeController'
 
-stripeRouter.get('/payment-intent/:id', stripeController.getPaymentIntent)
-stripeRouter.get('/publishable-key', stripeController.getPublishableKey)
-stripeRouter.post('/create-payment-intent', stripeController.createPaymentIntent)
-stripeRouter.post('/payment-methods', stripeController.getPaymentMethods)
-stripeRouter.post('/create-incognito-customer', stripeController.createIncognitoCustomer)
-stripeRouter.post('/update-payment-intent', stripeController.updatePaymentIntent)
+stripeRouter.get('/payment-intent/:id', getPaymentIntent)
+stripeRouter.get('/publishable-key', getPublishableKey)
+stripeRouter.post('/create-payment-intent', createPaymentIntent)
+stripeRouter.post('/payment-methods', getPaymentMethods)
+stripeRouter.post('/create-incognito-customer', createIncognitoCustomer)
+stripeRouter.post('/update-payment-intent', updatePaymentIntent)
 
-module.exports = stripeRouter
+export default stripeRouter

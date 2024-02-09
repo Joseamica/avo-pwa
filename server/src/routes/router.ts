@@ -1,13 +1,12 @@
 // const tables = require('../mocks/tables')
-const express = require('express')
+import express from 'express'
 const router = express.Router()
 require('dotenv').config()
-const bcrypt = require('bcrypt')
 
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+import bcrypt from 'bcrypt'
 
-const jwt = require('jsonwebtoken')
+import prisma from '../utils/prisma'
+import jwt from 'jsonwebtoken'
 
 // function verifyToken(req, res, next) {
 //   const authHeader = req.headers['authorization']
@@ -72,135 +71,9 @@ router.get('/auth/status', async (req, res) => {
   }
 })
 
-router.get('/do-something', verifyToken, (req, res) => {
-  console.log(req.user)
-  res.send('Estas autenticado')
-})
-
-router.get('/venues/:venueId/tables/:tableId', async (req, res) => {
-  const { venueId, tableId } = req.params
-  //TODO - Hacer algo con esta query como verificar algo
-  const query = req.query
-  console.log('query', query)
-
-  const table = await prisma.table.findUnique({
-    where: {
-      tableId: {
-        venueId: venueId,
-        tableNumber: parseInt(tableId),
-      },
-    },
-  })
-
-  if (!table) return res.status(404).json({ error: 'Table not found' })
-  if (!table.billId) {
-    //TODO - Hacer alguna acción si la mesa no está activa
-    return res.status(200).json({ redirect: false, message: 'La mesa no está activa' })
-  } else {
-    return res.json({ tableNumber: table.tableNumber, redirect: true, url: `/venues/${venueId}/bills/${table.billId}` })
-  }
-})
-
-// router.get('/api/venues/:venueId/bills/:billId', async (req, res) => {
-//   const bill = {
-//     id: 1,
-//     venueId: 1,
-//     tableId: 1,
-//     status: 'pending',
-//     orderedProducts: [
-//       {
-//         id: 1,
-//         name: 'Coca Cola',
-//         price: 10000,
-//         comments: 'Sin hielo',
-//         quantity: 1,
-//         description: 'Bebida de 80oz',
-//         visible: true,
-//         status: 'delivered', // 'pending' | 'delivered' | 'cancelled
-//         userId: 1,
-//         createdAt: Date.now(),
-//         updatedAt: Date.now(),
-//       },
-//       {
-//         id: 2,
-//         name: 'Papas Fritas',
-//         price: 10000,
-//         comments: 'Sin sal',
-//         quantity: 1,
-//         description: 'Unas papitas ricas',
-//         visible: true,
-//         status: 'pending',
-//         userId: 1,
-//         createdAt: Date.now(),
-//         updatedAt: Date.now(),
-//       },
-//       {
-//         id: 3,
-//         name: 'Hamburguesa',
-//         price: 50000,
-//         comments: 'Sin cebolla',
-//         quantity: 2,
-//         description: 'Una hamburguesa rica',
-//         visible: true,
-//         status: 'pending',
-//         userId: 2,
-//         createdAt: Date.now(),
-//         updatedAt: Date.now(),
-//       },
-//     ],
-//     payments: [
-//       {
-//         id: 1,
-//         method: 'Efectivo',
-//         amount: 10000,
-//         userId: 1,
-
-//         tips: [
-//           {
-//             id: 1,
-//             amount: 100,
-//           },
-//           {
-//             id: 2,
-//             amount: 200,
-//           },
-//         ],
-//       },
-//       {
-//         id: 2,
-//         method: 'Tarjeta',
-//         amount: 1000,
-//         userId: 1,
-//         tips: [
-//           {
-//             id: 4,
-//             amount: 241,
-//           },
-//         ],
-//       },
-//     ],
-//     users: [
-//       {
-//         id: 1,
-//         name: 'Juan',
-//         color: '#FF0000',
-//       },
-//       {
-//         id: 2,
-//         name: 'Pedro',
-//         color: '#00FF00',
-//       },
-//     ],
-//   }
-//   const total = bill.orderedProducts.reduce((acc, product) => {
-//     return acc + product.price * product.quantity
-//   }, 0)
-//   const amount_paid = bill.payments.reduce((acc, payment) => {
-//     return acc + payment.amount
-//   }, 0)
-
-//   const amount_left = total - amount_paid
-//   res.json({ ...bill, total, amount_left })
+// router.get('/do-something', verifyToken, (req, res) => {
+//   console.log(req.user)
+//   res.send('Estas autenticado')
 // })
 
 router.get('/menus', async (req, res) => {
@@ -337,4 +210,4 @@ function generateAccessToken(username) {
   return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '60m' })
 }
 
-module.exports = router
+export default router

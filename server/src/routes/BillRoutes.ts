@@ -1,12 +1,12 @@
-const express = require('express')
+import express from 'express'
 const billRouter = express.Router()
-const billController = require('../controller/BillController')
+import { getBillInfo, getTest } from '../controller/BillController'
 
-billRouter.get('/:billId', billController.getBillInfo)
-billRouter.get('/test', billController.getTest)
+billRouter.get('/:billId', getBillInfo)
+billRouter.get('/test', getTest)
 
 // billRouter.get('/bills/:billId', billController.get)
 
 // ANCHOR CONFIG
 
-module.exports = billRouter
+export default billRouter

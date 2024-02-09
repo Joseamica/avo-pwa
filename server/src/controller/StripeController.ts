@@ -88,11 +88,4 @@ const createIncognitoCustomer = async (req, res) => {
   }
 }
 
-module.exports = {
-  getPublishableKey,
-  createPaymentIntent,
-  getPaymentMethods,
-  getPaymentIntent,
-  createIncognitoCustomer,
-  updatePaymentIntent,
-}
+export { getPublishableKey, getPaymentMethods, createPaymentIntent, getPaymentIntent, updatePaymentIntent, createIncognitoCustomer }
