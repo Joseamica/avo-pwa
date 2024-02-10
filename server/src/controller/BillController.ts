@@ -93,6 +93,7 @@ const getBillInfo = async (req, res) => {
     }
 
     if (result.status === 4) {
+      console.log('bill.total es igual a total de POS?', Number(bill.total) === Number(result.total))
       if (Number(bill.total) === Number(result.total)) {
         return res.json(result)
       }
@@ -106,6 +107,11 @@ const getBillInfo = async (req, res) => {
           },
         },
         data: {
+          bill: {
+            update: {
+              total: result.total,
+            },
+          },
           status: 'ACTIVE',
         },
       })
