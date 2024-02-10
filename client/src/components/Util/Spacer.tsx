@@ -4,6 +4,7 @@ const spacerSizes = {
   md: 'h-4',
   lg: 'h-6',
   xl: 'h-8',
+  jumbo: 'h-20',
 }
 
 function Spacer({
