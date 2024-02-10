@@ -66,15 +66,13 @@ function App() {
             <Route path=":venueId/menus" element={<Menus />} loader={menusLoader} />
           </Route>
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
-            <Route path=":tableId" element={<Tables.TableId />} />
+            <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
           <Route path="venues/:venueId/bills" element={<Bills.Bills />} errorElement={<Error />}>
             <Route path=":billId" element={<Bills.BillId />} />
           </Route>
           <Route path="success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
-
-          {/* <Route path="page-3" loader={page3Loader} action={page3action} element={<Page3 />} /> */}
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="sockets" element={<Sockets />} />
