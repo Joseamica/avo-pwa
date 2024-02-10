@@ -1,8 +1,8 @@
 import { Flex } from '@/components'
-import { Check } from '@/components/Icons'
+import { Amex, Check, MasterCard, Visa } from '@/components/Icons'
 import Meta from '@/components/Meta'
 import { Spacer } from '@/components/Util/Spacer'
-import { H2, H4 } from '@/components/Util/Typography'
+import { H2, H4, H5 } from '@/components/Util/Typography'
 import getIcon from '@/utils/get-icon'
 import { getUserLS } from '@/utils/localStorage/user'
 import { initStripe } from '@/utils/stripe'
@@ -92,7 +92,7 @@ const Checkout = ({
         <div className="space-y-2">
           {data.paymentMethods?.map(paymentMethod => (
             <button
-              className={clsx('relative w-full p-3 max-h-16 bg-white border-2 rounded-full flex justify-between items-center')}
+              className={clsx('relative w-full p-3 max-h-16 bg-white border-2 rounded-full flex justify-start space-x-4 items-center')}
               key={paymentMethod.id}
               onClick={() => handlePaymentOptions(paymentMethod.id)}
             >
@@ -100,7 +100,7 @@ const Checkout = ({
                 align="center"
                 justify="center"
                 className={clsx(
-                  'box-border  left-0  flex-shrink-0 w-8 h-8 p-1 border-4 rounded-full cursor-pointer ',
+                  'box-border  left-0  flex-shrink-0 w-8 h-8 p-1 border-2 rounded-full cursor-pointer ',
                   paymentMethodId === paymentMethod.id ? 'bg-buttons-main border-borders-button' : 'border-gray-300',
                 )}
               >
@@ -125,13 +125,16 @@ const Checkout = ({
               align="center"
               justify="center"
               className={clsx(
-                'box-border  left-0  flex-shrink-0 w-8 h-8 p-1 border-4 rounded-full cursor-pointer ',
+                'box-border  left-0  flex-shrink-0 w-8 h-8 p-1 border-2 rounded-full cursor-pointer ',
                 isPaymentFormVisible ? 'bg-buttons-main border-borders-button' : 'border-gray-300',
               )}
             >
               {isPaymentFormVisible ? <Check className="fill-white" /> : null}
             </Flex>
-            <span>Tarjeta de Crédito</span>
+            <H5>Tarjeta de Crédito</H5>
+            <Visa />
+            <Amex />
+            <MasterCard />
             <div />
           </button>
         </div>

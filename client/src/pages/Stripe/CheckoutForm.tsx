@@ -5,12 +5,13 @@ import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import axios from 'axios'
 import { useState } from 'react'
 import TipModal from './TipModal'
+import { useParams } from 'react-router-dom'
 
 const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLoading, setErrorMessage }) => {
   const stripe = useStripe()
   const elements = useElements()
-
   const [showTipModal, setShowTipModal] = useState(false)
+  const params = useParams()
 
   const handleError = error => {
     setLoading(false)
@@ -41,14 +42,21 @@ const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLo
     setLoading(true)
 
     try {
-      // Verifica si estás utilizando un método de pago guardado
-
       const { user } = getUserLS()
 
-      const response = await axios.post('/api/v1/stripe/create-payment-intent', {
-        amount: amounts.total,
+      const response = await axios.post(`/api/v1/stripe/create-payment-intent`, {
         currency: 'mxn',
         customerId: user.stripeCustomerId,
+        params: {
+          venueId: params.venueId,
+          billId: params.billId,
+        },
+        amounts: {
+          amount: amounts.amount,
+          tipPercentage: tipPercentage,
+          avoFee: amounts.avoFee,
+          total: amounts.total,
+        },
       })
       const { client_secret: clientSecret, id } = response.data
 
@@ -102,7 +110,7 @@ const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLo
       <Spacer size="md" />
       <Button
         size="md"
-        className="sticky bottom-0 p-4 rounded-full disabled:bg-zinc-400"
+        className="sticky p-4 mb-5 rounded-full bottom-4 disabled:bg-zinc-400"
         type="submit"
         disabled={!stripe || loading}
         text="Confirmar"
