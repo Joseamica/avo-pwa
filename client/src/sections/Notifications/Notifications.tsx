@@ -6,6 +6,7 @@ import Notifier from './Notifier'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import { Ref, forwardRef } from 'react'
+import { H1, H3, H4, H5 } from '@/components/Util/Typography'
 
 // here how you can define your own notification component
 
@@ -20,9 +21,12 @@ const CustomNotification = forwardRef(function CustomNotification({ message }: C
 
 const PaymentNotification = forwardRef(function PaymentNotification({ message }: CustomContentProps, ref: Ref<HTMLDivElement>) {
   return (
-    <div ref={ref} className="p-2 text-white rounded-lg bg-buttons-main">
-      <AlertTitle>¡Pago Exitoso!</AlertTitle>
-      {message}
+    <div ref={ref} className="w-full p-3 rounded-lg bg-background-success ">
+      <H4 variant="success" bold="semibold">
+        ¡Pago Exitoso!
+      </H4>
+
+      <H5 variant="success">{message}</H5>
     </div>
   )
 })
@@ -35,6 +39,7 @@ function Notifications() {
         customNotification: CustomNotification,
         paymentNotification: PaymentNotification,
       }}
+      dense
     >
       <Notifier />
     </SnackbarProvider>

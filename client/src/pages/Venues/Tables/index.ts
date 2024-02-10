@@ -1,7 +1,7 @@
 import Tables from './Tables'
-import TableId from './TableId'
+import TableNumber from './TableNumber'
 
 export default {
   Tables,
-  TableId,
+  TableNumber,
 }

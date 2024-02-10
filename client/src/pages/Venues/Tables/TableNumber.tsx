@@ -24,19 +24,19 @@ import { useNavigate, useParams } from 'react-router-dom'
  * 2. se usa para obtener la información de la mesa
  */
 
-function TableId() {
+function TableNumber() {
   const params = useParams()
   const navigate = useNavigate()
   const { isPending, error, data, isError, isLoading } = useQuery<any>({
     queryKey: ['table_data'],
     queryFn: async () => {
       try {
-        const response = await axios.get(`/api/venues/${params.venueId}/tables/${params.tableId}?todo=yes`)
+        const response = await axios.get(`/api/v1/venues/${params.venueId}/tables/${params.tableNumber}?todo=yes`)
         // const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
         // if (localStorageUser.user.tableNumber === undefined) {
         //   localStorageUser.user.tableNumber = response.data.tableNumber
         // }
-
+        console.log('responese', response)
         response.data.redirect && navigate(response.data.url, { replace: true })
         return response.data
       } catch (error) {
@@ -54,4 +54,4 @@ function TableId() {
   )
 }
 
-export default TableId
+export default TableNumber

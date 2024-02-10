@@ -1,9 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import Loading from '@/components/Loading'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import BillId from './BillId'
+import { Spacer } from '@/components/Util/Spacer'
+import HeaderAvo from '@/sections/Header/HeaderAvo'
+import { IncognitoUser } from '@/utils/types/user'
 // import { useAuth } from '@/auth/AuthProvider'
 interface Tip {
   id: number
@@ -43,7 +46,7 @@ interface Bill {
   venueId: number
   tableId: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' // Asumiendo posibles estados
-  orderedProducts: OrderedProduct[]
+  products: OrderedProduct[]
   payments: Payment[]
   users: User[]
   total: number
@@ -55,13 +58,14 @@ interface Bill {
 
 function Bills() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-
+  const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
   const { isPending, error, data, isError, status } = useQuery<Bill>({
     queryKey: ['bill_data'],
 
     queryFn: async () => {
       try {
-        const response = await axios.get(`/api/v1/bills/${params.billId}`)
+        const response = await axios.get(`/api/v1/bills/${params.billId}?venueId=${params.venueId}`)
+
         return response.data
       } catch (error) {
         throw new Error('No existe la mesa o la cuenta no está disponible en este momento.')
@@ -74,16 +78,24 @@ function Bills() {
 
   return (
     <>
-      {/* <Meta title="Bills" />
-      <FullSizeCenteredFlexBox flexDirection="column">
-        <Typography variant="h3">Bills</Typography>
-        <p>Layout</p>
-        <h2>TODO</h2>
-        <ol>
-          <li>cargar todos los tables existentes y mostrarlos con un boton</li>
-        </ol> */}
+      <HeaderAvo iconColor={user.user.color} />
+      <Spacer size="xl" />
+
+      <div className="flex justify-center w-full">
+        <Link
+          to={`/venues/${params.venueId}/menus`}
+          className="flex justify-center w-40 p-2 text-black bg-white border-2 border-black rounded-md"
+          state={{
+            tableId: params.tableId,
+            billId: params.billId,
+            venueId: params.venueId,
+          }}
+        >
+          Menu
+        </Link>
+      </div>
+
       <BillId data={data} isPending={isPending} />
-      {/* </FullSizeCenteredFlexBox> */}
     </>
   )
 }

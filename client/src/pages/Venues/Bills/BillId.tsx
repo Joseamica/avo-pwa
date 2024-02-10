@@ -5,8 +5,6 @@ import { Spacer } from '@/components/Util/Spacer'
 import { H1, H2 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
-import HeaderAvo from '@/sections/Header/HeaderAvo'
-import { IncognitoUser } from '@/utils/types/user'
 
 import ByProductModal from '@/components/Modals/ByProductModal'
 import CustomModal from '@/components/Modals/CustomModal'
@@ -17,8 +15,8 @@ import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import clsx from 'clsx'
 import { Fragment } from 'react'
-import { Link, useParams } from 'react-router-dom'
 
 interface Tip {
   id: number
@@ -58,7 +56,7 @@ interface Bill {
   venueId: number
   tableId: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | any
-  orderedProducts: OrderedProduct[]
+  products: OrderedProduct[]
   payments: Payment[]
   users: User[]
   total: number
@@ -69,62 +67,47 @@ interface Bill {
 }
 
 function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
-  const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-
-  const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
-
   //TODO -  convert to useReducer
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
 
   return (
     <Fragment>
       <div className="h-full ">
-        <HeaderAvo iconColor={user.user.color} />
-        <Spacer size="xl" />
-        {/* <h3 className="flex justify-center w-full">{`Mesa ${tableNumber}`}</h3> */}
-        <div className="flex justify-center w-full">
-          <Link
-            to={`/venues/${params.venueId}/menus`}
-            className="flex justify-center w-40 p-2 text-black bg-white border-2 border-black rounded-md"
-            state={{
-              tableId: params.tableId,
-              billId: params.billId,
-              venueId: params.venueId,
-            }}
-          >
-            Menu
-          </Link>
-        </div>
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
           <h1 className="font-neue">Mesa {data.tableNumber} </h1>
           {/* TODO - definir los estados y segun el estado ponerlo */}
-          <H2>Status: {data.status === 4 ? 'Abierta' : 'Cerrada'}</H2>
+          <H2 className={clsx('text-white', data.status === 4 ? 'bg-green-500' : 'bg-red-500')}>
+            Status: {data.status === 4 ? 'Abierta' : 'Cerrada'}
+          </H2>
           <Flex direction="row" align="center" space="sm">
             <H1>Total</H1>
             <H2>${data.total / 100}</H2>
           </Flex>
-          <Flex direction="row" align="center" space="sm">
-            <H1>Por Pagar</H1>
-            <H2>
-              ${data.amount_left / 100} {`<- hardcoded`}
-            </H2>
-          </Flex>
+          {data.status !== 'CLOSED' ? (
+            <Flex direction="row" align="center" space="sm">
+              <H1>Por Pagar</H1>
+
+              <H2>${data.amount_left / 100}</H2>
+            </Flex>
+          ) : null}
 
           <Spacer size="xl" />
 
-          <Flex direction="col" space="xs" className="border">
-            {data.orderedProducts.map(product => {
-              return (
-                <div key={product.id}>
-                  <span>{product.quantity}</span> <span>{product.name}</span> <span>${product.price / 100}</span>
+          <div className="max-w-md mx-auto">
+            <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md shadow-lg">
+              {data.products?.map((product, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span className="font-semibold">{product.quantity}x</span>
+                  <span className="text-gray-600">{product.name}</span>
+                  <span className="font-bold text-green-500">${(product.price / 100).toFixed(2)}</span>
                 </div>
-              )
-            })}
-          </Flex>
+              ))}
+            </div>
+          </div>
           <Spacer size="xl" />
-          <Button onClick={() => openModal('payment_methods')} text={'Pagar'} />
+          {data.status === 4 && <Button onClick={() => openModal('payment_methods')} disabled={data.amount_left <= 0} text={'Pagar'} />}
         </Flex>
       </div>
       {/* TODO modify icons */}
@@ -145,7 +128,7 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
             isInnerModalOpen={isInnerModalOpen}
             closeInnerModal={closeInnerModal}
             openInnerModal={openInnerModal}
-            orderedProducts={data.orderedProducts}
+            orderedProducts={data.products}
             isPending={isPending}
           />
           {/* ANCHOR innerModal - EqualParts */}
@@ -166,25 +149,11 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
         </Modal>
         {/* ANCHOR FullBill */}
         <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
-          {/* NOTE - TODO - Decide what approach is better, to go to checkout route or render directly on childModal */}
-          {/* <Link
-            to="/checkout"
-            state={{
-              amount: { amount: data.amount_left },
-              venueId: params.venueId,
-              tableId: params.tableId,
-              billId: params.billId,
-              redirectTo: location.pathname,
-            }}
-          >
-            
-            Checkout
-          </Link> */}
           <Checkout amount={{ amount: data.amount_left }} />
         </Modal>
       </Modal>
 
-      <ReactQueryDevtools initialIsOpen />
+      <ReactQueryDevtools initialIsOpen position="right" />
     </Fragment>
   )
 }

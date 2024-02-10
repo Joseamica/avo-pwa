@@ -3,6 +3,7 @@ node_modules/
 
 # Ignore build output
 build/
+.vscode/
 
 # Ignore environment-specific files
 .env
