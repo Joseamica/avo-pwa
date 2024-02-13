@@ -152,22 +152,23 @@ model Table {
 }
 
 model Bill {
-  id            String         @id @default(cuid())
-  key           String?
-  status        StatusBills?   @default(PENDING)
-  tableNumber   Int?
-  total         Decimal?
-  active        Boolean?
-  products      Product[]
-  usertable     UserTable?     @relation(fields: [usertableId], references: [id])
-  usertableId   String?
-  billdetails   BillDetails[]
-  payments      Payment[]
-  notifications Notification[]
-  table         Table[]
-  tips          Tip[]
-  updatedAt     DateTime?      @updatedAt
-  createdAt     DateTime       @default(now())
+  id          String       @id @default(cuid())
+  key         String?
+  posOrder    Int?
+  status      StatusBills? @default(PENDING)
+  tableNumber Int?
+  total       Decimal?
+  // active        Boolean?
+  table       Table[]
+  products    Product[]
+  usertable   UserTable?   @relation(fields: [usertableId], references: [id])
+  usertableId String?
+  // billdetails   BillDetails[]
+  payments    Payment[]
+  // notifications Notification[]
+  tips        Tip[]
+  updatedAt   DateTime?    @updatedAt
+  createdAt   DateTime     @default(now())
 }
 
 model UserTable {
@@ -240,8 +241,8 @@ model BillDetails {
   plu              String?
   price            Float
   quantity         Int
-  billId           String?
-  bill             Bill?             @relation(fields: [billId], references: [id])
+  // billId           String?
+  // bill             Bill?             @relation(fields: [billId], references: [id])
   // productId        String?
   // product          Product?          @relation(fields: [productId], references: [id])
   comments         String?
@@ -296,8 +297,8 @@ model Notification {
   venue       Venue?              @relation(fields: [venueId], references: [id])
   usertableId String?
   usertable   UserTable?          @relation(fields: [usertableId], references: [id])
-  billId      String?
-  bill        Bill?               @relation(fields: [billId], references: [id])
+  // billId      String?
+  // bill        Bill?               @relation(fields: [billId], references: [id])
   paymentId   String?
   payment     Payment?            @relation(fields: [paymentId], references: [id])
   updatedAt   DateTime?           @updatedAt

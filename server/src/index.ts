@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 // ANCHOR ROUTERS
 import router from './routes/router'
 import stripeRouter from './routes/StripeRoutes'
-import billRouter from './routes/BillRoutes'
+// import billRouter from './routes/BillRoutes'
 import venueRouter from './routes/VenuesRoutes'
 
 const app = express()
@@ -37,7 +37,7 @@ const server = http.createServer(app)
 app.use('/', router)
 app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)
-app.use('/v1/bills', billRouter)
+// app.use('/v1/bills', billRouter)
 
 // LISTEN
 const port = process.env.PORT || 5000

@@ -16,7 +16,8 @@ const getTest = async (req, res) => {
 
 const getBillInfo = async (req, res) => {
   const { billId } = req.params
-  const { venueId } = req.query
+  const { venueId } = req.body
+  console.log('venueId', venueId)
 
   try {
     const bill = await prisma.bill.findUnique({
@@ -43,7 +44,7 @@ const getBillInfo = async (req, res) => {
         },
       },
     })
-
+    console.log('bill', bill)
     if (!bill) {
       return res.status(404).json({ message: 'No existe una cuenta con este Id' })
     }
@@ -61,6 +62,35 @@ const getBillInfo = async (req, res) => {
     const pool = await sql.connect(dbConfig)
     const query = getOrderWithTableNumber(bill.tableNumber)
     const r = await pool.request().query(query)
+    console.log('r', r)
+
+    //NOTE - Si la cuenta se quedo en OPEN pero desde el punto de venta se cerro la cuenta actualizar.
+    if (
+      (r.recordset.length === 0 && bill.status === 'OPEN') ||
+      ((r.recordset[0].status === 0 || r.recordset[0].total === 0) && bill.status === 'OPEN')
+    ) {
+      console.log('🔌❌ ')
+      await prisma.table.update({
+        where: {
+          tableId: {
+            venueId: venueId,
+            tableNumber: bill.tableNumber,
+          },
+        },
+        data: {
+          status: 'INACTIVE',
+        },
+      })
+      await prisma.bill.update({
+        where: {
+          id: bill.id,
+        },
+        data: {
+          status: 'CLOSED',
+        },
+      })
+    }
+
     const result = r.recordset[0]
 
     if (result === undefined) {

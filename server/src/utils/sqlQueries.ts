@@ -40,4 +40,11 @@ const getOrderWithTableNumber = (tableNumber: number) => {
     op.HoraAbrir DESC`
 }
 
-export { getOrderWithTableNumber }
+const getProducts = (order: number) => {
+  return `SELECT * FROM NetSilver.dbo.Comanda WHERE ORDEN = ${order} AND CONVERT(DATE, Hora) = CONVERT(DATE, GETDATE()) AND Modificador = 0 ORDER BY Hora DESC`
+}
+
+const getOrder = (tableNumber: string | number) => {
+  return `SELECT TOP 1 * FROM NetSilver.dbo.OrdenPendiente WHERE MESA = ${tableNumber} AND CONVERT(DATE, HoraAbrir) = CONVERT(DATE, GETDATE()) ORDER BY HoraAbrir DESC`
+}
+export { getOrderWithTableNumber, getProducts, getOrder }
