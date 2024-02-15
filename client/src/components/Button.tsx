@@ -92,6 +92,35 @@ export function Button({
   )
 }
 
+function LinkButton({
+  text,
+  size = 'lg',
+  className,
+  variant = 'primary',
+  to = '/ ',
+  state,
+}: { text: string; className?: string; variant?: string; size?: string; to: string; state: {} } & JSX.IntrinsicElements['button']) {
+  return (
+    <Link to={to} state={state} className="w-full">
+      <div
+        className={clsx(
+          'flex items-center  disabled:border-4 justify-center    border-borders-button  rounded-full border-gray text-xl',
+          { 'text-white bg-buttons-main border-4': variant === 'primary' },
+          { 'text-buttons-main bg-white border': variant === 'secondary' },
+          { 'px-11 py-6 ': size === 'lg' },
+          { 'px-8 py-4': size === 'md' },
+          { ' px-5 py-2 ': size === 'sm' },
+          className,
+        )}
+      >
+        {/* <InnerButton> */}
+        <span className={clsx('', { 'text-xl': size === 'lg' }, { 'text-lg': size === 'md' }, { 'text-base': size === 'sm' })}>{text}</span>
+        {/* </InnerButton> */}
+      </div>
+    </Link>
+  )
+}
+
 export function CounterButton({
   text,
 
@@ -206,25 +235,6 @@ function Button2({ children, variant = 'primary', size = 'lg', className, ...but
         {children}
       </ButtonInner>
     </button>
-  )
-}
-
-function LinkButton({
-  children,
-  fullWith,
-  variant = 'primary',
-  size = 'lg',
-  className,
-  custom,
-  to = '/',
-  onClick,
-}: LinkProps & JSX.IntrinsicElements['button']) {
-  return (
-    <Link onClick={onClick} to={to} preventScrollReset className={getClassName({ className, fullWith })}>
-      <ButtonInner variant={variant} size={size} custom={custom}>
-        {children}
-      </ButtonInner>
-    </Link>
   )
 }
 

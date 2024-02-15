@@ -26,10 +26,10 @@ function HeaderAvo({ iconColor }) {
   return (
     <div className="relative">
       <img
-        src="https://fastly.picsum.photos/id/591/200/300.jpg?hmac=GBnqheK8f8NgGoZ-JQIGl0uYMejcmT4gvw4PsBmUWPY"
+        src="https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2FPortada.png?alt=media&token=2960aaef-6a8a-4e2d-a197-f8eb1c167b3c"
         alt="Header Background"
         loading="lazy"
-        className="object-cover w-full max-h-44 rounded-b-3xl bg-day-bg_principal brightness-50"
+        className="object-cover w-full max-h-56 rounded-b-3xl bg-day-bg_principal brightness-50"
       />
       <div className="absolute flex flex-row right-7 top-7">
         <UserProfileLink iconColor={iconColor} />
@@ -44,7 +44,9 @@ function HeaderAvo({ iconColor }) {
             </span> */}
           <img
             className="object-cover max-w-full max-h-full rounded-full"
-            src={'https://fastly.picsum.photos/id/474/200/300.jpg?hmac=ujW-ONkfEKNYQaIt8c6e2WaF1LWjpave8A5pHryyQs0'}
+            src={
+              'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2FAZUL%20SIN%20FONDO%20(4)%201.png?alt=media&token=d8dfb7de-58d5-4706-bd3f-3f20ffbe7f9b'
+            }
             alt="src"
           />
         </div>

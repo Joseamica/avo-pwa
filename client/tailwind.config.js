@@ -31,6 +31,7 @@ export default {
         background: {
           primary: '#F6F6F9',
           success: '#D1FFDD',
+          warning: '#E57373',
         },
         main: {
           warning: '#E57373',
