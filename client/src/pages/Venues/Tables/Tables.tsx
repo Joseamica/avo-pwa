@@ -17,9 +17,10 @@ function Tables() {
     queryFn: async () => {
       try {
         const response = await axios.get(`/api/v1/venues/${params.venueId}/tables`)
+
         return response.data
       } catch (error) {
-        throw new Error('No existe la mesa')
+        throw new Error('error', error.message)
       }
     },
   })
@@ -41,9 +42,9 @@ function Tables() {
               <li key={table.tableNumber}>
                 <Link
                   className={clsx(
-                    'flex items-center justify-center h-8 border rounded-full',
-                    table.status === 'ACTIVE' && 'bg-buttons-main text-white ',
-                    table.status === 'INACTIVE' && 'bg-buttons-secondary border-2',
+                    'flex items-center justify-center h-10 border rounded-full w-20',
+                    table.status === 'ACTIVE' && 'bg-background-success text-texts-success ',
+                    table.status === 'INACTIVE' && 'bg-background-warning text-white border-2',
                   )}
                   to={`${table.tableNumber}`}
                 >
@@ -52,7 +53,6 @@ function Tables() {
               </li>
             )
           })}
-          <li>cargar todos los tables existentes y mostrarlos con un boton</li>
         </ol>
         <Outlet />
       </FullSizeCenteredFlexBox>

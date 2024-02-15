@@ -27,7 +27,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 function TableNumber() {
   const params = useParams()
   const navigate = useNavigate()
-  const { isPending, error, data, isError, isLoading } = useQuery<any>({
+
+  const { isPending, error, data, isError, isLoading, status } = useQuery<any>({
     queryKey: ['table_data'],
     queryFn: async () => {
       try {
@@ -36,16 +37,21 @@ function TableNumber() {
         // if (localStorageUser.user.tableNumber === undefined) {
         //   localStorageUser.user.tableNumber = response.data.tableNumber
         // }
-        console.log('responese', response)
-        response.data.redirect && navigate(response.data.url, { replace: true })
+        console.log('response', response)
+        response.data.redirect &&
+          navigate(response.data.url, {
+            replace: true,
+          })
         return response.data
       } catch (error) {
-        throw new Error('No existe la mesa')
+        throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
       }
     },
+    retry: false,
   })
+
   if (isPending) return <Loading message="Buscando tu mesa" />
-  if (isError) return <H3 variant="error">Error: {error?.message}</H3>
+  if (isError) return <H3 variant="error">Error: {error.message}</H3>
 
   return (
     <h3 className="border">

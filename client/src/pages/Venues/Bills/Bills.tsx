@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom'
 
 import Loading from '@/components/Loading'
 import { useQuery } from '@tanstack/react-query'
@@ -7,6 +7,8 @@ import BillId from './BillId'
 import { Spacer } from '@/components/Util/Spacer'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
 import { IncognitoUser } from '@/utils/types/user'
+import { LinkButton } from '@/components/Button'
+import clsx from 'clsx'
 // import { useAuth } from '@/auth/AuthProvider'
 interface Tip {
   id: number
@@ -59,43 +61,35 @@ interface Bill {
 function Bills() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
-  const { isPending, error, data, isError, status } = useQuery<Bill>({
-    queryKey: ['bill_data'],
-
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`/api/v1/bills/${params.billId}?venueId=${params.venueId}`)
-
-        return response.data
-      } catch (error) {
-        throw new Error('No existe la mesa o la cuenta no está disponible en este momento.')
-      }
-    },
-  })
-
-  if (isPending) return <Loading message="Buscando tu mesa" />
-  if (isError) return 'An error has occurrsed: ' + error?.message
 
   return (
     <>
       <HeaderAvo iconColor={user.user.color} />
       <Spacer size="xl" />
 
-      <div className="flex justify-center w-full">
-        <Link
+      <div className="flex justify-center w-full px-2">
+        <LinkButton
+          size="md"
+          variant="secondary"
           to={`/venues/${params.venueId}/menus`}
-          className="flex justify-center w-40 p-2 text-black bg-white border-2 border-black rounded-md"
           state={{
             tableId: params.tableId,
             billId: params.billId,
             venueId: params.venueId,
           }}
+          text="Menu"
+        />
+        {/* <Link
+          to={`/venues/${params.venueId}/menus`}
+          className={clsx(
+            'flex items-center  disabled:border-4 justify-center w-full  text-black bg-buttons-main border-4 border-borders-button  rounded-2xl border-gray text-xl',
+          )}
         >
           Menu
-        </Link>
+        </Link> */}
       </div>
-
-      <BillId data={data} isPending={isPending} />
+      <BillId />
+      {/* <BillId data={data} isPending={isPending} /> */}
     </>
   )
 }

@@ -1,8 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-
 import Meta from '@/components/Meta'
 import { FullSizeCenteredFlexBox } from '@/components/styled'
 import ChevronLeft from '@mui/icons-material/ChevronLeft'

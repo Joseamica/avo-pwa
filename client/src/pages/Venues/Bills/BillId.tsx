@@ -17,6 +17,10 @@ import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import clsx from 'clsx'
 import { Fragment } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import Loading from '@/components/Loading'
+import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
 interface Tip {
   id: number
@@ -66,9 +70,25 @@ interface Bill {
   tableNumber: number
 }
 
-function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
+function BillId() {
+  const params = useParams<{ venueId: string; billId: string; tableId: string }>()
+
   //TODO -  convert to useReducer
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
+  const { isPending, error, data, isError, status } = useQuery<Bill>({
+    queryKey: ['bill_data'],
+    queryFn: async () => {
+      try {
+        const response = await axios.post(`/api/v1/venues/${params.venueId}/bills/${params.billId}`)
+        return response.data
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
+      }
+    },
+  })
+
+  if (isPending) return <Loading message="Buscando tu mesa" />
+  if (isError) return 'An error has occured: ' + error?.message
 
   return (
     <Fragment>
@@ -78,14 +98,20 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
         <Flex align="center" direction="col">
           <h1 className="font-neue">Mesa {data.tableNumber} </h1>
           {/* TODO - definir los estados y segun el estado ponerlo */}
-          <H2 className={clsx('text-white', data.status === 4 ? 'bg-green-500' : 'bg-red-500')}>
-            Status: {data.status === 4 ? 'Abierta' : 'Cerrada'}
+          <H2
+            className={clsx('text-white', {
+              'bg-green-500': data.status === 'OPEN',
+              'bg-red-500': data.status === 'CLOSED',
+              'bg-yellow-500': data.status === 'PENDING',
+            })}
+          >
+            STATUS {data.status}
           </H2>
           <Flex direction="row" align="center" space="sm">
             <H1>Total</H1>
             <H2>${data.total / 100}</H2>
           </Flex>
-          {data.status !== 'CLOSED' ? (
+          {data.status === 4 ? (
             <Flex direction="row" align="center" space="sm">
               <H1>Por Pagar</H1>
 
@@ -107,7 +133,9 @@ function BillId({ data, isPending }: { data?: Bill; isPending?: boolean }) {
             </div>
           </div>
           <Spacer size="xl" />
-          {data.status === 4 && <Button onClick={() => openModal('payment_methods')} disabled={data.amount_left <= 0} text={'Pagar'} />}
+          {data.status === 'OPEN' && (
+            <Button onClick={() => openModal('payment_methods')} disabled={data.amount_left <= 0} text={'Pagar'} />
+          )}
         </Flex>
       </div>
       {/* TODO modify icons */}

@@ -447,6 +447,7 @@ enum StatusBills {
   PENDING
   CLOSED
   CANCELED
+  PRECREATED
 }
 
 enum StatusNotification {
