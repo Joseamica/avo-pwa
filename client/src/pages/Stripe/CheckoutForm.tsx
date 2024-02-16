@@ -64,7 +64,7 @@ const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLo
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `http://localhost:5173/success`,
+          return_url: `${window.location.origin}/success`,
         },
       })
 

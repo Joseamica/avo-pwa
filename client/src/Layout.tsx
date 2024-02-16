@@ -1,5 +1,5 @@
 // Layout.js
-import { Outlet, json } from 'react-router-dom'
+import { Link, Outlet, json } from 'react-router-dom'
 
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
@@ -80,6 +80,7 @@ const Layout = ({}) => {
       {/* <Link to="/me" className="flex items-center justify-center w-12 h-12 border rounded-full">
         <Person style={{ color: data.user.color }} />
       </Link> */}
+      <Link to="/venues/clsdc47cc0002gx3lsjx112r1/tables">Ir a mesas</Link>
       <Outlet />
     </>
   )

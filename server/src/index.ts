@@ -1,12 +1,21 @@
-import express from 'express'
+import express, { Request } from 'express'
 import cors from 'cors'
 import http from 'http'
 import path from 'path'
 import cookieParser from 'cookie-parser'
+import { Server } from 'socket.io'
+
+declare global {
+  namespace Express {
+    interface Request {
+      io: Server
+    }
+  }
+}
+
 // ANCHOR ROUTERS
 import router from './routes/router'
 import stripeRouter from './routes/StripeRoutes'
-// import billRouter from './routes/BillRoutes'
 import venueRouter from './routes/VenuesRoutes'
 
 const app = express()
@@ -31,9 +40,34 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
     express.json()(req, res, next)
   }
 })
-
 const server = http.createServer(app)
+const io = new Server(server)
 
+io.on('connection', socket => {
+  console.log('Cliente conectado', socket.id)
+
+  socket.on('joinRoom', ({ venueId, billId }) => {
+    const roomId = `venue_${venueId}_bill_${billId}`
+    socket.join(roomId)
+    console.log(`Cliente ${socket.id} se unió al room ${roomId}`)
+  })
+
+  socket.on('leaveRoom', ({ venueId, billId }) => {
+    const roomId = `venue_${venueId}_bill_${billId}`
+    socket.leave(roomId)
+    console.log(`Cliente ${socket.id} dejó el room ${roomId}`)
+  })
+
+  // Más manejadores...
+})
+
+// Middleware para adjuntar io a req
+app.use((req, res, next) => {
+  req.io = io
+  next()
+})
+
+// ANCHOR ROUTES
 app.use('/', router)
 app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)

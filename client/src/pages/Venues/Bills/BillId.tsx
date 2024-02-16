@@ -16,11 +16,12 @@ import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import clsx from 'clsx'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Loading from '@/components/Loading'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
+import { io } from 'socket.io-client'
 
 interface Tip {
   id: number
@@ -68,14 +69,28 @@ interface Bill {
   createdAt: number
   updatedAt: number
   tableNumber: number
+  pos_order: { Status: number; Orden: number; Total: number }
 }
+
+const URL = '/'
+
+export const socket = io(URL, {
+  autoConnect: true,
+})
 
 function BillId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
+  const [billData, setBillData] = useState<Bill | null>(null)
 
   //TODO -  convert to useReducer
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
-  const { isPending, error, data, isError, status } = useQuery<Bill>({
+  const {
+    data: initialData,
+    isPending,
+    error,
+    isError,
+    isFetching,
+  } = useQuery<Bill>({
     queryKey: ['bill_data'],
     queryFn: async () => {
       try {
@@ -85,10 +100,54 @@ function BillId() {
         throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
       }
     },
+    retry: false,
+    staleTime: Infinity,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
+    // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
   })
+
+  useEffect(() => {
+    // Suponiendo que `params` contiene `venueId` y `billId`
+    socket.emit('joinRoom', { venueId: params.venueId, billId: params.billId })
+
+    socket.on('updateOrder', data => {
+      console.log('data', data)
+      setBillData(data)
+      // Aquí puedes manejar la actualización en el estado del cliente
+    })
+
+    // Asegurarse de dejar el room al desmontar el componente
+    return () => {
+      socket.emit('leaveRoom', { venueId: params.venueId, billId: params.billId })
+    }
+  }, [params.venueId, params.billId])
+
+  useEffect(() => {
+    if (initialData) {
+      setBillData(initialData)
+    }
+  }, [initialData])
+
+  // if (isFetching) return <Loading message="Buscando tu mesa" />
 
   if (isPending) return <Loading message="Buscando tu mesa" />
   if (isError) return 'An error has occured: ' + error?.message
+  if (!billData) return <div>Cargando datos de la factura...</div>
+
+  let status
+
+  if (billData?.pos_order?.Status === 4 || billData.status === 'OPEN') {
+    status = 'OPEN'
+  } else if (billData?.pos_order?.Status === 0 || billData.status === 'CLOSED') {
+    status = 'CLOSED'
+  } else if (billData.status === 'PENDING') {
+    status = 'PENDING'
+  } else if (billData.status === 'PRECREATED') {
+    status = 'PRECREATED'
+  } else {
+    status = 'UNKNOWN'
+  }
 
   return (
     <Fragment>
@@ -96,26 +155,27 @@ function BillId() {
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
-          <h1 className="font-neue">Mesa {data.tableNumber} </h1>
+          <h1 className="font-neue">Mesa {billData.tableNumber} </h1>
           {/* TODO - definir los estados y segun el estado ponerlo */}
           <H2
             className={clsx('text-white', {
-              'bg-green-500': data.status === 'OPEN',
-              'bg-red-500': data.status === 'CLOSED',
-              'bg-yellow-500': data.status === 'PENDING',
+              'bg-green-500': status === 'OPEN',
+              'bg-red-500': status === 'CLOSED',
+              'bg-yellow-500': status === 'PENDING',
+              'bg-gray-500': status === 'PRECREATED',
             })}
           >
-            STATUS {data.status}
+            STATUS {status}
           </H2>
           <Flex direction="row" align="center" space="sm">
             <H1>Total</H1>
-            <H2>${data.total / 100}</H2>
+            <H2>${billData.pos_order?.Total || billData.total / 100}</H2>
           </Flex>
-          {data.status === 4 ? (
+          {status === 'OPEN' ? (
             <Flex direction="row" align="center" space="sm">
               <H1>Por Pagar</H1>
 
-              <H2>${data.amount_left / 100}</H2>
+              <H2>${billData.amount_left / 100}</H2>
             </Flex>
           ) : null}
 
@@ -123,7 +183,7 @@ function BillId() {
 
           <div className="max-w-md mx-auto">
             <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md shadow-lg">
-              {data.products?.map((product, index) => (
+              {billData.products?.map((product, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <span className="font-semibold">{product.quantity}x</span>
                   <span className="text-gray-600">{product.name}</span>
@@ -133,9 +193,7 @@ function BillId() {
             </div>
           </div>
           <Spacer size="xl" />
-          {data.status === 'OPEN' && (
-            <Button onClick={() => openModal('payment_methods')} disabled={data.amount_left <= 0} text={'Pagar'} />
-          )}
+          {status === 'OPEN' && <Button onClick={() => openModal('payment_methods')} disabled={billData.amount_left <= 0} text={'Pagar'} />}
         </Flex>
       </div>
       {/* TODO modify icons */}
@@ -156,7 +214,7 @@ function BillId() {
             isInnerModalOpen={isInnerModalOpen}
             closeInnerModal={closeInnerModal}
             openInnerModal={openInnerModal}
-            orderedProducts={data.products}
+            orderedProducts={billData.products}
             isPending={isPending}
           />
           {/* ANCHOR innerModal - EqualParts */}
@@ -164,7 +222,7 @@ function BillId() {
             isInnerModalOpen={isInnerModalOpen}
             closeInnerModal={closeInnerModal}
             openInnerModal={openInnerModal}
-            amountLeft={data.amount_left}
+            amountLeft={billData.amount_left}
             isPending={isPending}
           />
           {/* ANCHOR innerModal - Custom */}
@@ -177,7 +235,7 @@ function BillId() {
         </Modal>
         {/* ANCHOR FullBill */}
         <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
-          <Checkout amount={{ amount: data.amount_left }} />
+          <Checkout amount={{ amount: billData.amount_left }} />
         </Modal>
       </Modal>
 

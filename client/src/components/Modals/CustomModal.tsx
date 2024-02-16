@@ -45,7 +45,7 @@ export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInn
             <span className="text-[21px] leading-6">Total seleccionado</span>
             <span className="text-[21px] leading-6"> {Currency(customAmount)}</span>
           </Flex>
-          <Button onClick={() => openInnerModal('checkout')} disabled={isPending || customAmount <= 0} text={'Confirmar'} />
+          <Button onClick={() => openInnerModal('checkout')} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} />
         </Flex>
       }
     >
@@ -66,9 +66,11 @@ export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInn
               // 'animate-pulse placeholder:text-warning': actionData?.amountToPay,
             },
           )}
-          placeholder="0.00"
+          placeholder="10.00"
         />
       </div>
+
+      <span className="text-[14px] text-texts-disabled">Mínimo $10.00</span>
       <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
         <Checkout amount={{ amount: customAmount }} />
       </Modal>

@@ -41,10 +41,32 @@ const getOrderWithTableNumber = (tableNumber: number) => {
 }
 
 const getProducts = (order: number) => {
-  return `SELECT * FROM NetSilver.dbo.Comanda WHERE ORDEN = ${order} AND CONVERT(DATE, Hora) = CONVERT(DATE, GETDATE()) AND Modificador = 0 ORDER BY Hora DESC`
+  return `SELECT Id_Consecutivo,Cantidad, Descripcion, Punitario, IVACobrado, SubTotal FROM NetSilver.dbo.Comanda WHERE ORDEN = ${order} AND CONVERT(DATE, Hora) = CONVERT(DATE, GETDATE()) AND Modificador = 0 ORDER BY Hora DESC`
 }
 
 const getOrder = (tableNumber: string | number) => {
-  return `SELECT TOP 1 * FROM NetSilver.dbo.OrdenPendiente WHERE MESA = ${tableNumber} AND CONVERT(DATE, HoraAbrir) = CONVERT(DATE, GETDATE()) ORDER BY HoraAbrir DESC`
+  return `SELECT TOP 1 Status, Orden, Total FROM NetSilver.dbo.OrdenPendiente WHERE MESA = ${tableNumber} AND CONVERT(DATE, HoraAbrir) = CONVERT(DATE, GETDATE()) ORDER BY HoraAbrir DESC`
 }
-export { getOrderWithTableNumber, getProducts, getOrder }
+const getOrderWithTableNumberAndOrderNumber = (tableNumber: string | number, orderNumber: string | number) => {
+  return `SELECT 
+  OP.Mesa,
+  OP.Status, 
+  OP.Orden, 
+  OP.Total,
+  CASE 
+    WHEN V.HoraCierre IS NOT NULL THEN 'Pagada' 
+    ELSE 'No Pagada' 
+  END as EstadoPago
+FROM 
+  NetSilver.dbo.OrdenPendiente OP
+LEFT JOIN 
+  NetSilver.dbo.Ventas V ON OP.HoraAbrir = V.HoraAbrir AND OP.Orden = V.Orden AND CONVERT(DATE, V.Fecha) = CONVERT(DATE, GETDATE())
+WHERE 
+  OP.MESA = ${tableNumber} AND
+  OP.Orden = ${orderNumber} AND 
+  CONVERT(DATE, OP.HoraAbrir) = CONVERT(DATE, GETDATE())
+ORDER BY 
+  OP.HoraAbrir DESC;`
+}
+
+export { getOrderWithTableNumber, getProducts, getOrder, getOrderWithTableNumberAndOrderNumber }

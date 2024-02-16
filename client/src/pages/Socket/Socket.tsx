@@ -1,8 +1,9 @@
+import { Flex } from '@/components'
 import React, { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 
 // const URL = process.env.NODE_ENV === 'production' ? undefined : '/'
-const URL = '/'
+const URL = '/sockets'
 
 export const socket = io(URL, {
   autoConnect: true,
@@ -24,6 +25,9 @@ export default function Sockets() {
     function onFooEvent(value) {
       setFooEvents(previous => [...previous, value])
     }
+    socket.on('getOrders', data => {
+      console.log('getOrders', data)
+    })
 
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
@@ -53,10 +57,8 @@ export function ConnectionState({ isConnected }) {
 export function Events({ events }) {
   return (
     <ul>
-      pene
       {events.map((event, index) => (
         <li className="text-white" key={index}>
-          pene
           {event}
         </li>
       ))}
@@ -74,10 +76,10 @@ export function ConnectionManager() {
   }
 
   return (
-    <>
+    <Flex space="sm">
       <button onClick={connect}>Connect</button>
       <button onClick={disconnect}>Disconnect</button>
-    </>
+    </Flex>
   )
 }
 

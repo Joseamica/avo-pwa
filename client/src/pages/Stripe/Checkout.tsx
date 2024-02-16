@@ -29,6 +29,10 @@ const Checkout = ({
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState() as any
 
+  if (amount.amount / 100 < 10) {
+    return <div>El monto mínimo es de $10</div>
+  }
+
   const tip = amount.amount * tipPercentage
   const avoFee = amount.amount * 0.05
   const total = Math.round(amount.amount + tip + avoFee)
@@ -104,7 +108,7 @@ const Checkout = ({
                   paymentMethodId === paymentMethod.id ? 'bg-buttons-main border-borders-button' : 'border-gray-300',
                 )}
               >
-                {paymentMethodId === paymentMethod.id ? <Check className="fill-white" /> : null}
+                {paymentMethodId === paymentMethod.id ? <Check className="w-3 h-3 fill-white" /> : null}
               </Flex>
 
               <Flex align="center" space="md">
@@ -129,7 +133,7 @@ const Checkout = ({
                 isPaymentFormVisible ? 'bg-buttons-main border-borders-button' : 'border-gray-300',
               )}
             >
-              {isPaymentFormVisible ? <Check className="fill-white" /> : null}
+              {isPaymentFormVisible ? <Check className="w-3 h-3 fill-white" /> : null}
             </Flex>
             <H5>Tarjeta de Crédito</H5>
             <Visa />

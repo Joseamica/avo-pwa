@@ -37,7 +37,7 @@ function TableNumber() {
         // if (localStorageUser.user.tableNumber === undefined) {
         //   localStorageUser.user.tableNumber = response.data.tableNumber
         // }
-        console.log('response', response)
+
         response.data.redirect &&
           navigate(response.data.url, {
             replace: true,

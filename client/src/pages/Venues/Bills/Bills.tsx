@@ -1,14 +1,10 @@
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-import Loading from '@/components/Loading'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import BillId from './BillId'
+import { LinkButton } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
 import { IncognitoUser } from '@/utils/types/user'
-import { LinkButton } from '@/components/Button'
-import clsx from 'clsx'
+import BillId from './BillId'
 // import { useAuth } from '@/auth/AuthProvider'
 interface Tip {
   id: number

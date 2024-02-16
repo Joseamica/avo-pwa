@@ -1,7 +1,7 @@
-import { ThemeOptions } from '@mui/material/styles';
-import { deepmerge } from '@mui/utils';
+import { ThemeOptions } from '@mui/material/styles'
+import { deepmerge } from '@mui/utils'
 
-import { Themes } from './types';
+import { Themes } from './types'
 
 const sharedTheme = {
   palette: {
@@ -32,7 +32,7 @@ const sharedTheme = {
       },
     },
   },
-} as ThemeOptions; // the reason for this casting is deepmerge return type
+} as ThemeOptions // the reason for this casting is deepmerge return type
 // TODO (Suren): replace mui-utils-deepmerge with lodash or ramda deepmerge
 
 const themes: Record<Themes, ThemeOptions> = {
@@ -43,6 +43,7 @@ const themes: Record<Themes, ThemeOptions> = {
         default: '#fafafa',
         paper: '#fff',
       },
+
       primary: {
         main: '#3f51b5',
       },
@@ -61,6 +62,6 @@ const themes: Record<Themes, ThemeOptions> = {
       },
     },
   }),
-};
+}
 
-export default themes;
+export default themes
