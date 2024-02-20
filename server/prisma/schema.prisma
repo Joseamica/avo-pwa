@@ -28,7 +28,7 @@ model Venue {
   country         String?
   utc             String?        @default("-6")
   phone           String?
-  email           String         @unique
+  email           String?        @unique
   language        String?        @default("es")
   image           String
   logo            String?
