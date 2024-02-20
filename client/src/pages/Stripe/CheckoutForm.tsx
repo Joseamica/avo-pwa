@@ -7,7 +7,25 @@ import { useState } from 'react'
 import TipModal from './TipModal'
 import { useParams } from 'react-router-dom'
 
-const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLoading, setErrorMessage }) => {
+const CheckoutForm = ({
+  amounts,
+  tipPercentage,
+  setTipPercentage,
+  loading,
+  setLoading,
+  setErrorMessage,
+}: {
+  amounts: {
+    amount: number
+    avoFee: number
+    total: number
+  }
+  tipPercentage: number
+  setTipPercentage: (value: number) => void
+  loading: boolean
+  setLoading: (value: boolean) => void
+  setErrorMessage: (value: string) => void
+}) => {
   const stripe = useStripe()
   const elements = useElements()
   const [showTipModal, setShowTipModal] = useState(false)
@@ -58,7 +76,7 @@ const CheckoutForm = ({ amounts, tipPercentage, setTipPercentage, loading, setLo
           total: amounts.total,
         },
       })
-      const { client_secret: clientSecret, id } = response.data
+      const { client_secret: clientSecret } = response.data
 
       const { error } = await stripe.confirmPayment({
         elements,

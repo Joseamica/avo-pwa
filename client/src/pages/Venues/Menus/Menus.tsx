@@ -10,7 +10,7 @@ interface LoaderData {
   menus: Menu[]
 }
 
-export async function loader({ request, params }) {
+export async function loader() {
   const res = await fetch('/api/menus')
   const menus = await res.json()
   return json({ menus })

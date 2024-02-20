@@ -27,6 +27,7 @@ type ByProductModalProps = {
   openInnerModal: any
   orderedProducts: {
     id: number
+    key: string
     name: string
     price: number
     comments: string
@@ -50,10 +51,10 @@ export default function ByProductModal({
 }: ByProductModalProps) {
   // NOTE - Per product
   const [selectedProducts, setSelectedProducts] = useState([])
-  const totalSelectedProducts = selectedProducts.reduce((acc, curr) => acc + curr.price, 0)
-  const handleSelectProducts = (id, price) => {
-    const isSelected = selectedProducts.some(product => product.id === id)
-    setSelectedProducts(isSelected ? selectedProducts.filter(product => product.id !== id) : [...selectedProducts, { id, price }])
+  const totalSelectedProducts = selectedProducts.reduce((acc, curr) => acc + parseInt(curr.price), 0)
+  const handleSelectProducts = (key, price) => {
+    const isSelected = selectedProducts.some(product => product.key === key)
+    setSelectedProducts(isSelected ? selectedProducts.filter(product => product.key !== key) : [...selectedProducts, { key, price }])
   }
 
   return (

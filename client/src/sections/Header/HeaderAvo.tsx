@@ -10,7 +10,7 @@ import Person from '@mui/icons-material/Person'
 import { Link } from 'react-router-dom'
 import { getRandomJoke } from './utils'
 
-function HeaderAvo({ iconColor }) {
+function HeaderAvo({ iconColor }: { iconColor: string }) {
   const [, sidebarActions] = useSidebar()
   const [, themeActions] = useTheme()
   const [, notificationsActions] = useNotifications()
@@ -55,7 +55,7 @@ function HeaderAvo({ iconColor }) {
   )
 }
 
-const UserProfileLink = ({ iconColor }) => (
+const UserProfileLink = ({ iconColor }: { iconColor: string }) => (
   <Link to="/me" className="flex flex-col text-center">
     <div className="flex items-center justify-center w-10 h-10 bg-white border-2 border-white rounded-full">
       <Person style={{ color: iconColor }} />

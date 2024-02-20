@@ -12,7 +12,7 @@ import NotFound from './pages/NotFound'
 import Page2 from './pages/Page2'
 import Venues from './pages/Venues'
 import Bills from './pages/Venues/Bills'
-import Tables from './pages/Venues/Tables'
+import Tables, { tablesLoader } from './pages/Venues/Tables'
 
 import { registerSW } from 'virtual:pwa-register'
 import './index.css'
@@ -65,7 +65,7 @@ function App() {
             <Route path=":venueId" element={<Venues.VenueId />} />
             <Route path=":venueId/menus" element={<Menus />} loader={menusLoader} />
           </Route>
-          <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
+          <Route path="venues/:venueId/tables" element={<Tables.Tables />} loader={tablesLoader}>
             <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
           <Route path="venues/:venueId/bills" element={<Bills.Bills />} errorElement={<Error />}>
@@ -83,7 +83,7 @@ function App() {
         <Route path="me" element={<Me />} action={meAction} />
         <Route path="page-4" element={<Page4 />} />
 
-        <Route path="checkout" element={<Checkout />} />
+        {/* <Route path="checkout" element={<Checkout />} /> */}
         {/* </Suspense> */}
       </Fragment>,
 

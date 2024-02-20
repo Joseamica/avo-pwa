@@ -2,11 +2,11 @@ import { CustomContentProps, SnackbarProvider } from 'notistack'
 
 import { notifications } from '@/config'
 
-import Notifier from './Notifier'
+import { H4, H5 } from '@/components/Util/Typography'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import { Ref, forwardRef } from 'react'
-import { H1, H3, H4, H5 } from '@/components/Util/Typography'
+import Notifier from './Notifier'
 
 // here how you can define your own notification component
 

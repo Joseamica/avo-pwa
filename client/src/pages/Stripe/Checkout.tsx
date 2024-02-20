@@ -29,16 +29,6 @@ const Checkout = ({
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState() as any
 
-  if (amount.amount / 100 < 10) {
-    return <div>El monto mínimo es de $10</div>
-  }
-
-  const tip = amount.amount * tipPercentage
-  const avoFee = amount.amount * 0.05
-  const total = Math.round(amount.amount + tip + avoFee)
-
-  const { user } = getUserLS()
-
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['paymentMethods'],
     queryFn: async () => {
@@ -48,6 +38,16 @@ const Checkout = ({
       return response.data
     },
   })
+
+  if (amount.amount / 100 < 10) {
+    return <div>El monto mínimo es de $10</div>
+  }
+
+  const tip = amount.amount * tipPercentage
+  const avoFee = amount.amount * 0.05
+  const total = Math.round(amount.amount + tip + avoFee)
+
+  const { user } = getUserLS()
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -178,7 +178,7 @@ const Checkout = ({
   )
 }
 
-const PaymentSummary = ({ amount, avoFee }) => {
+const PaymentSummary = ({ amount, avoFee }: { amount: number; avoFee: number }) => {
   return (
     <div className="flex flex-col justify-center w-full px-4 py-2 bg-white border-2 rounded-xl">
       <H2 bold="normal" as="p">

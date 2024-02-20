@@ -82,20 +82,20 @@ define(['./workbox-a2d9e19e'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "firebase-messaging-sw.js",
-    "revision": "61b97f217c646637818b56c76376ff13"
+    "revision": "b500f22934fd65742de1e5ea96e79b22"
   }, {
     "url": "registerSW.js",
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.n0k75qvu67"
+    "revision": "0.1na0ohuobgo"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/^https?:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o/, new workbox.CacheFirst({
-    "cacheName": "local-images1",
+  workbox.registerRoute(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o\/1\.%20Madre%20Cafecito%2F.*\.(png|jpg|jpeg)$/, new workbox.CacheFirst({
+    "cacheName": "restaurant-images",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 500,
       maxAgeSeconds: 63072000
@@ -103,7 +103,7 @@ define(['./workbox-a2d9e19e'], (function (workbox) { 'use strict';
       statuses: [200]
     })]
   }), 'GET');
-  workbox.registerRoute(/^https:\/\/my-library-cover-uploads.s3.amazonaws.com/, new workbox.CacheFirst({
+  workbox.registerRoute(/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o\/1\.%20Madre%20Cafecito%2F.*\.(png|jpg|jpeg)$/, new workbox.CacheFirst({
     "cacheName": "local-images2",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 500,

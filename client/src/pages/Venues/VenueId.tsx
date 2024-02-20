@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 function VenueId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-  const { isPending, error, data, isError, status } = useQuery({
+  const { isPending, error, isError } = useQuery({
     queryKey: ['bill_data'],
 
     queryFn: async () => {

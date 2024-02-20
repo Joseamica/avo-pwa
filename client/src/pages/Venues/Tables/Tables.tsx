@@ -1,4 +1,4 @@
-import { Link, Outlet, useParams } from 'react-router-dom'
+import { Link, Outlet, useLoaderData, useParams } from 'react-router-dom'
 
 import Typography from '@mui/material/Typography'
 
@@ -10,10 +10,19 @@ import { H3 } from '@/components/Util/Typography'
 import axios from 'axios'
 import clsx from 'clsx'
 
+export async function loader({ request, params }) {
+  const { venueId } = params
+  // const response = await axios.get(`/api/v1/venues/${venueId}/tables`)
+
+  // return response.data
+  return { venueId }
+}
+
 function Tables() {
-  const params = useParams<{ venueId: string; tableId: string }>()
-  const { isPending, error, data, isError, isLoading } = useQuery<any>({
-    queryKey: ['table_data'],
+  const params = useParams()
+  // const data = useLoaderData() as any
+  const { isPending, error, data, isError, isLoading, isFetching, refetch, isRefetching } = useQuery<any>({
+    queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
         const response = await axios.get(`/api/v1/venues/${params.venueId}/tables`)
@@ -28,15 +37,16 @@ function Tables() {
   if (isPending) return <Loading message="Buscando tu mesa" />
   if (isLoading) return <Loading message="Buscando tu mesa" />
   if (isError) return <H3 variant="error">Error: {error?.message}</H3>
-
+  if (isFetching) return <Loading message="Buscando tu mesa (Fetching)" />
+  if (isRefetching) return <Loading message="Refetching" />
+  if (!data) return <H3 variant="error">No hay mesas</H3>
   return (
     <>
       <Meta title="Tables" />
       <FullSizeCenteredFlexBox flexDirection="column">
         <Typography variant="h3">Tables</Typography>
-        <p>Layout</p>
-        <h2>TODO</h2>
-        <ol className="space-y-2">
+
+        <ol className="flex flex-wrap gap-2">
           {data?.map((table: any) => {
             return (
               <li key={table.tableNumber}>
@@ -47,6 +57,7 @@ function Tables() {
                     table.status === 'INACTIVE' && 'bg-background-warning text-white border-2',
                   )}
                   to={`${table.tableNumber}`}
+                  // replace={true}
                 >
                   {table.tableNumber}
                 </Link>

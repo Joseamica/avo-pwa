@@ -18,7 +18,7 @@ export default function TipModal({
   stripe,
 }: {
   amounts: {
-    tip: number
+    amount: number
     avoFee: number
     total: number
   }

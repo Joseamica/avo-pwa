@@ -36,11 +36,13 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           getCache({
-            pattern: /^https?:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o/,
-            name: 'local-images1',
+            pattern: /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o\//,
+
+            name: 'restaurant-images',
           }),
           getCache({
-            pattern: /^https:\/\/my-library-cover-uploads.s3.amazonaws.com/,
+            pattern:
+              /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/avoqado-d0a24\.appspot\.com\/o\/1\.%20Madre%20Cafecito%2F.*\.(png|jpg|jpeg)$/,
             name: 'local-images2',
           }),
         ],
@@ -49,7 +51,7 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 5173,
+    // port: 5173,
     proxy: {
       '/socket.io': {
         target: 'http://localhost:5000/',

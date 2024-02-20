@@ -17,7 +17,7 @@ import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import clsx from 'clsx'
 import { Fragment, useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Loading from '@/components/Loading'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
@@ -44,6 +44,7 @@ interface User {
 
 interface OrderedProduct {
   id: number
+  key: string
   name: string
   price: number
   comments: string
@@ -80,6 +81,7 @@ export const socket = io(URL, {
 
 function BillId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
+  // const queryClient = useQueryClient()
   const [billData, setBillData] = useState<Bill | null>(null)
 
   //TODO -  convert to useReducer
@@ -102,9 +104,9 @@ function BillId() {
     },
     retry: false,
     staleTime: Infinity,
-    refetchInterval: 15000,
-    refetchIntervalInBackground: true,
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
+    // refetchInterval: 15000,
+    // refetchIntervalInBackground: true,
   })
 
   useEffect(() => {
@@ -112,7 +114,6 @@ function BillId() {
     socket.emit('joinRoom', { venueId: params.venueId, billId: params.billId })
 
     socket.on('updateOrder', data => {
-      console.log('data', data)
       setBillData(data)
       // Aquí puedes manejar la actualización en el estado del cliente
     })
@@ -120,6 +121,7 @@ function BillId() {
     // Asegurarse de dejar el room al desmontar el componente
     return () => {
       socket.emit('leaveRoom', { venueId: params.venueId, billId: params.billId })
+      socket.off('updateOrder')
     }
   }, [params.venueId, params.billId])
 
@@ -139,10 +141,10 @@ function BillId() {
 
   if (billData?.pos_order?.Status === 4 || billData.status === 'OPEN') {
     status = 'OPEN'
-  } else if (billData?.pos_order?.Status === 0 || billData.status === 'CLOSED') {
-    status = 'CLOSED'
   } else if (billData.status === 'PENDING') {
     status = 'PENDING'
+  } else if (billData?.pos_order?.Status === 0 || billData.status === 'CLOSED') {
+    status = 'CLOSED'
   } else if (billData.status === 'PRECREATED') {
     status = 'PRECREATED'
   } else {
@@ -239,7 +241,7 @@ function BillId() {
         </Modal>
       </Modal>
 
-      <ReactQueryDevtools initialIsOpen position="right" />
+      <ReactQueryDevtools initialIsOpen position="bottom" />
     </Fragment>
   )
 }

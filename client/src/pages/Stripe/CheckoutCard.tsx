@@ -3,10 +3,7 @@ import { Button } from '@/components/Button'
 import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
 import { H4, JumboTitle } from '@/components/Util/Typography'
-import { getRandomJoke } from '@/sections/Header/utils'
-import useNotifications from '@/store/notifications'
 import { Currency } from '@/utils/currency'
-import { getRandomPaymentMsg } from '@/utils/get-msgs'
 import { useStripe } from '@stripe/react-stripe-js'
 import axios from 'axios'
 import clsx from 'clsx'
@@ -22,6 +19,19 @@ export default function CheckoutCard({
   setLoading,
   tipPercentage = 0 ? 0.15 : 0,
   setTipPercentage,
+}: {
+  paymentMethodId: string
+  customerId: string
+  amounts: {
+    amount: number
+    avoFee: number
+    total: number
+  }
+  setErrorMessage: (message: string) => void
+  loading: boolean
+  setLoading: (loading: boolean) => void
+  tipPercentage: number
+  setTipPercentage: (tipPercentage: number) => void
 }) {
   const stripe = useStripe()
   const params = useParams()
@@ -53,7 +63,7 @@ export default function CheckoutCard({
       // Confirma el pago con el método de pago guardado
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: paymentMethodId,
-        return_url: `http://localhost:5173/success`,
+        return_url: `${window.location.origin}/success`,
       })
 
       if (error) {
@@ -61,8 +71,8 @@ export default function CheckoutCard({
       } else {
         // Maneja el éxito del pago aquí
         // TODO redirigir a success o cerrar todos los modales y mostrar notificacion
-
-        navigate(`/success?payment_intent=${paymentIntent.id}`)
+        console.log('exito', paymentIntent)
+        navigate(`/success?payment_intent=${paymentIntent.id}`, { replace: true })
       }
     } catch (error) {
       setErrorMessage(error.message)
