@@ -1,8 +1,8 @@
-import express, { Request } from 'express'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import express from 'express'
 import http from 'http'
 import path from 'path'
-import cookieParser from 'cookie-parser'
 import { Server } from 'socket.io'
 
 declare global {
@@ -21,7 +21,6 @@ import venueRouter from './routes/VenuesRoutes'
 const app = express()
 // const socketUtils = require('./utils/socketUtils')
 
-app.use(express.static(path.join(__dirname, 'public')))
 app.use(cookieParser())
 app.use(
   cors({

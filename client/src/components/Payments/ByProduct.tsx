@@ -1,14 +1,21 @@
-import React, { useState } from 'react'
-import { Flex } from '../Util/Flex'
 import { Currency } from '@/utils/currency'
 import clsx from 'clsx'
+import { Flex } from '../Util/Flex'
 
-export default function ByProduct({ orderedProducts, handleSelectProducts, selectedProducts }) {
+export default function ByProduct({
+  orderedProducts,
+  handleSelectProducts,
+  selectedProducts,
+}: {
+  orderedProducts: Array<{ key: string; name: string; price: number }>
+  handleSelectProducts: (key: string, price: number) => void
+  selectedProducts: Array<{ key: string; name: string; price: number }>
+}) {
   return (
     <Flex direction="col" space="xs">
       {orderedProducts.map(product => {
         return (
-          <article key={product.id} className="block p-4 bg-white border rounded-xl">
+          <article key={product.key} className="block p-4 bg-white border rounded-xl">
             <span>
               <div className="flex items-center justify-between">
                 <h3 className="flex flex-grow leading-5 text-base`">
@@ -17,10 +24,10 @@ export default function ByProduct({ orderedProducts, handleSelectProducts, selec
                 <div className="flex items-center flex-shrink-0 ml-3">
                   <span className="relative">{Currency(product.price)}</span>
                   <button
-                    onClick={() => handleSelectProducts(product.id, product.price)}
+                    onClick={() => handleSelectProducts(product.key, product.price)}
                     className={clsx(
                       'box-border relative flex items-center justify-center flex-shrink-0 w-8 h-8 ml-3 border rounded-full cursor-pointer',
-                      selectedProducts.some(p => p.id === product.id)
+                      selectedProducts.some(p => p.key === product.key)
                         ? 'bg-buttons-main border-borders-button border-4 text-white'
                         : 'bg-white border-gray-300 text-black',
                     )}

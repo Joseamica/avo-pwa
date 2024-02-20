@@ -45,8 +45,9 @@ const getProducts = (order: number) => {
 }
 
 const getOrder = (tableNumber: string | number) => {
-  return `SELECT TOP 1 Status, Orden, Total FROM NetSilver.dbo.OrdenPendiente WHERE MESA = ${tableNumber} AND CONVERT(DATE, HoraAbrir) = CONVERT(DATE, GETDATE()) ORDER BY HoraAbrir DESC`
+  return `SELECT TOP 1 Status, FechaOperacion, Orden, Total FROM NetSilver.dbo.OrdenPendiente WHERE MESA = ${tableNumber} AND CONVERT(DATE, HoraAbrir) = CONVERT(DATE, GETDATE()) ORDER BY HoraAbrir DESC`
 }
+
 const getOrderWithTableNumberAndOrderNumber = (tableNumber: string | number, orderNumber: string | number) => {
   return `SELECT 
   OP.Mesa,

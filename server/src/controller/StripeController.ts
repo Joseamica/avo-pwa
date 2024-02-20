@@ -4,9 +4,14 @@ import express from 'express'
 
 import Stripe from 'stripe'
 const stripe = new Stripe(config.stripeSecretKey)
-const endpointSecret = 'whsec_5c940eb81d083376576505abda0bcb3367d576096cfc2e3d96324208839c02d8'
+const endpointSecret = config.stripeWebhookSecret
+
+// import sql, { ConnectionPool } from 'mssql'
+// import dbConfig from '../config/DbConfig'
+// const pool = new ConnectionPool(dbConfig)
 
 const getPublishableKey = async (req, res) => {
+  console.log('config.stripePublishableKey', config.stripePublishableKey)
   res.json({ publishable_key: config.stripePublishableKey })
 }
 
@@ -25,14 +30,19 @@ const getPaymentMethods = async (req, res) => {
 
 const createPaymentIntent = async (req, res) => {
   const { amounts, customerId, currency, paymentMethodId, params } = req.body
-
+  console.log(amounts)
+  const rest_fee = amounts.total * 0.02
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       customer: customerId,
-      amount: amounts.total,
+      amount: amounts.total - rest_fee,
       currency: currency,
       payment_method: paymentMethodId,
       setup_future_usage: 'off_session',
+      application_fee_amount: amounts.avoFee + rest_fee,
+      transfer_data: {
+        destination: 'acct_1Oks58PmsglnVXF2',
+      },
       metadata: {
         venueId: params.venueId,
         billId: params.billId,
@@ -150,32 +160,75 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
   // Cast event data to Stripe object
   if (event.type === 'payment_intent.succeeded') {
     const stripeObject: Stripe.PaymentIntent = event.data.object as Stripe.PaymentIntent
+  } else if (event.type === 'charge.succeeded') {
+    const charge = event.data.object as Stripe.Charge
 
-    const { billId, venueId, avoFee, tipPercentage, amount } = stripeObject.metadata
-    await prisma.payment.create({
-      data: {
-        billId,
-        amount: Number(amount),
-        method: 'STRIPE',
-        status: 'ACCEPTED',
-        venueId,
-        avoFee,
-        tips: {
-          create: {
-            amount: parseInt(amount) * parseInt(tipPercentage),
-            percentage: tipPercentage,
-            bill: {
-              connect: {
-                id: billId,
+    const { billId, venueId, avoFee, tipPercentage, amount } = charge.metadata
+    try {
+      const card = charge.payment_method_details.card
+      const card_brand = card.brand
+      const receipt_url = charge.receipt_url
+      // console.log('tipPercentage', tipPercentage)
+      // console.log('parseInt(tipPercentage)', parseInt(amount), parseFloat(tipPercentage))
+      // console.log('amount', parseInt(amount) * parseInt(tipPercentage))
+      const updatedBill = await prisma.bill.update({
+        where: { id: billId },
+        data: {
+          payments: {
+            create: {
+              amount: Number(amount),
+              method: 'STRIPE',
+              status: 'ACCEPTED',
+              venueId,
+              avoFee,
+              cardBrand: card_brand,
+              cardCountry: card.country,
+              receiptUrl: receipt_url,
+              tips: {
+                create: {
+                  amount: parseInt(amount) * parseFloat(tipPercentage),
+                  percentage: tipPercentage,
+                  bill: {
+                    connect: {
+                      id: billId,
+                    },
+                  },
+                },
               },
             },
           },
         },
-      },
-    })
-  } else if (event.type === 'charge.succeeded') {
-    const charge = event.data.object as Stripe.Charge
-    console.log(`💵 Charge id: ${charge.id}`)
+        include: {
+          payments: {
+            select: {
+              amount: true,
+            },
+          },
+          table: {
+            select: {
+              tableNumber: true,
+            },
+          },
+          products: {
+            select: {
+              key: true,
+              name: true,
+              quantity: true,
+              price: true,
+            },
+          },
+        },
+      })
+      const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+      console.log('req.io', req.io)
+      console.log('venueId', venueId, billId, updatedBill, amount_left)
+      const roomId = `venue_${venueId}_bill_${billId}`
+      req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left })
+      console.log(`💵 Charge id: ${charge.id}`)
+    } catch (err) {
+      console.log(`❌ Error message: ${err.message}`)
+      return res.status(400).send(`Webhook Error: ${err.message}`)
+    }
   } else {
     console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`)
   }

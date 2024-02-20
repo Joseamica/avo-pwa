@@ -10,4 +10,5 @@ export const config = {
   postUrl: 'https://jsonplaceholder.typicode.com/posts',
   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
 }

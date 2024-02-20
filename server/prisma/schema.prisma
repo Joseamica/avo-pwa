@@ -260,6 +260,9 @@ model Payment {
   status        StatusPayments? @default(PENDING)
   amount        Decimal
   avoFee        Decimal?
+  receiptUrl    String?
+  cardBrand     String?
+  cardCountry   String?
   tips          Tip[]
   billId        String?
   bill          Bill?           @relation(fields: [billId], references: [id])

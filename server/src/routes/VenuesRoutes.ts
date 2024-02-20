@@ -3,6 +3,7 @@ import sql, { ConnectionPool } from 'mssql'
 import dbConfig from '../config/DbConfig'
 import prisma from '../utils/prisma'
 import { getOrder, getProducts } from '../utils/sqlQueries'
+import xml2js from 'xml2js'
 
 const venueRouter = express.Router()
 const pool = new ConnectionPool(dbConfig)
@@ -11,18 +12,113 @@ venueRouter.get('/:venueId', (req, res) => {
   res.json({ message: 'VenueId Works!' })
 })
 
-//ANCHOR - TABLES
-venueRouter.get('/:venueId/tables', async (req, res) => {
-  const { venueId } = req.params
+async function updateTableStatusesAndGetTables(venueId, mesasArray) {
+  // Primero, actualiza los estados de las mesas
+  await prisma.$transaction([
+    prisma.table.updateMany({
+      where: {
+        venueId: venueId,
+        tableNumber: {
+          in: mesasArray,
+        },
+      },
+      data: {
+        status: 'ACTIVE',
+      },
+    }),
+    prisma.table.updateMany({
+      where: {
+        venueId: venueId,
+        tableNumber: {
+          notIn: mesasArray,
+        },
+      },
+      data: {
+        status: 'INACTIVE',
+      },
+    }),
+  ])
+
+  // Luego, recupera todas las mesas para el venueId dado
   const tables = await prisma.table.findMany({
     where: {
       venueId: venueId,
     },
-    orderBy: {
-      tableNumber: 'asc',
-    },
   })
-  res.json(tables)
+
+  return tables // Devuelve las mesas
+}
+
+//ANCHOR - TABLES
+venueRouter.get('/:venueId/tables', async (req, res) => {
+  console.log('🔍 Obteniendo todas las mesas 🍴')
+  const { venueId } = req.params
+  try {
+    const pool = await sql.connect(dbConfig)
+    const queryExperimental = await pool.request()
+      .query(`DECLARE @Movimiento INT, @NoCuentasAbiertas BIGINT, @TotalCuentasAbiertas DECIMAL(18,2)
+  
+    SELECT @NoCuentasAbiertas = COUNT(*), 
+           @TotalCuentasAbiertas = CONVERT(DECIMAL(18,2), ISNULL(SUM(total), 0)) 
+    FROM ordenPendiente WITH (NOLOCK)
+    WHERE status = 4 AND IdTipoOrden <> 4
+    AND fechaoperacion > DATEADD(dd, -2, GETDATE())
+    
+    SELECT TOP 1 @Movimiento = Movimiento 
+    FROM Ventas v
+    WHERE IsNull(controlEnvio, 0) = 0
+    AND v.HoraCierre < DATEADD(s, -15, GETDATE())
+    ORDER BY Movimiento
+    
+    DECLARE @OrdenPendiente_XML AS XML
+    SET @OrdenPendiente_XML = (select IdTipoOrden as 'Orden/@IdTipoOrden', CAST(Orden AS INT) as 'Orden/@Orden', fechaoperacion as 'Orden/@fechaoperacion', Mesa as 'Orden/@Mesa', personas as 'Orden/@personas', CAST( total AS DECIMAL(16,2)) as 'Orden/@total'
+    from OrdenPendiente with(nolock)
+    where Status = 4 and IdTipoOrden <> 4
+    and fechaoperacion > DATEADD(dd,-2,GETDATE())
+    for xml path(''), root('OrdenesPendientes'))
+    
+    
+    
+    
+    
+    -- Ahora, selecciona las variables para ver sus valores.
+    SELECT @Movimiento AS Movimiento, 
+           @NoCuentasAbiertas AS NoCuentasAbiertas, 
+           @TotalCuentasAbiertas AS TotalCuentasAbiertas,
+         @OrdenPendiente_XML AS OrdenPendiente
+    `)
+    const ordenes = queryExperimental.recordset[0].OrdenPendiente
+    if (!ordenes) {
+      const tables = await prisma.table.findMany({
+        where: {
+          venueId: venueId,
+        },
+      })
+      return res.status(200).json(tables)
+    }
+    const parser = new xml2js.Parser()
+    parser.parseString(ordenes, async function (err, result) {
+      if (err) {
+        console.error('Error al parsear XML:', err)
+        return
+      }
+
+      // Extrae las mesas y las coloca en un array
+      const mesasArray = result.OrdenesPendientes.Orden.map(orden => parseInt(orden.$.Mesa))
+      try {
+        // Actualiza los estados de las mesas y recupera las mesas actualizadas
+        const tables = await updateTableStatusesAndGetTables(venueId, mesasArray)
+        // Envía las mesas actualizadas como respuesta
+        res.status(200).json(tables)
+      } catch (error) {
+        console.error('Error al actualizar y recuperar mesas:', error)
+        res.status(500).json({ error: 'Error interno al actualizar/recuperar mesas' })
+      }
+    })
+  } catch (error) {
+    console.error('Error al obtener mesas:', error)
+    res.status(500).json({ error: 'Error interno al obtener mesas' })
+  }
 })
 
 //ANCHOR - TABLE NUMBER
@@ -172,8 +268,6 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
     const bill = await prisma.bill.findUnique({
       where: {
         id: billId,
-        // NOTE - no se debe definir status, ya que admin puede revisar la orden aunque este cerrada
-        // status: 'OPEN',
       },
       include: {
         payments: {
@@ -211,12 +305,28 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
     //     return res.status(200).json({ ...bill, amount_left })
     // }
 
+    // function startOfDayUTC(date) {
+    //   const newDate = new Date(date)
+    //   newDate.setUTCHours(0, 0, 0, 0) // Ajusta la hora a medianoche UTC
+    //   return newDate
+    // }
+    // if (bill.status === 'OPEN') {
+    //   if (startOfDayUTC(bill.createdAt) < startOfDayUTC(new Date())) {
+    //     console.log('PENE')
+    //     const pool = await sql.connect(dbConfig)
+    //     const queryGetOrder = await pool.request().query(getOrder(bill.tableNumber))
+    //     const pos_order = queryGetOrder.recordset[0]
+    //     if (pos_order === undefined) {
+    //       return res.status(200).json(bill)
+    //     }
+    //   }
+    // }
+
     if (bill.status === 'CLOSED') {
       console.log('🔒 La cuenta está cerrada y no se reactivará.')
 
       return res.status(200).json({ ...bill, amount_left })
     }
-
     const pool = await sql.connect(dbConfig)
 
     // NOTE - EXPERIMENTAL
@@ -309,6 +419,7 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
       console.log('🟡 La cuenta está pendiente, se agregaran productos una ves que el mesero los ingrese al POS')
       const queryGetOrder = await pool.request().query(getOrder(bill.tableNumber))
       const pos_order = queryGetOrder.recordset[0]
+
       const queryGetProducts = await pool.request().query(getProducts(pos_order.Orden))
       const platillos_pos = queryGetProducts.recordset
       const platillos = platillos_pos.map(platillo => {
@@ -357,9 +468,12 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
             },
           },
         })
+        const updated_amount_left =
+          Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+
         const roomId = `venue_${venueId}_bill_${billId}`
         req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order })
-        return res.json({ ...updatedBill, amount_left, pos_order })
+        return res.json({ ...updatedBill, amount_left: updated_amount_left, pos_order })
       }
 
       return res.status(200).json({ ...bill, amount_left, pos_order })
@@ -410,9 +524,40 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
     const queryGetOrder = await pool.request().query(getOrder(bill.tableNumber))
 
     const pos_order = queryGetOrder.recordset[0]
+    if (pos_order === undefined) {
+      console.log('❌ POS: No existen ordenes activas en POS')
+      const updatedBill = await prisma.bill.update({
+        where: { id: billId },
+        data: {
+          status: 'CLOSED',
+        },
+        include: {
+          payments: {
+            select: {
+              amount: true,
+            },
+          },
+          table: {
+            select: {
+              tableNumber: true,
+            },
+          },
+          products: {
+            select: {
+              key: true,
+              name: true,
+              quantity: true,
+              price: true,
+            },
+          },
+        },
+      })
+      return res.status(200).json(updatedBill)
+    }
 
     //NOTE - NUEVO PLATILLO AGREGADO?
     if (queryGetProducts.recordset.length !== bill.products.length) {
+      console.log('🟢🍖 Nuevos platillos seran agregados a la cuenta')
       // const platillosInexistentes = queryGetProducts.recordset
       //   .filter(product => {
       //     return bill.products.some(platillo => {
