@@ -6,8 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "prebuild": "npm install",
-    "setup": "prisma generate && prisma migrate deploy && prisma db seed",
-    "build": "npm install && prisma generate && prisma migrate deploy && prisma db seed && tsc",
+    "setup": "prisma db push && prisma generate && prisma migrate deploy && prisma db seed",
+    "build": "npm install && prisma generate && prisma db push && prisma migrate deploy && prisma db seed && tsc",
     "start": "node build/index.js",
     "dev": "nodemon --watch 'src/**/*' --watch 'routes/**/*' --exec 'ts-node' src/index.ts"
   },
