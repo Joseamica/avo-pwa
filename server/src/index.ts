@@ -24,7 +24,13 @@ const app = express()
 app.use(cookieParser())
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:4173', 'http://localhost:5000', 'https://localhost', 'http://192.168.100.7:5173'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:4173',
+      'http://localhost:5000',
+      'https://localhost',
+      'http://192.168.100.7:5173, https://avo-pwa.pages.dev/',
+    ],
     methods: ['GET', 'POST'],
     credentials: true,
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
