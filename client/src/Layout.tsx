@@ -12,7 +12,8 @@ import { H3 } from './components/Util/Typography'
 const User = IncognitoUser
 
 const instance = axios.create({
-  baseURL: 'https://avo-pwa.onrender.com',
+  baseURL: 'http://localhost:5000',
+  // baseURL: 'https://avo-pwa.onrender.com/',
 })
 
 export async function loader({ request }) {
