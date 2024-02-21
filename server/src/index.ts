@@ -29,7 +29,7 @@ app.use(
       'http://localhost:4173',
       'http://localhost:5000',
       'https://localhost',
-      'http://192.168.100.7:5173, https://avo-pwa.pages.dev/',
+      'http://192.168.100.7:5173, https://avo-pwa.pages.dev',
     ],
     methods: ['GET', 'POST'],
     credentials: true,
