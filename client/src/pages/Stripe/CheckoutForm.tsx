@@ -17,7 +17,7 @@ const CheckoutForm = ({
 }: {
   amounts: {
     amount: number
-    avoFee: number
+    userFee: number
     total: number
   }
   tipPercentage: number
@@ -72,7 +72,7 @@ const CheckoutForm = ({
         amounts: {
           amount: amounts.amount,
           tipPercentage: tipPercentage,
-          avoFee: amounts.avoFee,
+          userFee: amounts.userFee,
           total: amounts.total,
         },
       })

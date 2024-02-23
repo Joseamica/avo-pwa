@@ -6,6 +6,7 @@ import { H1, H2 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
 
+import Loading from '@/components/Loading'
 import ByProductModal from '@/components/Modals/ByProductModal'
 import CustomModal from '@/components/Modals/CustomModal'
 import EqualPartsModal from '@/components/Modals/EqualPartsModal'
@@ -14,12 +15,11 @@ import Edit from '@mui/icons-material/Edit'
 import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
+import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import axios from 'axios'
 import clsx from 'clsx'
 import { Fragment, useEffect, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import Loading from '@/components/Loading'
-import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
 
@@ -153,7 +153,7 @@ function BillId() {
 
   return (
     <Fragment>
-      <div className="h-full ">
+      <div className="h-full px-2 ">
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
@@ -169,17 +169,18 @@ function BillId() {
           >
             STATUS {status}
           </H2>
-          <Flex direction="row" align="center" space="sm">
-            <H1>Total</H1>
-            <H2>${billData.pos_order?.Total || billData.total / 100}</H2>
-          </Flex>
-          {status === 'OPEN' ? (
-            <Flex direction="row" align="center" space="sm">
-              <H1>Por Pagar</H1>
-
-              <H2>${billData.amount_left / 100}</H2>
+          <Flex direction="col" align="center" className="w-full p-3 bg-white border rounded-2xl">
+            <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
+              <H1>Total</H1>
+              <H2>${billData.pos_order?.Total || billData.total / 100}</H2>
             </Flex>
-          ) : null}
+            {status === 'OPEN' ? (
+              <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
+                <H1>Por Pagar</H1>
+                <H2>${billData.amount_left / 100}</H2>
+              </Flex>
+            ) : null}
+          </Flex>
 
           <Spacer size="xl" />
 

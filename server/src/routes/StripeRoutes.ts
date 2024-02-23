@@ -9,7 +9,7 @@ import {
   getPaymentMethods,
   createIncognitoCustomer,
   updatePaymentIntent,
-  confirmPayment,
+  // confirmPayment,
   webhookConfirmPayment,
 } from '../controller/StripeController'
 
@@ -19,7 +19,7 @@ stripeRouter.post('/create-payment-intent', createPaymentIntent)
 stripeRouter.post('/payment-methods', getPaymentMethods)
 stripeRouter.post('/create-incognito-customer', createIncognitoCustomer)
 stripeRouter.post('/update-payment-intent', updatePaymentIntent)
-stripeRouter.post('/confirm-payment', confirmPayment)
+// stripeRouter.post('/confirm-payment', confirmPayment)
 stripeRouter.post('/webhooks/confirm-payment', bodyParser.raw({ type: 'application/json' }), webhookConfirmPayment)
 
 export default stripeRouter

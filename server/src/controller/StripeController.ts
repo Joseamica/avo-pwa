@@ -30,16 +30,20 @@ const getPaymentMethods = async (req, res) => {
 
 const createPaymentIntent = async (req, res) => {
   const { amounts, customerId, currency, paymentMethodId, params } = req.body
-  console.log(amounts)
-  const rest_fee = amounts.total * 0.02
+
+  const rest_fee_percentage = Math.round(amounts.total * 0.03)
+  const rest_fee_fixed = 400
+  const rest_fee = rest_fee_percentage + rest_fee_fixed
+  const avoFee = amounts.userFee + rest_fee
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       customer: customerId,
-      amount: amounts.total - rest_fee,
+      amount: amounts.total,
       currency: currency,
       payment_method: paymentMethodId,
       setup_future_usage: 'off_session',
-      application_fee_amount: amounts.avoFee + rest_fee,
+
+      application_fee_amount: avoFee,
       transfer_data: {
         destination: 'acct_1Oks58PmsglnVXF2',
       },
@@ -47,7 +51,7 @@ const createPaymentIntent = async (req, res) => {
         venueId: params.venueId,
         billId: params.billId,
         tipPercentage: amounts.tipPercentage,
-        avoFee: amounts.avoFee,
+        avoFee: avoFee,
         total: amounts.total,
         amount: amounts.amount,
       },
@@ -103,38 +107,6 @@ const createIncognitoCustomer = async (req, res) => {
     )
 
     res.json({ id: customer.id })
-  } catch (err) {
-    console.log(err)
-    res.status(500).json('Error creating customer')
-  }
-}
-
-const confirmPayment = async (req, res) => {
-  const { venueId, billId, amount, tipPercentage, avoFee } = req.body
-
-  try {
-    await prisma.payment.create({
-      data: {
-        billId,
-        amount: amount,
-        method: 'STRIPE',
-        status: 'ACCEPTED',
-        venueId,
-        avoFee,
-        tips: {
-          create: {
-            amount: amount * tipPercentage,
-            percentage: tipPercentage,
-            bill: {
-              connect: {
-                id: billId,
-              },
-            },
-          },
-        },
-      },
-    })
-    res.status(200).json('Payment confirmed')
   } catch (err) {
     console.log(err)
     res.status(500).json('Error creating customer')
@@ -244,6 +216,6 @@ export {
   getPaymentIntent,
   updatePaymentIntent,
   createIncognitoCustomer,
-  confirmPayment,
+  // confirmPayment,
   webhookConfirmPayment,
 }

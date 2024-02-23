@@ -1,14 +1,10 @@
-import { Flex } from '@/components'
 import { Button } from '@/components/Button'
-import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
-import { H4, JumboTitle } from '@/components/Util/Typography'
-import { Currency } from '@/utils/currency'
 import { useStripe } from '@stripe/react-stripe-js'
 import axios from 'axios'
-import clsx from 'clsx'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import TipModal from './TipModal'
 
 export default function CheckoutCard({
   paymentMethodId,
@@ -17,14 +13,14 @@ export default function CheckoutCard({
   setErrorMessage,
   loading,
   setLoading,
-  tipPercentage = 0 ? 0.15 : 0,
+  tipPercentage,
   setTipPercentage,
 }: {
   paymentMethodId: string
   customerId: string
   amounts: {
     amount: number
-    avoFee: number
+    userFee: number
     total: number
   }
   setErrorMessage: (message: string) => void
@@ -53,7 +49,7 @@ export default function CheckoutCard({
         amounts: {
           amount: amounts.amount,
           tipPercentage: tipPercentage,
-          avoFee: amounts.avoFee,
+          userFee: amounts.userFee,
           total: amounts.total,
         },
       })
@@ -71,7 +67,7 @@ export default function CheckoutCard({
       } else {
         // Maneja el éxito del pago aquí
         // TODO redirigir a success o cerrar todos los modales y mostrar notificacion
-        console.log('exito', paymentIntent)
+
         navigate(`/success?payment_intent=${paymentIntent.id}`, { replace: true })
       }
     } catch (error) {
@@ -83,72 +79,16 @@ export default function CheckoutCard({
 
   return (
     <div className="flex flex-col justify-between">
-      <Modal
-        isOpen={showTipModal}
-        closeModal={() => setShowTipModal(false)}
-        footer={
-          <div className="text-center">
-            <Flex space="xs" justify="center" align="center">
-              <H4 as="span" variant="secondary">
-                Estas Pagando:
-              </H4>
-              <H4 as="span" variant="secondary">
-                {Currency(amounts.total)}
-              </H4>
-            </Flex>
-            <Spacer size="md" />
-            <Button
-              size="md"
-              text={loading ? 'Pagando...' : 'Pagar'}
-              onClick={completePayment}
-              disabled={!stripe || loading}
-              className="disabled:bg-buttons-disabled"
-            />
-          </div>
-        }
-      >
-        <div className="mb-5 leading-8 text-center">
-          <JumboTitle>
-            <span>Da las gracias</span> <br /> <span>con una propina</span>
-          </JumboTitle>
-          <H4 variant="secondary">Todas las propinas van directo a los meseros</H4>
-        </div>
-        <Flex direction="row" space="sm" justify="center" className="mb-2">
-          <button
-            type="button"
-            onClick={() => setTipPercentage(0.1)}
-            className={clsx(`relative border-2 h-28 w-44 rounded-xl`, {
-              'bg-buttons-main text-white': tipPercentage === 0.1,
-              'bg-white': tipPercentage !== 0.1,
-            })}
-          >
-            10%
-            <span className="absolute inset-x-0 text-4xl -bottom-3">😘</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setTipPercentage(0.15)}
-            className={clsx(`relative border-2 h-28 w-44 rounded-xl`, {
-              'bg-buttons-main text-white': tipPercentage === 0.15,
-              'bg-white': tipPercentage !== 0.15,
-            })}
-          >
-            15%
-            <span className="absolute inset-x-0 text-4xl -bottom-3">🥰</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setTipPercentage(0.2)}
-            className={clsx(`relative border-2 h-28 w-44 rounded-xl`, {
-              'bg-buttons-main text-white': tipPercentage === 0.2,
-              'bg-white': tipPercentage !== 0.2,
-            })}
-          >
-            20%
-            <span className="absolute inset-x-0 text-4xl -bottom-3">💚</span>
-          </button>
-        </Flex>
-      </Modal>
+      <TipModal
+        amounts={amounts}
+        tipPercentage={tipPercentage}
+        setTipPercentage={setTipPercentage}
+        showTipModal={showTipModal}
+        setShowTipModal={setShowTipModal}
+        loading={loading}
+        completePayment={completePayment}
+        stripe={stripe}
+      />
       <Spacer size="jumbo" />
       <div className="fixed inset-x-4 bottom-4">
         <div className="flex-1">

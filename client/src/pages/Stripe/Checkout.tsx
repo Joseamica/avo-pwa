@@ -44,8 +44,8 @@ const Checkout = ({
   }
 
   const tip = amount.amount * tipPercentage
-  const avoFee = amount.amount * 0.05
-  const total = Math.round(amount.amount + tip + avoFee)
+  const userFee = Math.round((amount.amount * 0.025) / (1 - 0.025))
+  const total = Math.round(amount.amount + tip + userFee)
 
   const { user } = getUserLS()
 
@@ -91,7 +91,7 @@ const Checkout = ({
           },
         }}
       >
-        <PaymentSummary amount={amount.amount} avoFee={avoFee} />
+        <PaymentSummary amount={amount.amount} userFee={userFee} />
         <Spacer size="md" />
         <div className="space-y-2">
           {data.paymentMethods?.map(paymentMethod => (
@@ -148,7 +148,7 @@ const Checkout = ({
             setErrorMessage={setErrorMessage}
             amounts={{
               amount: amount.amount,
-              avoFee: avoFee,
+              userFee: userFee,
               total: total,
             }}
             loading={loading}
@@ -162,7 +162,7 @@ const Checkout = ({
             setErrorMessage={setErrorMessage}
             amounts={{
               amount: amount.amount,
-              avoFee: avoFee,
+              userFee: userFee,
               total: total,
             }}
             loading={loading}
@@ -178,7 +178,7 @@ const Checkout = ({
   )
 }
 
-const PaymentSummary = ({ amount, avoFee }: { amount: number; avoFee: number }) => {
+const PaymentSummary = ({ amount, userFee }: { amount: number; userFee: number }) => {
   return (
     <div className="flex flex-col justify-center w-full px-4 py-2 bg-white border-2 rounded-xl">
       <H2 bold="normal" as="p">
@@ -198,14 +198,14 @@ const PaymentSummary = ({ amount, avoFee }: { amount: number; avoFee: number }) 
           Tasa Avoqado:
         </H4>
         <H4 variant="avoqado" as="span">
-          ${(avoFee / 100).toFixed(2)}
+          ${(userFee / 100).toFixed(2)}
         </H4>
       </Flex>
       <Flex space="sm" align="center" justify="between">
         <H4 bold="normal" as="span">
           Total:
         </H4>
-        <H4 as="span">${(amount / 100 + avoFee / 100).toFixed(2)}</H4>
+        <H4 as="span">${(amount / 100 + userFee / 100).toFixed(2)}</H4>
       </Flex>
     </div>
   )
