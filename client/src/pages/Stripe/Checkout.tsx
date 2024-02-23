@@ -2,7 +2,7 @@ import { Flex } from '@/components'
 import { Amex, Check, MasterCard, Visa } from '@/components/Icons'
 import Meta from '@/components/Meta'
 import { Spacer } from '@/components/Util/Spacer'
-import { H2, H4, H5 } from '@/components/Util/Typography'
+import { H2, H4 } from '@/components/Util/Typography'
 import getIcon from '@/utils/get-icon'
 import { getUserLS } from '@/utils/localStorage/user'
 import { initStripe } from '@/utils/stripe'
@@ -16,18 +16,24 @@ import CheckoutForm from './CheckoutForm'
 
 const stripePromise = initStripe('/api/v1/stripe/publishable-key')
 
-const Checkout = ({
-  amount,
-}: {
-  amount?: {
-    amount: number
-  }
-}) => {
+/**
+ * Checkout component for processing payments.
+ *
+ * @component
+ * @param {number} amount - The amount to be paid in Int format.
+ * @returns {JSX.Element} The rendered Checkout component.
+ */
+const Checkout = ({ amount }: { amount: number }) => {
   const [tipPercentage, setTipPercentage] = useState(0 as number)
   const [isPaymentFormVisible, setIsPaymentFormVisible] = useState(false as boolean)
-  const [paymentMethodId, setPaymentMethodId] = useState('' as string)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState() as any
+
+  //CHECKOUT CARD ONLY
+  const [paymentMethodId, setPaymentMethodId] = useState('' as string)
+  const [isInternationalCard, setIsInternationalCard] = useState(false as boolean)
+
+  const { user } = getUserLS()
 
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['paymentMethods'],
@@ -35,19 +41,18 @@ const Checkout = ({
       const response = await axios.post(`/api/v1/stripe/payment-methods`, {
         customerId: user.stripeCustomerId,
       })
+
       return response.data
     },
   })
 
-  if (amount.amount / 100 < 10) {
+  if (amount / 100 < 10) {
     return <div>El monto mínimo es de $10</div>
   }
 
-  const tip = amount.amount * tipPercentage
-  const userFee = Math.round((amount.amount * 0.025) / (1 - 0.025))
-  const total = Math.round(amount.amount + tip + userFee)
-
-  const { user } = getUserLS()
+  const tip = amount * tipPercentage
+  const userFee = Math.round((amount * 0.025) / (1 - 0.025))
+  const total = Math.round(amount + tip + userFee)
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -58,6 +63,12 @@ const Checkout = ({
 
   const handlePaymentOptions = (paymentMethodId?: string) => {
     if (paymentMethodId) {
+      const selectedCard = data.paymentMethods.find(card => card.id === paymentMethodId)
+      if (selectedCard.card.country !== 'MX') {
+        setIsInternationalCard(true)
+      } else {
+        setIsInternationalCard(false)
+      }
       setIsPaymentFormVisible(false)
       setPaymentMethodId(paymentMethodId)
     } else {
@@ -74,6 +85,7 @@ const Checkout = ({
         options={{
           mode: 'payment',
           amount: total,
+          paymentMethodCreation: 'manual', //NOTE ES NECESARIA?
           currency: 'mxn',
           setup_future_usage: 'off_session',
           appearance: {
@@ -91,7 +103,7 @@ const Checkout = ({
           },
         }}
       >
-        <PaymentSummary amount={amount.amount} userFee={userFee} />
+        <PaymentSummary amount={amount} userFee={userFee} />
         <Spacer size="md" />
         <div className="space-y-2">
           {data.paymentMethods?.map(paymentMethod => (
@@ -120,7 +132,7 @@ const Checkout = ({
           ))}
           <button
             className={clsx(
-              'relative w-full p-3 max-h-16 bg-white border-2 rounded-full flex justify-between items-center',
+              'relative w-full space-x-4 p-3 max-h-16 bg-white border-2 rounded-full flex justify-start items-center',
               // isPaymentFormVisible && 'bg-green-500',
             )}
             onClick={() => handlePaymentOptions()}
@@ -135,10 +147,12 @@ const Checkout = ({
             >
               {isPaymentFormVisible ? <Check className="w-3 h-3 fill-white" /> : null}
             </Flex>
-            <H5>Tarjeta de Crédito</H5>
-            <Visa />
-            <Amex />
-            <MasterCard />
+            <Flex align="center" space="md">
+              <H4 className="tracking-wide">Tarjeta</H4>
+              <Visa />
+              <Amex />
+              <MasterCard />
+            </Flex>
             <div />
           </button>
         </div>
@@ -147,7 +161,7 @@ const Checkout = ({
           <CheckoutForm
             setErrorMessage={setErrorMessage}
             amounts={{
-              amount: amount.amount,
+              amount: amount,
               userFee: userFee,
               total: total,
             }}
@@ -159,9 +173,10 @@ const Checkout = ({
         ) : (
           <CheckoutCard
             paymentMethodId={paymentMethodId}
+            isInternationalCard={isInternationalCard}
             setErrorMessage={setErrorMessage}
             amounts={{
-              amount: amount.amount,
+              amount: amount,
               userFee: userFee,
               total: total,
             }}

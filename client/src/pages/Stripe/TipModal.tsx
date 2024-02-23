@@ -4,7 +4,6 @@ import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
 import { H3, H4, JumboTitle } from '@/components/Util/Typography'
 import { Currency } from '@/utils/currency'
-
 import clsx from 'clsx'
 
 export default function TipModal({
@@ -19,7 +18,7 @@ export default function TipModal({
 }: {
   amounts: {
     amount: number
-    avoFee: number
+    userFee: number
     total: number
   }
   tipPercentage: number
@@ -62,6 +61,17 @@ export default function TipModal({
         <H3 variant="secondary">Todas las propinas van directo a los meseros</H3>
       </div>
       <Flex direction="row" space="sm" justify="center" className="mb-2">
+        <button
+          type="button"
+          onClick={() => setTipPercentage(0.0)}
+          className={clsx(`relative border-2 h-28 w-44 rounded-xl`, {
+            'bg-buttons-main text-white': tipPercentage === 0.0,
+            'bg-white': tipPercentage !== 0.0,
+          })}
+        >
+          0%
+          <span className="absolute inset-x-0 text-4xl -bottom-3">🥺</span>
+        </button>
         <button
           type="button"
           onClick={() => setTipPercentage(0.1)}

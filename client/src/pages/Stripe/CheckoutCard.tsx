@@ -8,6 +8,7 @@ import TipModal from './TipModal'
 
 export default function CheckoutCard({
   paymentMethodId,
+  isInternationalCard,
   customerId,
   amounts,
   setErrorMessage,
@@ -17,6 +18,7 @@ export default function CheckoutCard({
   setTipPercentage,
 }: {
   paymentMethodId: string
+  isInternationalCard: boolean
   customerId: string
   amounts: {
     amount: number
@@ -41,6 +43,7 @@ export default function CheckoutCard({
       const response = await axios.post('/api/v1/stripe/create-payment-intent', {
         currency: 'mxn',
         customerId: customerId,
+        isInternationalCard,
         paymentMethodId: paymentMethodId, // Usa el método de pago guardado
         params: {
           venueId: params.venueId,

@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useState } from 'react'
 import TipModal from './TipModal'
 import { useParams } from 'react-router-dom'
+import { Flex } from '@/components'
 
 const CheckoutForm = ({
   amounts,
@@ -29,6 +30,8 @@ const CheckoutForm = ({
   const stripe = useStripe()
   const elements = useElements()
   const [showTipModal, setShowTipModal] = useState(false)
+  const [isInternationalCard, setIsInternationalCard] = useState(false as boolean)
+  const [saveCard, setSaveCard] = useState(true as boolean)
   const params = useParams()
 
   const handleError = error => {
@@ -44,15 +47,37 @@ const CheckoutForm = ({
     setLoading(true)
 
     const { error: submitError } = await elements.submit()
-
     if (submitError) {
       handleError(submitError)
       setLoading(false)
       return false
     }
 
+    const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+      elements,
+    })
+
+    if (paymentMethodError) {
+      handleError(paymentMethodError)
+      setLoading(false)
+      return false
+    }
+
+    if (paymentMethod.card.country !== 'MX') {
+      setIsInternationalCard(true)
+    }
+
     setLoading(false)
     return true
+  }
+
+  const handleSubmit = async event => {
+    event.preventDefault()
+    const isValid = await validatePayment()
+
+    if (isValid) {
+      setShowTipModal(true)
+    }
   }
 
   // ANCHOR Complete Payment
@@ -65,6 +90,8 @@ const CheckoutForm = ({
       const response = await axios.post(`/api/v1/stripe/create-payment-intent`, {
         currency: 'mxn',
         customerId: user.stripeCustomerId,
+        isInternationalCard,
+        saveCard,
         params: {
           venueId: params.venueId,
           billId: params.billId,
@@ -99,21 +126,26 @@ const CheckoutForm = ({
     }
   }
 
-  const handleSubmit = async event => {
-    event.preventDefault()
-    const isValid = await validatePayment()
-
-    if (isValid) {
-      setShowTipModal(true)
-    }
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="p-3 bg-white border-2 rounded-xl">
         <PaymentElement />
-        {/* <h1>guardar tarjeta</h1>
-        <input type="checkbox" checked={saveCard} onChange={() => setSaveCard(!saveCard)} /> */}
+        <Flex direction="row" space="xs" align="center" className="flex justify-end w-full mt-3">
+          <span>Guardar tarjeta</span>
+          <button onClick={() => setSaveCard(!saveCard)} type="button">
+            <div
+              className={`relative w-12 h-5 rounded-full transition-all duration-300 ease-in-out ${
+                saveCard ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            >
+              <div
+                className={`absolute w-5 h-5 rounded-full transition-all duration-300 ease-in-out transform ${
+                  saveCard ? 'translate-x-7 border' : 'border'
+                } bg-white`}
+              ></div>
+            </div>
+          </button>
+        </Flex>
       </div>
       <TipModal
         amounts={amounts}

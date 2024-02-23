@@ -91,7 +91,6 @@ function BillId() {
     isPending,
     error,
     isError,
-    isFetching,
   } = useQuery<Bill>({
     queryKey: ['bill_data'],
     queryFn: async () => {
@@ -238,7 +237,7 @@ function BillId() {
         </Modal>
         {/* ANCHOR FullBill */}
         <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
-          <Checkout amount={{ amount: billData.amount_left }} />
+          <Checkout amount={billData.amount_left} />
         </Modal>
       </Modal>
 

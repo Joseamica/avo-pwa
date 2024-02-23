@@ -72,7 +72,7 @@ export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInn
 
       <span className="text-[14px] text-texts-disabled">Mínimo $10.00</span>
       <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
-        <Checkout amount={{ amount: customAmount }} />
+        <Checkout amount={customAmount} />
       </Modal>
     </Modal>
   )

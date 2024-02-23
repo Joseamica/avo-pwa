@@ -11,7 +11,6 @@ const endpointSecret = config.stripeWebhookSecret
 // const pool = new ConnectionPool(dbConfig)
 
 const getPublishableKey = async (req, res) => {
-  console.log('config.stripePublishableKey', config.stripePublishableKey)
   res.json({ publishable_key: config.stripePublishableKey })
 }
 
@@ -19,7 +18,9 @@ const getPaymentMethods = async (req, res) => {
   const { customerId } = req.body
 
   try {
-    const paymentMethods = await stripe.customers.listPaymentMethods(customerId, {})
+    const paymentMethods = await stripe.customers.listPaymentMethods(customerId, {
+      limit: 3,
+    })
 
     res.send({ paymentMethods: paymentMethods.data })
   } catch (err) {
@@ -29,19 +30,21 @@ const getPaymentMethods = async (req, res) => {
 }
 
 const createPaymentIntent = async (req, res) => {
-  const { amounts, customerId, currency, paymentMethodId, params } = req.body
-
-  const rest_fee_percentage = Math.round(amounts.total * 0.03)
-  const rest_fee_fixed = 400
-  const rest_fee = rest_fee_percentage + rest_fee_fixed
+  const { amounts, customerId, currency, paymentMethodId, params, isInternationalCard, saveCard } = req.body
+  console.log('isInternationalCard', isInternationalCard)
+  const rest_fee_percentage = isInternationalCard ? 0.04 : 0.03
+  const rest_fee = Math.round(amounts.total * rest_fee_percentage) + 400
   const avoFee = amounts.userFee + rest_fee
+  console.log('avoFee', avoFee)
   try {
+    const setupFutureUsage = saveCard ? 'off_session' : undefined
+
     const paymentIntent = await stripe.paymentIntents.create({
       customer: customerId,
       amount: amounts.total,
       currency: currency,
       payment_method: paymentMethodId,
-      setup_future_usage: 'off_session',
+      setup_future_usage: setupFutureUsage,
 
       application_fee_amount: avoFee,
       transfer_data: {
@@ -97,7 +100,6 @@ const createIncognitoCustomer = async (req, res) => {
     const customer = await stripe.customers.create({
       name: name,
     })
-    console.log('customer', customer)
 
     res.cookie(
       'stripe_customer_id',
@@ -192,8 +194,7 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
         },
       })
       const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-      console.log('req.io', req.io)
-      console.log('venueId', venueId, billId, updatedBill, amount_left)
+
       const roomId = `venue_${venueId}_bill_${billId}`
       req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left })
       console.log(`💵 Charge id: ${charge.id}`)

@@ -191,16 +191,29 @@ venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
       }
     } else {
       console.log(`✅ POS: orden ${order.Orden} se encuentra en ${order.Status} = abierta`)
+      console.log('🕵🏻‍♂️ Verificando cuenta si es del dia de hoy')
       const bill = await prisma.bill.findFirst({
         where: {
           tableNumber: Number(tableNumber),
           posOrder: order.Orden,
+          AND: [
+            {
+              createdAt: {
+                gte: new Date(order.FechaOperacion.setHours(0, 0, 0, 0)), // start of the day
+              },
+            },
+            {
+              createdAt: {
+                lt: new Date(order.FechaOperacion.setHours(24, 0, 0, 0)), // start of the next day
+              },
+            },
+          ],
         },
       })
 
       if (!bill) {
         console.log(
-          `❌ Bill con orden ${order.Orden} no existe, 🔨 creando bill con los datos del POS y retornando url de la cuenta. (linea 270)`,
+          `❌ Bill con orden ${order.Orden} no existe, ➕ creando bill con los datos del POS y retornando url de la cuenta. (linea 270)`,
         )
         const queryGetProducts = await pool.request().query(getProducts(order.Orden))
         const platillos = queryGetProducts.recordset.map(platillo => {

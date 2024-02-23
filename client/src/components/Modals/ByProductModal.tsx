@@ -75,7 +75,7 @@ export default function ByProductModal({
     >
       <ByProduct orderedProducts={orderedProducts} handleSelectProducts={handleSelectProducts} selectedProducts={selectedProducts} />
       <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
-        <Checkout amount={{ amount: totalSelectedProducts }} />
+        <Checkout amount={totalSelectedProducts} />
       </Modal>
     </Modal>
   )
