@@ -3,14 +3,12 @@ import prisma from '../utils/prisma'
 import express from 'express'
 
 import Stripe from 'stripe'
+
 const stripe = new Stripe(config.stripeSecretKey)
 const endpointSecret = config.stripeWebhookSecret
 
-// import sql, { ConnectionPool } from 'mssql'
-// import dbConfig from '../config/DbConfig'
-// const pool = new ConnectionPool(dbConfig)
-
 const getPublishableKey = async (req, res) => {
+  // res.json({ publishable_key: config.stripePublishableKey })
   res.json({ publishable_key: config.stripePublishableKey })
 }
 

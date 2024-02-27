@@ -691,4 +691,94 @@ venueRouter.post('/:venueId/bills/:billId', async (req, res) => {
   }
 })
 
+venueRouter.put('/:venueId/orders/:orderNumber', async (req, res) => {
+  const { key, orden, nombre, cantidad, precio } = req.body
+  const { venueId } = req.params
+  const bill = await prisma.bill.findFirst({
+    where: {
+      posOrder: parseInt(orden),
+      status: 'OPEN',
+    },
+    include: {
+      products: true,
+    },
+  })
+  const total = bill.products.reduce((acc, platillo) => acc + Number(platillo.price), 0)
+
+  const updatedBill = await prisma.bill.update({
+    where: {
+      id: bill.id,
+    },
+    data: {
+      total: total + Number(precio) * Number(cantidad) * 100,
+      products: {
+        create: {
+          key,
+          name: nombre.replace('.,', ''),
+          price: precio * 100,
+          quantity: cantidad,
+          // modifier: modificador,
+        },
+      },
+    },
+    include: {
+      payments: {
+        select: {
+          amount: true,
+        },
+      },
+      table: {
+        select: {
+          tableNumber: true,
+        },
+      },
+      products: {
+        select: {
+          key: true,
+          name: true,
+          quantity: true,
+          price: true,
+        },
+      },
+    },
+  })
+  console.log('updatedBill', updatedBill)
+  const updated_amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+  const roomId = `venue_${venueId}_bill_${bill.id}`
+  req.io.to(roomId).emit('updateOrder', { ...updatedBill, updated_amount_left, orden })
+  return res.json({ orden })
+})
+
+venueRouter.put('/:venueId/tables', async (req, res) => {
+  const { venueId, orden, mesa, total, status } = req.body
+  const date = new Date()
+  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 5))
+
+  const isBillFromToday = await prisma.bill.findFirst({
+    where: {
+      posOrder: parseInt(orden),
+      tableNumber: parseInt(mesa),
+      updatedAt: {
+        gte: fiveHoursAgo,
+      },
+    },
+  })
+
+  if (!isBillFromToday) {
+    const bill = await prisma.bill.create({
+      data: {
+        key: `O${orden}-T${mesa}`,
+        tableNumber: parseInt(mesa),
+        posOrder: parseInt(orden),
+        status: status === '4' ? 'OPEN' : 'CLOSED',
+        total: total * 100,
+      },
+    })
+    console.log('✅ Bill nueva creada:', bill)
+    return res.status(200).send('Bill nueva creada')
+  }
+
+  return res.json({ venueId, orden, mesa, total })
+})
+
 export default venueRouter

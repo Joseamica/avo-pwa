@@ -204,6 +204,7 @@ model Product {
   name           String
   //best name for turning off or on
   quantity       Int?             @default(1)
+  modifier       Int?             @default(0)
   punitario      Decimal?
   tax            Decimal?
   price          Decimal

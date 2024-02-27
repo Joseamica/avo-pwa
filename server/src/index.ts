@@ -39,6 +39,8 @@ app.use(
   }),
 )
 
+app.use(express.static(path.join(__dirname, 'public')))
+
 // NOTE - This is a middleware that allows us to parse the body of a request
 app.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
   if (req.originalUrl.includes('/v1/stripe/webhooks/')) {
@@ -78,7 +80,6 @@ app.use((req, res, next) => {
 app.use('/', router)
 app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)
-// app.use('/v1/bills', billRouter)
 
 // LISTEN
 const port = process.env.PORT || 5000
