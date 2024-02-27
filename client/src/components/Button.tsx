@@ -98,10 +98,21 @@ function LinkButton({
   className,
   variant = 'primary',
   to = '/ ',
+  reloadDocument,
+  replace,
   state,
-}: { text: string; className?: string; variant?: string; size?: string; to: string; state: {} } & JSX.IntrinsicElements['button']) {
+}: {
+  text: string
+  className?: string
+  variant?: string
+  size?: string
+  to: string
+  reloadDocument?: boolean
+  replace?: boolean
+  state?: any
+} & JSX.IntrinsicElements['button']) {
   return (
-    <Link to={to} state={state} className="w-full">
+    <Link to={to} state={state} className="w-full" reloadDocument={reloadDocument} replace={replace}>
       <div
         className={clsx(
           'flex items-center  disabled:border-4 justify-center    border-borders-button  rounded-full border-gray text-xl',

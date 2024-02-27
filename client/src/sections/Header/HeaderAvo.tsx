@@ -1,6 +1,3 @@
-import ThemeIcon from '@mui/icons-material/InvertColors'
-import IconButton from '@mui/material/IconButton'
-
 import useHotKeysDialog from '@/store/hotkeys'
 import useNotifications from '@/store/notifications'
 import useSidebar from '@/store/sidebar'
@@ -31,12 +28,12 @@ function HeaderAvo({ iconColor }: { iconColor: string }) {
         loading="lazy"
         className="object-cover w-full max-h-56 rounded-b-3xl bg-day-bg_principal brightness-50"
       />
-      <div className="absolute flex flex-row right-7 top-7">
+      {/* <div className="absolute flex flex-row right-7 top-7">
         <UserProfileLink iconColor={iconColor} />
         <IconButton color="info" edge="end" size="large" onClick={themeActions.toggle}>
           <ThemeIcon />
         </IconButton>
-      </div>
+      </div> */}
       <div className="absolute flex flex-row items-center justify-center w-full space-x-4 -bottom-5">
         <div className="flex items-center justify-center w-24 h-24 bg-white border-4 rounded-full shadow-sm">
           {/* <span>

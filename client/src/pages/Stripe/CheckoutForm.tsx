@@ -7,6 +7,7 @@ import { useState } from 'react'
 import TipModal from './TipModal'
 import { useParams } from 'react-router-dom'
 import { Flex } from '@/components'
+import instance from '@/axiosConfig'
 
 const CheckoutForm = ({
   amounts,
@@ -87,7 +88,7 @@ const CheckoutForm = ({
     try {
       const { user } = getUserLS()
 
-      const response = await axios.post(`/api/v1/stripe/create-payment-intent`, {
+      const response = await instance.post(`/v1/stripe/create-payment-intent`, {
         currency: 'mxn',
         customerId: user.stripeCustomerId,
         isInternationalCard,

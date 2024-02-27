@@ -1,4 +1,8 @@
-import { json, useLoaderData } from 'react-router-dom'
+import { Flex } from '@/components'
+import { Spacer } from '@/components/Util/Spacer'
+import { H2, H3 } from '@/components/Util/Typography'
+import ChevronLeft from '@mui/icons-material/ChevronLeft'
+import { Link, json, useLoaderData, useLocation } from 'react-router-dom'
 
 interface Menu {
   id: number
@@ -18,14 +22,26 @@ export async function loader() {
 
 export default function Menus() {
   const data = useLoaderData() as LoaderData
+  const location = useLocation()
 
   return (
-    <div>
+    <div className="w-full max-w-md py-3 mx-auto">
+      <Flex className="" align="center" justify="between">
+        <Link
+          to={`/venues/${location.state.venueId}/bills/${location.state.billId}`}
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-background-primary "
+        >
+          <ChevronLeft />
+        </Link>
+        <H2>Carta</H2>
+        <div />
+      </Flex>
+      <Spacer size="xl" />
       {data.menus.map((menu: Menu) => {
         return (
           <div key={menu.id}>
             <h1>{menu.name}</h1>
-            <img loading="lazy" src={menu.url} alt={menu.name} width="500" height="500" />
+            <img loading="lazy" src={menu.url} alt={menu.name} width="500" height="500" className="rounded-xl" />
           </div>
         )
       })}

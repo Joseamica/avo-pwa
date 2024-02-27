@@ -13,8 +13,9 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
+import instance from '@/axiosConfig'
 
-const stripePromise = initStripe('/api/v1/stripe/publishable-key')
+const stripePromise = initStripe('http://localhost:5000/v1/stripe/publishable-key')
 
 /**
  * Checkout component for processing payments.
@@ -38,7 +39,8 @@ const Checkout = ({ amount }: { amount: number }) => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['paymentMethods'],
     queryFn: async () => {
-      const response = await axios.post(`/api/v1/stripe/payment-methods`, {
+      const response = await instance.post(`/v1/stripe/payment-methods`, {
+        // const response = await instance.post(`/api/v1/stripe/payment-methods`, {
         customerId: user.stripeCustomerId,
       })
 

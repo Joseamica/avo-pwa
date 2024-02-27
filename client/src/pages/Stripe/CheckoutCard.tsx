@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TipModal from './TipModal'
+import instance from '@/axiosConfig'
 
 export default function CheckoutCard({
   paymentMethodId,
@@ -40,7 +41,7 @@ export default function CheckoutCard({
   const completePayment = async () => {
     try {
       setLoading(true)
-      const response = await axios.post('/api/v1/stripe/create-payment-intent', {
+      const response = await instance.post('/v1/stripe/create-payment-intent', {
         currency: 'mxn',
         customerId: customerId,
         isInternationalCard,

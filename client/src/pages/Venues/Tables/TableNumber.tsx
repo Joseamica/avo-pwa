@@ -1,3 +1,4 @@
+import instance from '@/axiosConfig'
 import Loading from '@/components/Loading'
 import { H3 } from '@/components/Util/Typography'
 import { useQuery } from '@tanstack/react-query'
@@ -12,7 +13,8 @@ function TableNumber() {
     queryKey: ['table_data'],
     queryFn: async () => {
       try {
-        const response = await axios.get(`/api/v1/venues/${params.venueId}/tables/${params.tableNumber}?todo=yes`)
+        // const response = await axios.get(`/api/v1/venues/${params.venueId}/tables/${params.tableNumber}?todo=yes`)
+        const response = await instance.get(`/v1/venues/${params.venueId}/tables/${params.tableNumber}?todo=yes`)
         response.data.redirect &&
           navigate(response.data.url, {
             replace: true,

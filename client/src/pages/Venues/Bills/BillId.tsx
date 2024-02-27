@@ -2,7 +2,7 @@ import { Flex } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
-import { H1, H2 } from '@/components/Util/Typography'
+import { H1, H2, H4 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
 
@@ -18,10 +18,10 @@ import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import axios from 'axios'
-import clsx from 'clsx'
 import { Fragment, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
+import instance from '@/axiosConfig'
 
 interface Tip {
   id: number
@@ -86,6 +86,7 @@ function BillId() {
 
   //TODO -  convert to useReducer
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
+
   const {
     data: initialData,
     isPending,
@@ -95,7 +96,8 @@ function BillId() {
     queryKey: ['bill_data'],
     queryFn: async () => {
       try {
-        const response = await axios.post(`/api/v1/venues/${params.venueId}/bills/${params.billId}`)
+        // const response = await instance.post(`/api/v1/venues/${params.venueId}/bills/${params.billId}`)
+        const response = await instance.post(`/v1/venues/${params.venueId}/bills/${params.billId}`)
         return response.data
       } catch (error) {
         throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
@@ -106,6 +108,7 @@ function BillId() {
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
     // refetchInterval: 15000,
     // refetchIntervalInBackground: true,
+    // refetchOnWindowFocus: true,
   })
 
   useEffect(() => {
@@ -152,13 +155,15 @@ function BillId() {
 
   return (
     <Fragment>
-      <div className="h-full px-2 ">
+      <div className="h-full max-w-md px-2 mx-auto ">
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
-          <h1 className="font-neue">Mesa {billData.tableNumber} </h1>
+          <H4 className="font-neue">Mesa {billData.tableNumber} </H4>
+          <Spacer size="sm" />
+
           {/* TODO - definir los estados y segun el estado ponerlo */}
-          <H2
+          {/* <H2
             className={clsx('text-white', {
               'bg-green-500': status === 'OPEN',
               'bg-red-500': status === 'CLOSED',
@@ -167,15 +172,16 @@ function BillId() {
             })}
           >
             STATUS {status}
-          </H2>
-          <Flex direction="col" align="center" className="w-full p-3 bg-white border rounded-2xl">
+          </H2> */}
+          <Flex direction="col" align="center" className="w-full p-3 bg-white border rounded-md">
             <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
-              <H1>Total</H1>
+              <H1>Pagar la cuenta</H1>
               <H2>${billData.pos_order?.Total || billData.total / 100}</H2>
             </Flex>
+            <Spacer size="sm" />
             {status === 'OPEN' ? (
               <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
-                <H1>Por Pagar</H1>
+                <H1>Por pagar</H1>
                 <H2>${billData.amount_left / 100}</H2>
               </Flex>
             ) : null}
@@ -183,19 +189,30 @@ function BillId() {
 
           <Spacer size="xl" />
 
-          <div className="max-w-md mx-auto">
-            <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md shadow-lg">
+          <div className="w-full max-w-md mx-auto">
+            <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md ">
               {billData.products?.map((product, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <span className="font-semibold">{product.quantity}x</span>
-                  <span className="text-gray-600">{product.name}</span>
-                  <span className="font-bold text-green-500">${(product.price / 100).toFixed(2)}</span>
+                  <Flex space="xs">
+                    <span className="box-border flex items-center justify-center w-6 h-6 font-semibold rounded-md bg-background-primary">
+                      {product.quantity}
+                    </span>
+                    <span className="flex-1 overflow-hidden text-gray-600 w-52 whitespace-nowrap text-ellipsis text-over">
+                      {product.name}
+                    </span>
+                  </Flex>
+                  <span className="font-extralight">${(product.price / 100).toFixed(2)}</span>
                 </div>
               ))}
             </div>
           </div>
+
           <Spacer size="xl" />
-          {status === 'OPEN' && <Button onClick={() => openModal('payment_methods')} disabled={billData.amount_left <= 0} text={'Pagar'} />}
+          <div className="sticky w-full bottom-5">
+            {status === 'OPEN' && (
+              <Button onClick={() => openModal('payment_methods')} disabled={billData.amount_left <= 0} text={'Pagar'} />
+            )}
+          </div>
         </Flex>
       </div>
       {/* TODO modify icons */}

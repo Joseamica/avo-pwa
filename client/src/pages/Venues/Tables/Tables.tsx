@@ -9,6 +9,7 @@ import Loading from '@/components/Loading'
 import { H3 } from '@/components/Util/Typography'
 import axios from 'axios'
 import clsx from 'clsx'
+import instance from '@/axiosConfig'
 
 export async function loader({ request, params }) {
   const { venueId } = params
@@ -25,7 +26,8 @@ function Tables() {
     queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
-        const response = await axios.get(`/api/v1/venues/${params.venueId}/tables`)
+        // const response = await instance.get(`/api/v1/venues/${params.venueId}/tables`)
+        const response = await instance.get(`/v1/venues/${params.venueId}/tables`)
 
         return response.data
       } catch (error) {

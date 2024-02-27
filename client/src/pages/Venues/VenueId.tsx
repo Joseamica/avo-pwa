@@ -1,28 +1,38 @@
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import { useParams } from 'react-router-dom'
+import { LinkButton } from '@/components/Button'
+import { Spacer } from '@/components/Util/Spacer'
+import HeaderAvo from '@/sections/Header/HeaderAvo'
+import { type IncognitoUser } from '@/utils/types/user'
+import { Suspense } from 'react'
+import { Outlet, useParams } from 'react-router-dom'
 
 function VenueId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-  const { isPending, error, isError } = useQuery({
-    queryKey: ['bill_data'],
+  const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
-    queryFn: async () => {
-      try {
-        const response = await axios.get(`/api/v1/venues/${params.venueId}`)
+  return (
+    <div className="max-w-md mx-auto">
+      {/* TODO- poner aqui headerAVO link button etc, y quitarlo de bills */}
+      <HeaderAvo iconColor={user.user.color} />
+      <Spacer size="xl" />
 
-        console.log('response', response)
-        return response.data
-      } catch (error) {
-        throw new Error('No existe la mesa o la cuenta no está disponible en este momento.')
-      }
-    },
-  })
-
-  if (isPending) return <div>Loading...</div>
-  if (isError) return <div>Error: {error?.message}</div>
-
-  return <div>VenueId</div>
+      <div className="flex justify-center w-full px-2">
+        <LinkButton
+          size="md"
+          variant="secondary"
+          to={`/venues/${params.venueId}/menus`}
+          state={{
+            tableId: params.tableId,
+            billId: params.billId,
+            venueId: params.venueId,
+          }}
+          text="Menu"
+        />
+      </div>
+      <Suspense fallback={<h2>Loading</h2>}>
+        <Outlet />
+      </Suspense>
+    </div>
+  )
 }
 
 export default VenueId

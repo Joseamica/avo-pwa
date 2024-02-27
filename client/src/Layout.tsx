@@ -8,17 +8,14 @@ import { IncognitoUser } from './utils/types/user'
 import { useQuery } from '@tanstack/react-query'
 import Loading from './components/Loading'
 import { H3 } from './components/Util/Typography'
+import instance from './axiosConfig'
 
 const User = IncognitoUser
 
-const instance = axios.create({
-  baseURL: 'http://localhost:5000',
-  // baseURL: 'https://avo-pwa.onrender.com/',
-})
-
 export async function loader({ request }) {
   const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
-
+  const mode = import.meta.env.MODE
+  console.log('mode', mode)
   if (localStorageUser) {
     return json({ user: localStorageUser.user })
   } else {
