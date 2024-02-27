@@ -1,6 +1,6 @@
 import { Flex } from '@/components'
 import { Spacer } from '@/components/Util/Spacer'
-import { H2, H3 } from '@/components/Util/Typography'
+import { H2 } from '@/components/Util/Typography'
 import ChevronLeft from '@mui/icons-material/ChevronLeft'
 import { Link, json, useLoaderData, useLocation } from 'react-router-dom'
 

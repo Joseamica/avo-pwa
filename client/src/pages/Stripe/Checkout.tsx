@@ -1,3 +1,4 @@
+import instance from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Amex, Check, MasterCard, Visa } from '@/components/Icons'
 import Meta from '@/components/Meta'
@@ -8,14 +9,12 @@ import { getUserLS } from '@/utils/localStorage/user'
 import { initStripe } from '@/utils/stripe'
 import { Elements } from '@stripe/react-stripe-js'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import clsx from 'clsx'
 import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
-import instance from '@/axiosConfig'
 
-const stripePromise = initStripe('http://localhost:5000/v1/stripe/publishable-key')
+const stripePromise = initStripe('https://avo-pwa.onrender.com/v1/stripe/publishable-key')
 
 /**
  * Checkout component for processing payments.

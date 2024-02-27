@@ -2,14 +2,13 @@ import instance from '@/axiosConfig'
 import Loading from '@/components/Loading'
 import { H3 } from '@/components/Util/Typography'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 
 function TableNumber() {
   const params = useParams()
   const navigate = useNavigate()
 
-  const { isPending, error, data, isError, isLoading, status } = useQuery<any>({
+  const { isPending, error, data, isError } = useQuery<any>({
     queryKey: ['table_data'],
     queryFn: async () => {
       try {

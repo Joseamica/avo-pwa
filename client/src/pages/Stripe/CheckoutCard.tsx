@@ -1,11 +1,10 @@
+import instance from '@/axiosConfig'
 import { Button } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
 import { useStripe } from '@stripe/react-stripe-js'
-import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TipModal from './TipModal'
-import instance from '@/axiosConfig'
 
 export default function CheckoutCard({
   paymentMethodId,
