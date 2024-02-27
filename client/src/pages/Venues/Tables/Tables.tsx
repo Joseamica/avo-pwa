@@ -1,23 +1,14 @@
-import { Link, Outlet, useLoaderData, useParams } from 'react-router-dom'
+import { Link, Outlet, useParams } from 'react-router-dom'
 
 import Typography from '@mui/material/Typography'
 
+import instance from '@/axiosConfig'
+import Loading from '@/components/Loading'
 import Meta from '@/components/Meta'
+import { H3 } from '@/components/Util/Typography'
 import { FullSizeCenteredFlexBox } from '@/components/styled'
 import { useQuery } from '@tanstack/react-query'
-import Loading from '@/components/Loading'
-import { H3 } from '@/components/Util/Typography'
-import axios from 'axios'
 import clsx from 'clsx'
-import instance from '@/axiosConfig'
-
-export async function loader({ request, params }) {
-  const { venueId } = params
-  // const response = await axios.get(`/api/v1/venues/${venueId}/tables`)
-
-  // return response.data
-  return { venueId }
-}
 
 function Tables() {
   const params = useParams()

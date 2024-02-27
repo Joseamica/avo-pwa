@@ -1,7 +1,5 @@
-import Tables, { loader as tablesLoader } from './Tables'
+import Tables from './Tables'
 import TableNumber from './TableNumber'
-
-export { tablesLoader }
 
 export default {
   Tables,
