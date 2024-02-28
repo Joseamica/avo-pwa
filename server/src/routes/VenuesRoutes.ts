@@ -8,7 +8,14 @@ import xml2js from 'xml2js'
 const venueRouter = express.Router()
 const pool = new ConnectionPool(dbConfig)
 
-venueRouter.get('/:venueId', (req, res) => {
+venueRouter.post('/testing', async (req, res) => {
+  const { venueId, orden, mesa, total, status } = req.body
+  console.log('venueId, orden, mesa, total, status', venueId, orden, mesa, total, status)
+  return res.json({ venueId, orden, mesa, total, status })
+})
+
+venueRouter.post('/:venueId/review', (req, res) => {
+  console.log('stars', req.body)
   res.json({ message: 'VenueId Works!' })
 })
 
