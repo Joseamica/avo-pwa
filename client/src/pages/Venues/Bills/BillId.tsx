@@ -6,6 +6,7 @@ import { H1, H2, H4 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
 
+import instance from '@/axiosConfig'
 import Loading from '@/components/Loading'
 import ByProductModal from '@/components/Modals/ByProductModal'
 import CustomModal from '@/components/Modals/CustomModal'
@@ -17,11 +18,10 @@ import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import axios from 'axios'
 import { Fragment, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-import instance from '@/axiosConfig'
+import ModalPadding from '@/components/Util/ModalPadding'
 
 interface Tip {
   id: number
@@ -155,7 +155,7 @@ function BillId() {
 
   return (
     <Fragment>
-      <div className="h-full max-w-md px-2 mx-auto ">
+      <div className="h-full max-w-lg px-2 mx-auto ">
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
@@ -189,7 +189,7 @@ function BillId() {
 
           <Spacer size="xl" />
 
-          <div className="w-full max-w-md mx-auto">
+          <div className="w-full max-w-lg mx-auto">
             <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md ">
               {billData.products?.map((product, index) => (
                 <div key={index} className="flex items-center justify-between">
@@ -217,45 +217,49 @@ function BillId() {
       </div>
       {/* TODO modify icons */}
       <Modal isOpen={isModalOpen.payment_methods} closeModal={() => closeModal('payment_methods')} title="Método de pago">
-        <IconButton icon={<CallSplit />} onClick={() => openModal('split_bill')} text={'Dividir Cuenta'} />
-        <Spacer size="sm" />
-        <IconButton icon={<Payment />} onClick={() => openModal('pay_full_bill')} text={'Pagar Cuenta Completa'} />
+        <ModalPadding>
+          <IconButton icon={<CallSplit />} onClick={() => openModal('split_bill')} text={'Dividir Cuenta'} />
+          <Spacer size="sm" />
+          <IconButton icon={<Payment />} onClick={() => openModal('pay_full_bill')} text={'Pagar Cuenta Completa'} />
 
-        {/* ANCHOR SplitBill */}
-        <Modal isOpen={isModalOpen.split_bill} closeModal={() => closeModal('split_bill')} title="Dividir cuenta">
-          <IconButton icon={<ListAlt />} onClick={() => openInnerModal('by_product')} text={'Pagar por producto'} />
-          <Spacer size="sm" />
-          <IconButton icon={<SafetyDivider />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
-          <Spacer size="sm" />
-          <IconButton icon={<Edit />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
-          {/* ANCHOR innerModal - ByProduct */}
-          <ByProductModal
-            isInnerModalOpen={isInnerModalOpen}
-            closeInnerModal={closeInnerModal}
-            openInnerModal={openInnerModal}
-            orderedProducts={billData.products}
-            isPending={isPending}
-          />
-          {/* ANCHOR innerModal - EqualParts */}
-          <EqualPartsModal
-            isInnerModalOpen={isInnerModalOpen}
-            closeInnerModal={closeInnerModal}
-            openInnerModal={openInnerModal}
-            amountLeft={billData.amount_left}
-            isPending={isPending}
-          />
-          {/* ANCHOR innerModal - Custom */}
-          <CustomModal
-            isInnerModalOpen={isInnerModalOpen}
-            closeInnerModal={closeInnerModal}
-            openInnerModal={openInnerModal}
-            isPending={isPending}
-          />
-        </Modal>
-        {/* ANCHOR FullBill */}
-        <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
-          <Checkout amount={billData.amount_left} />
-        </Modal>
+          {/* ANCHOR SplitBill */}
+          <Modal isOpen={isModalOpen.split_bill} closeModal={() => closeModal('split_bill')} title="Dividir cuenta">
+            <ModalPadding>
+              <IconButton icon={<ListAlt />} onClick={() => openInnerModal('by_product')} text={'Pagar por producto'} />
+              <Spacer size="sm" />
+              <IconButton icon={<SafetyDivider />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
+              <Spacer size="sm" />
+              <IconButton icon={<Edit />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
+              {/* ANCHOR innerModal - ByProduct */}
+              <ByProductModal
+                isInnerModalOpen={isInnerModalOpen}
+                closeInnerModal={closeInnerModal}
+                openInnerModal={openInnerModal}
+                orderedProducts={billData.products}
+                isPending={isPending}
+              />
+              {/* ANCHOR innerModal - EqualParts */}
+              <EqualPartsModal
+                isInnerModalOpen={isInnerModalOpen}
+                closeInnerModal={closeInnerModal}
+                openInnerModal={openInnerModal}
+                amountLeft={billData.amount_left}
+                isPending={isPending}
+              />
+              {/* ANCHOR innerModal - Custom */}
+              <CustomModal
+                isInnerModalOpen={isInnerModalOpen}
+                closeInnerModal={closeInnerModal}
+                openInnerModal={openInnerModal}
+                isPending={isPending}
+              />
+            </ModalPadding>
+          </Modal>
+          {/* ANCHOR FullBill */}
+          <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
+            <Checkout amount={billData.amount_left} />
+          </Modal>
+        </ModalPadding>
       </Modal>
 
       <ReactQueryDevtools initialIsOpen position="bottom" />

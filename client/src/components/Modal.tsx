@@ -53,16 +53,16 @@ const Modal = ({
               leaveFrom="opacity-100 translate-y-0 scale-100"
               leaveTo="opacity-0 translate-y-full scale-95"
             >
-              <div className={`fixed inset-x-0 bottom-0  ${scrollable ? 'overflow-hidden' : ''}`}>
+              <div className={`fixed inset-x-0 bottom-0 max-w-lg mx-auto  ${scrollable ? 'overflow-hidden' : ''}`}>
                 <Dialog.Panel
-                  className={`w-full text-left align-middle transition-all transform flex flex-col pb-7  ${
-                    isFullScreen ? 'fixed inset-0 bg-background-primary' : 'bg-background-primary shadow-xl rounded-t-2xl'
+                  className={`w-full text-left align-middle transition-all transform flex flex-col   ${
+                    isFullScreen ? 'fixed inset-0 bg-background-primary' : 'bg-background-primary shadow-xl rounded-t-3xl'
                   }`}
                   style={{ maxHeight: modalContentMaxHeight }}
                 >
                   <Dialog.Title
                     as="div"
-                    className="sticky top-0 z-10 flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 bg-white border rounded-t-xl"
+                    className="sticky top-0 z-10 flex justify-between w-full p-4 text-xl font-medium leading-6 text-gray-900 bg-white border rounded-t-3xl"
                   >
                     <div />
                     <h3 className="">{title}</h3>
@@ -72,8 +72,8 @@ const Modal = ({
                   </Dialog.Title>
 
                   <div className="flex-grow overflow-y-auto">
-                    <Dialog.Description className="px-5 mt-2 text-sm text-gray-500">{description}</Dialog.Description>
-                    <div className="px-5">{children}</div>
+                    <Dialog.Description className="px-5 text-sm text-gray-500">{description}</Dialog.Description>
+                    <div className="">{children}</div>
                   </div>
 
                   {footer && <div className="p-4 bg-white border-t rounded-t-xl">{footer}</div>}

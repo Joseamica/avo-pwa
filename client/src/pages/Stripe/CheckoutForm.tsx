@@ -127,8 +127,8 @@ const CheckoutForm = ({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="p-3 bg-white border-2 rounded-xl">
+    <form onSubmit={handleSubmit} className="px-4">
+      <div className="p-4 bg-white border-2 rounded-3xl">
         <PaymentElement />
         <Flex direction="row" space="xs" align="center" className="flex justify-end w-full mt-3">
           <span>Guardar tarjeta</span>
@@ -160,7 +160,7 @@ const CheckoutForm = ({
       <Spacer size="md" />
       <Button
         size="md"
-        className="sticky p-4 mb-5 rounded-full bottom-4 disabled:bg-zinc-400"
+        className="p-4 mb-5 rounded-full bottom-4 disabled:bg-zinc-400"
         type="submit"
         disabled={!stripe || loading}
         text="Confirmar"

@@ -25,7 +25,7 @@ export default function Menus() {
   const location = useLocation()
 
   return (
-    <div className="w-full max-w-md py-3 mx-auto">
+    <div className="w-full max-w-lg py-3 mx-auto">
       <Flex className="" align="center" justify="between">
         <Link
           to={`/venues/${location.state.venueId}/bills/${location.state.billId}`}

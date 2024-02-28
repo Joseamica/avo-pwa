@@ -15,7 +15,7 @@ export default function ByProduct({
     <Flex direction="col" space="xs">
       {orderedProducts.map(product => {
         return (
-          <article key={product.key} className="block p-4 bg-white border rounded-xl">
+          <article key={product.key} className="block px-5 py-4 bg-white border rounded-full">
             <span>
               <div className="flex items-center justify-between">
                 <h3 className="flex flex-grow leading-5 text-base`">

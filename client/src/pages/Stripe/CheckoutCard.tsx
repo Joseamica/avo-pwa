@@ -33,7 +33,6 @@ export default function CheckoutCard({
 }) {
   const stripe = useStripe()
   const params = useParams()
-
   const navigate = useNavigate()
   const [showTipModal, setShowTipModal] = useState(false as boolean)
 

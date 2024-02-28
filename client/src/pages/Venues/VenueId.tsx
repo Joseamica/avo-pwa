@@ -10,7 +10,7 @@ function VenueId() {
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-lg mx-auto">
       {/* TODO- poner aqui headerAVO link button etc, y quitarlo de bills */}
       <HeaderAvo iconColor={user.user.color} />
       <Spacer size="xl" />

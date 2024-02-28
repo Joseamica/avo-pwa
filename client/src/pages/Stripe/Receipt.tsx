@@ -1,14 +1,19 @@
 import { Field } from '@/components'
 import { Button } from '@/components/Button'
 import Modal from '@/components/Modal'
-import useModal from '@/hooks/useModal'
 import useNotifications from '@/store/notifications'
-import { getRandomPaymentMsg } from '@/utils/get-msgs'
-import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useState } from 'react'
 
-export default function Receipt({ isOpen, closeModal, paymentIntentId }) {
+export default function Receipt({
+  isOpen,
+  closeModal,
+  paymentIntentId,
+}: {
+  isOpen: boolean
+  closeModal: () => void
+  paymentIntentId: string
+}) {
   const [email, setEmail] = useState('' as string)
 
   const onSubmitEmail = async e => {

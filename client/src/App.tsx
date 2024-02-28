@@ -1,4 +1,4 @@
-import { Fragment, lazy, Suspense } from 'react'
+import { Fragment, lazy } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 
 // import CssBaseline from '@mui/material/CssBaseline'

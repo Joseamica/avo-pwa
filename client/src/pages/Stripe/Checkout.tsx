@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
+import ModalPadding from '@/components/Util/ModalPadding'
 
 const stripePromise = initStripe('https://avo-pwa.onrender.com/v1/stripe/publishable-key')
 
@@ -104,9 +105,11 @@ const Checkout = ({ amount }: { amount: number }) => {
           },
         }}
       >
-        <PaymentSummary amount={amount} userFee={userFee} />
+        <div className="px-4 pt-4">
+          <PaymentSummary amount={amount} userFee={userFee} />
+        </div>
         <Spacer size="md" />
-        <div className="space-y-2">
+        <div className="px-4 space-y-2">
           {data.paymentMethods?.map(paymentMethod => (
             <button
               className={clsx('relative w-full p-3 max-h-16 bg-white border-2 rounded-full flex justify-start space-x-4 items-center')}

@@ -55,10 +55,7 @@ const IconButton = ({
   return (
     <button
       onClick={onClick}
-      className={clsx(
-        'flex items-center justify-between w-full px-10 py-5 text-white bg-buttons-main border-4 border-borders-button rounded-full',
-        className,
-      )}
+      className={clsx('flex items-center justify-between w-full px-10 py-5 text-white bg-buttons-main rounded-full', className)}
     >
       <span className="flex justify-start ">{icon}</span>
       <span className="flex justify-center text-lg ">{text}</span>
@@ -78,7 +75,7 @@ export function Button({
     <button
       {...buttonProps}
       className={clsx(
-        'flex items-center disabled:bg-buttons-disabled disabled:border-4 justify-center w-full  text-white bg-buttons-main border-4 border-borders-button  rounded-full border-gray text-xl',
+        'flex items-center disabled:bg-buttons-disabled justify-center w-full  text-white bg-buttons-main  rounded-full border-gray text-xl',
         { 'px-11 py-6 ': size === 'lg' },
         { 'px-8 py-4': size === 'md' },
         { ' px-5 py-2 ': size === 'sm' },
@@ -115,7 +112,7 @@ function LinkButton({
     <Link to={to} state={state} className="w-full" reloadDocument={reloadDocument} replace={replace}>
       <div
         className={clsx(
-          'flex items-center  disabled:border-4 justify-center    border-borders-button  rounded-full border-gray text-xl',
+          'flex items-center   justify-center      rounded-full border-gray text-xl',
           { 'text-white bg-buttons-main border-4': variant === 'primary' },
           { 'text-buttons-main bg-white border': variant === 'secondary' },
           { 'px-11 py-6 ': size === 'lg' },

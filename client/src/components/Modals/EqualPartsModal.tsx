@@ -67,7 +67,7 @@ export default function EqualPartsModal({
         partySize={partySize}
         setPartySize={setPartySize}
       />
-      <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
+      <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Método de pago">
         <Checkout amount={totalEqualParts} />
       </Modal>
     </Modal>

@@ -5,6 +5,7 @@ import { Currency } from '@/utils/currency'
 import ByProduct from '../Payments/ByProduct'
 import Checkout from '@/pages/Stripe/Checkout'
 import { Button } from '../Button'
+import ModalPadding from '../Util/ModalPadding'
 
 /**
  * Renders a modal component for selecting and paying for products.
@@ -73,10 +74,12 @@ export default function ByProductModal({
         </Flex>
       }
     >
-      <ByProduct orderedProducts={orderedProducts} handleSelectProducts={handleSelectProducts} selectedProducts={selectedProducts} />
-      <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Checkout">
-        <Checkout amount={totalSelectedProducts} />
-      </Modal>
+      <ModalPadding>
+        <ByProduct orderedProducts={orderedProducts} handleSelectProducts={handleSelectProducts} selectedProducts={selectedProducts} />
+        <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Método de pago">
+          <Checkout amount={totalSelectedProducts} />
+        </Modal>
+      </ModalPadding>
     </Modal>
   )
 }
