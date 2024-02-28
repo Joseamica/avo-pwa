@@ -11,6 +11,10 @@ const pool = new ConnectionPool(dbConfig)
 venueRouter.post('/testing', async (req, res) => {
   const { venueId, orden, mesa, total, status } = req.body
   console.log('venueId, orden, mesa, total, status', venueId, orden, mesa, total, status)
+  if (!venueId) {
+    return res.status(400).json({ message: 'No se recibieron datos' })
+  }
+
   return res.json({ venueId, orden, mesa, total, status })
 })
 
