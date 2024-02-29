@@ -136,6 +136,7 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
     const charge = event.data.object as Stripe.Charge
 
     const { billId, venueId, avoFee, tipPercentage, amount } = charge.metadata
+    console.log('amount', amount)
     try {
       const card = charge.payment_method_details.card
       const card_brand = card.brand
@@ -192,8 +193,9 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
         },
       })
       const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
-      const roomId = `venue_${venueId}_bill_${billId}`
+      console.log('amount_left', amount_left)
+      console.log('updatedBill', updatedBill)
+      const roomId = `venue_${venueId}_table_${updatedBill.tableNumber}`
       req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left })
       console.log(`💵 Charge id: ${charge.id}`)
     } catch (err) {

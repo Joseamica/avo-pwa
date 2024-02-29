@@ -369,6 +369,12 @@ venueRouter.post('/:venueId/review', (req, res) => {
   res.json({ message: 'VenueId Works!' })
 })
 
+venueRouter.get('/listVenues', async (req, res) => {
+  const venues = await prisma.venue.findMany()
+  console.log('stars', req.body)
+  res.json(venues)
+})
+
 // //ANCHOR - TABLE NUMBER
 // venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
 //   const { venueId, tableNumber } = req.params
