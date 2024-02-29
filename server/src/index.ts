@@ -55,14 +55,14 @@ const io = new Server(server)
 io.on('connection', socket => {
   console.log('Cliente conectado', socket.id)
 
-  socket.on('joinRoom', ({ venueId, billId }) => {
-    const roomId = `venue_${venueId}_bill_${billId}`
+  socket.on('joinRoom', ({ venueId, table }) => {
+    const roomId = `venue_${venueId}_table_${table}`
     socket.join(roomId)
     console.log(`Cliente ${socket.id} se unió al room ${roomId}`)
   })
 
-  socket.on('leaveRoom', ({ venueId, billId }) => {
-    const roomId = `venue_${venueId}_bill_${billId}`
+  socket.on('leaveRoom', ({ venueId, table }) => {
+    const roomId = `venue_${venueId}_table_${table}`
     socket.leave(roomId)
     console.log(`Cliente ${socket.id} dejó el room ${roomId}`)
   })

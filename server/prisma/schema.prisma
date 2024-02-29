@@ -452,6 +452,7 @@ enum StatusBills {
   CLOSED
   CANCELED
   PRECREATED
+  EARLYACCESS
 }
 
 enum StatusNotification {
