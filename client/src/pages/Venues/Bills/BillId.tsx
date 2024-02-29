@@ -22,6 +22,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
 import ModalPadding from '@/components/Util/ModalPadding'
+import clsx from 'clsx'
 
 interface Tip {
   id: number
@@ -97,7 +98,7 @@ function BillId() {
     queryFn: async () => {
       try {
         // const response = await instance.post(`/api/v1/venues/${params.venueId}/bills/${params.billId}`)
-        const response = await instance.post(`/v1/venues/${params.venueId}/bills/${params.billId}`)
+        const response = await instance.get(`/v1/venues/${params.venueId}/bills/${params.billId}`)
         return response.data
       } catch (error) {
         throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
@@ -108,12 +109,12 @@ function BillId() {
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
     // refetchInterval: 15000,
     // refetchIntervalInBackground: true,
-    // refetchOnWindowFocus: true,
+    refetchOnWindowFocus: true,
   })
 
   useEffect(() => {
     // Suponiendo que `params` contiene `venueId` y `billId`
-    socket.emit('joinRoom', { venueId: params.venueId, billId: params.billId })
+    socket.emit('joinRoom', { venueId: params.venueId, table: initialData?.tableNumber })
 
     socket.on('updateOrder', data => {
       setBillData(data)
@@ -122,10 +123,10 @@ function BillId() {
 
     // Asegurarse de dejar el room al desmontar el componente
     return () => {
-      socket.emit('leaveRoom', { venueId: params.venueId, billId: params.billId })
+      socket.emit('leaveRoom', { venueId: params.venueId, table: initialData?.tableNumber })
       socket.off('updateOrder')
     }
-  }, [params.venueId, params.billId])
+  }, [params.venueId, initialData?.tableNumber])
 
   useEffect(() => {
     if (initialData) {
@@ -150,8 +151,9 @@ function BillId() {
   } else if (billData.status === 'PRECREATED') {
     status = 'PRECREATED'
   } else {
-    status = 'UNKNOWN'
+    status = 'EARLYACCESS'
   }
+  console.log('billData', billData)
 
   return (
     <Fragment>
@@ -163,16 +165,18 @@ function BillId() {
           <Spacer size="sm" />
 
           {/* TODO - definir los estados y segun el estado ponerlo */}
-          {/* <H2
+          <H2
             className={clsx('text-white', {
               'bg-green-500': status === 'OPEN',
               'bg-red-500': status === 'CLOSED',
+              'bg-violet-500': status === 'EARLYACCESS',
               'bg-yellow-500': status === 'PENDING',
               'bg-gray-500': status === 'PRECREATED',
             })}
           >
             STATUS {status}
-          </H2> */}
+            <p>{status === 'EARLYACCESS' && 'el usuario scaneo el qr de la mesa antes de que existiera'}</p>
+          </H2>
           <Flex direction="col" align="center" className="w-full p-3 bg-white border rounded-md">
             <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
               <H1>Pagar la cuenta</H1>
