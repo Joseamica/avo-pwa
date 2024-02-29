@@ -111,9 +111,20 @@ const Layout = () => {
       <div>
         {venues.map(venue => {
           return (
-            <Link to={venue.id} key={venue.id}>
-              {venue.name}
-            </Link>
+            <div key={venue.id}>
+              <h1>{venue.name}</h1>
+              <div className="flex flex-row flex-wrap space-y-1">
+                {venue.tables.map(table => (
+                  <Link
+                    to={`/venues/${venue.id}/tables/${table.tableNumber}`}
+                    key={table.tableNumber}
+                    className="flex items-center justify-center w-20 h-10 border rounded-full"
+                  >
+                    <h3>{table.tableNumber}</h3>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )
         })}
       </div>

@@ -28,6 +28,7 @@ function VenueId() {
           text="Menu"
         />
       </div>
+      <p>TEMPORARY</p>
       <Suspense fallback={<h2>Loading</h2>}>
         <Outlet />
       </Suspense>

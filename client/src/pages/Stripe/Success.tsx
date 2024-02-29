@@ -28,7 +28,7 @@ const Success: React.FC = () => {
       return response.data
     },
   })
-  console.log('data', data)
+
   useEffect(() => {
     function showNotification() {
       notificationsActions.push({

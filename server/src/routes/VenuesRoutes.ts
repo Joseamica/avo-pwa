@@ -14,14 +14,14 @@ venueRouter.post('/order', async (req, res) => {
   const { venueId, orden, mesa, total, status } = req.body
 
   const date = new Date()
-  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 5))
+  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 24))
 
   const isBillFromToday = await prisma.bill.findFirst({
     where: {
       tableNumber: parseInt(mesa),
-      updatedAt: {
-        gte: fiveHoursAgo,
-      },
+      // updatedAt: {
+      //   gte: fiveHoursAgo,
+      // },
     },
   })
 
@@ -370,7 +370,7 @@ venueRouter.post('/:venueId/review', (req, res) => {
 })
 
 venueRouter.get('/listVenues', async (req, res) => {
-  const venues = await prisma.venue.findMany()
+  const venues = await prisma.venue.findMany({ include: { tables: true } })
   console.log('stars', req.body)
   res.json(venues)
 })
