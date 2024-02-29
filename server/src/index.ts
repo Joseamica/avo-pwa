@@ -38,7 +38,12 @@ app.use(
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   }),
 )
-
+app.use(
+  '/.well-known',
+  express.static(path.join(__dirname, '.well-known'), {
+    dotfiles: 'allow', // Permite servir archivos que comienzan con un punto
+  }),
+)
 app.use(express.static(path.join(__dirname, 'public')))
 
 // NOTE - This is a middleware that allows us to parse the body of a request
