@@ -5,7 +5,7 @@ import express from 'express'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(config.stripeSecretKey)
-const endpointSecret = 'whsec_Wyx0GnA52YempS1EFMKokQOUnGh2YaZI'
+const endpointSecret = config.stripeWebhookSecret
 
 const getPublishableKey = async (req, res) => {
   // res.json({ publishable_key: config.stripePublishableKey })

@@ -11,6 +11,7 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Receipt from './Receipt'
 import Review from './Review'
+import instance from '@/axiosConfig'
 
 const Success: React.FC = () => {
   const [searchParams] = useSearchParams()
@@ -23,11 +24,11 @@ const Success: React.FC = () => {
     queryKey: ['paymentIntent', paymentIntentId],
     queryFn: async () => {
       // const response = await axios.get(`/api/v1/stripe/payment-intent/${paymentIntentId}`)
-      const response = await axios.get(`/api/v1/stripe/payment-intent/${paymentIntentId}`)
+      const response = await instance.get(`/v1/stripe/payment-intent/${paymentIntentId}`)
       return response.data
     },
   })
-
+  console.log('data', data)
   useEffect(() => {
     function showNotification() {
       notificationsActions.push({
@@ -65,7 +66,7 @@ const Success: React.FC = () => {
       <Review isOpen={isModalOpen.review} closeModal={() => closeModal('review')} />
       <Button type="button" text="Obtener recibo" onClick={() => openModal('receipt')} />
       <LinkButton
-        to={`/venues/${data.metadata.venueId}/bills/${data.metadata.billId}`}
+        to={`/venues/${data?.metadata.venueId}/bills/${data.metadata.billId}`}
         reloadDocument={true}
         replace={true}
         text="Volver a la página principal"
