@@ -45,7 +45,13 @@ export async function action({ request }) {
 
 const Layout = () => {
   const params = useParams<{ venueId: string; tableId: string }>()
-  const { isPending, error, isError, isLoading } = useQuery<any>({
+  const {
+    isPending,
+    error,
+    isError,
+    isLoading,
+    data: venues,
+  } = useQuery<any>({
     queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
@@ -102,7 +108,15 @@ const Layout = () => {
       {/* <Link to="/me" className="flex items-center justify-center w-12 h-12 border rounded-full">
         <Person style={{ color: data.user.color }} />
       </Link> */}
-      <Link to="/venues/clsdc47cc0002gx3lsjx112r1/tables">Ir a mesas</Link>
+      <div>
+        {venues.map(venue => {
+          return (
+            <Link to={venue.id} key={venue.id}>
+              {venue.name}
+            </Link>
+          )
+        })}
+      </div>
       <Outlet />
     </>
   )
