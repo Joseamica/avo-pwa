@@ -1,6 +1,9 @@
+import { MenuBook } from '@mui/icons-material'
+import { Menu } from '@mui/material'
 import clsx from 'clsx'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Spacer } from './Util/Spacer'
 
 function InnerButton({
   children,
@@ -98,6 +101,7 @@ function LinkButton({
   reloadDocument,
   replace,
   state,
+  icon,
 }: {
   text: string
   className?: string
@@ -107,12 +111,13 @@ function LinkButton({
   reloadDocument?: boolean
   replace?: boolean
   state?: any
+  icon?: React.ReactNode
 } & JSX.IntrinsicElements['button']) {
   return (
     <Link to={to} state={state} className="w-full" reloadDocument={reloadDocument} replace={replace}>
       <div
         className={clsx(
-          'flex items-center   justify-center      rounded-full border-gray text-xl',
+          'flex items-center relative  justify-center  space-x-2    rounded-full border-gray text-xl',
           { 'text-white bg-buttons-main border-4': variant === 'primary' },
           { 'text-buttons-main bg-white border': variant === 'secondary' },
           { 'px-11 py-6 ': size === 'lg' },
@@ -122,6 +127,8 @@ function LinkButton({
         )}
       >
         {/* <InnerButton> */}
+        {icon && <span className="absolute flex justify-start left-10 ">{icon}</span>}
+
         <span className={clsx('', { 'text-xl': size === 'lg' }, { 'text-lg': size === 'md' }, { 'text-base': size === 'sm' })}>{text}</span>
         {/* </InnerButton> */}
       </div>

@@ -4,8 +4,9 @@ import express from 'express'
 
 import Stripe from 'stripe'
 
-const stripe = new Stripe(config.stripeSecretKey)
-const endpointSecret = 'whsec_Wyx0GnA52YempS1EFMKokQOUnGh2YaZI'
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
+// const endpointSecret = 'whsec_Wyx0GnA52YempS1EFMKokQOUnGh2YaZI'
 
 const getPublishableKey = async (req, res) => {
   // res.json({ publishable_key: config.stripePublishableKey })
@@ -134,9 +135,9 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
     const stripeObject: Stripe.PaymentIntent = event.data.object as Stripe.PaymentIntent
   } else if (event.type === 'charge.succeeded') {
     const charge = event.data.object as Stripe.Charge
-
+    console.log('charge', charge)
     const { billId, venueId, avoFee, tipPercentage, amount } = charge.metadata
-    console.log('amount', amount)
+
     try {
       const card = charge.payment_method_details.card
       const card_brand = card.brand
@@ -157,6 +158,7 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
               cardBrand: card_brand,
               cardCountry: card.country,
               receiptUrl: receipt_url,
+              customerId: String(charge.customer),
               tips: {
                 create: {
                   amount: parseInt(amount) * parseFloat(tipPercentage),

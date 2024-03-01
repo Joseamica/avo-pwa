@@ -54,8 +54,8 @@ type TitleProps = {
 )
 
 const sizes = {
-  h1: 'leading-tight text-2xl md:text-2xl',
-  h2: 'leading-tight text-xl md:text-xl',
+  h1: 'leading-tight text-[21px] md:text-2xl',
+  h2: 'leading-tight text-lg md:text-xl',
   h3: 'text-lg  sm:text-base',
   h4: 'text-base sm:text-sm',
   h5: 'text-sm sm:text-xs',

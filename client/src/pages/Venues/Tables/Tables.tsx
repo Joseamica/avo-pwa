@@ -13,7 +13,7 @@ import clsx from 'clsx'
 function Tables() {
   const params = useParams()
   // const data = useLoaderData() as any
-  const { isPending, error, data, isError, isLoading, isFetching, refetch, isRefetching } = useQuery<any>({
+  const { isPending, error, data, isError, isLoading, isFetching, isRefetching } = useQuery<any>({
     queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {

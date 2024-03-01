@@ -1,18 +1,17 @@
 // Layout.js
 import { Link, Outlet, json, useParams } from 'react-router-dom'
 
-import axios from 'axios'
-import { v4 as uuidv4 } from 'uuid'
-import { getRandomPastelHex } from './utils/misc'
-import { IncognitoUser } from './utils/types/user'
 import { useQuery } from '@tanstack/react-query'
+import { v4 as uuidv4 } from 'uuid'
+import instance from './axiosConfig'
 import Loading from './components/Loading'
 import { H3 } from './components/Util/Typography'
-import instance from './axiosConfig'
+import { getRandomPastelHex } from './utils/misc'
+import { IncognitoUser } from './utils/types/user'
 
 const User = IncognitoUser
 
-export async function loader({ request }) {
+export async function loader() {
   const localStorageUser = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
   const mode = import.meta.env.MODE
   console.log('mode', mode)
@@ -34,7 +33,7 @@ export async function loader({ request }) {
   }
 }
 
-export async function action({ request }) {
+export async function action() {
   // const formData = Object.fromEntries(await request.formData())
 
   // localStorage.setItem('persist:user', JSON.stringify({ user: { name: formData.name, color: getRandomColor(), createdAt: Date.now() } }))
@@ -56,7 +55,7 @@ const Layout = () => {
     queryFn: async () => {
       try {
         const response = await instance.get(`/v1/venues/listVenues`)
-        console.log('response', response)
+
         return response.data
       } catch (error) {
         throw new Error('error', error.message)

@@ -153,7 +153,6 @@ function BillId() {
   } else {
     status = 'EARLYACCESS'
   }
-  console.log('billData', billData)
 
   return (
     <Fragment>

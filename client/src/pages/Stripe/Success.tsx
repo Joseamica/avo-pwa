@@ -1,3 +1,4 @@
+import instance from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Button, LinkButton } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
@@ -6,12 +7,10 @@ import useModal from '@/hooks/useModal'
 import useNotifications from '@/store/notifications'
 import { getRandomPaymentMsg } from '@/utils/get-msgs'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Receipt from './Receipt'
 import Review from './Review'
-import instance from '@/axiosConfig'
 
 const Success: React.FC = () => {
   const [searchParams] = useSearchParams()
