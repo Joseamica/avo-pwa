@@ -3,6 +3,7 @@ import { Spacer } from '@/components/Util/Spacer'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
 import { type IncognitoUser } from '@/utils/types/user'
 import { Suspense } from 'react'
+import { MdMenuBook } from 'react-icons/md'
 import { Outlet, useParams } from 'react-router-dom'
 
 function VenueId() {
@@ -15,7 +16,7 @@ function VenueId() {
       <HeaderAvo iconColor={user.user.color} />
       <Spacer size="xl" />
 
-      <div className="flex justify-center w-full px-2">
+      <div className="flex justify-center w-full px-2 ">
         <LinkButton
           size="md"
           variant="secondary"
@@ -25,10 +26,12 @@ function VenueId() {
             billId: params.billId,
             venueId: params.venueId,
           }}
-          text="Menu"
+          text="Carta"
+          // className="animate-sparkling"
+          icon={<MdMenuBook />}
         />
       </div>
-      <p>TEMPORARY</p>
+
       <Suspense fallback={<h2>Loading</h2>}>
         <Outlet />
       </Suspense>

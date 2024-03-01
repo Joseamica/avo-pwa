@@ -39,6 +39,11 @@ app.use(
   }),
 )
 
+if (process.env.NODE_ENV === 'production') {
+  console.log('Estamos en producción!')
+} else {
+  console.log('Estamos en desarrollo!')
+}
 app.use(
   '/.well-known',
   express.static(path.join(__dirname, '.well-known'), {

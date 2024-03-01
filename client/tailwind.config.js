@@ -1,4 +1,4 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -6,8 +6,23 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Neue', ...defaultTheme.fontFamily.sans],
+        // sans: ['"Poppins"', ...defaultTheme.fontFamily.sans],
+        // sans: ['Neue', ...defaultTheme.fontFamily.sans],
       },
+      animation: {
+        sparkling: 'sparkling 2.0s ease-in-out infinite',
+      },
+      keyframes: {
+        sparkling: {
+          '0%, 100%': {
+            boxShadow: '0 0 8px #F6F6F9, 0 0 12px #F6F6F9, 0 0 16px #F6F6F9, 0 0 20px #9CA3AF, 0 0 24px #9CA3AF',
+          },
+          '50%': {
+            boxShadow: '0 0 4px #F6F6F9, 0 0 6px #F6F6F9, 0 0 8px #F6F6F9, 0 0 10px #9CA3AF, 0 0 12px #9CA3AF',
+          },
+        },
+      },
+
       colors: {
         buttons: {
           main: '#003366',
@@ -17,7 +32,7 @@ export default {
         },
         texts: {
           primary: '#1F2937',
-          secondary: '#4B5563',
+          secondary: '#807B86',
           disabled: '#9CA3AF',
           avoqado: '#336B42',
           success: '#2E3A23',

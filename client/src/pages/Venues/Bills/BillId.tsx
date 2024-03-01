@@ -2,15 +2,18 @@ import { Flex } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import Modal from '@/components/Modal'
 import { Spacer } from '@/components/Util/Spacer'
-import { H1, H2, H4 } from '@/components/Util/Typography'
+import { H1, H2, H4, H5 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
 import Checkout from '@/pages/Stripe/Checkout'
-
+import { AnimatePresence, motion } from 'framer-motion'
 import instance from '@/axiosConfig'
+import { LineOnBottom, LineThrough } from '@/components/LineThrough'
 import Loading from '@/components/Loading'
 import ByProductModal from '@/components/Modals/ByProductModal'
 import CustomModal from '@/components/Modals/CustomModal'
 import EqualPartsModal from '@/components/Modals/EqualPartsModal'
+import ModalPadding from '@/components/Util/ModalPadding'
+import { getUserLS } from '@/utils/localStorage/user'
 import CallSplit from '@mui/icons-material/CallSplit'
 import Edit from '@mui/icons-material/Edit'
 import ListAlt from '@mui/icons-material/ListAlt'
@@ -18,23 +21,15 @@ import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import clsx from 'clsx'
 import { Fragment, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-import ModalPadding from '@/components/Util/ModalPadding'
-import clsx from 'clsx'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 
 interface Tip {
   id: number
   amount: number
-}
-
-interface Payment {
-  id: number
-  method: string
-  amount: number
-  userId: number
-  tips: Tip[]
 }
 
 interface User {
@@ -64,7 +59,7 @@ interface Bill {
   tableId: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | any
   products: OrderedProduct[]
-  payments: Payment[]
+  payments: any[]
   users: User[]
   total: number
   amount_left: number
@@ -84,6 +79,8 @@ function BillId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
   // const queryClient = useQueryClient()
   const [billData, setBillData] = useState<Bill | null>(null)
+  const [showDetails, setShowDetails] = useState<any>(false)
+  const { user } = getUserLS()
 
   //TODO -  convert to useReducer
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
@@ -105,7 +102,7 @@ function BillId() {
       }
     },
     retry: false,
-    staleTime: Infinity,
+    // staleTime: Infinity,
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
     // refetchInterval: 15000,
     // refetchIntervalInBackground: true,
@@ -160,7 +157,7 @@ function BillId() {
         <Spacer size="xl" />
 
         <Flex align="center" direction="col">
-          <H4 className="font-neue">Mesa {billData.tableNumber} </H4>
+          <H4 bold="light">Mesa {billData.tableNumber} </H4>
           <Spacer size="sm" />
 
           {/* TODO - definir los estados y segun el estado ponerlo */}
@@ -176,35 +173,70 @@ function BillId() {
             STATUS {status}
             <p>{status === 'EARLYACCESS' && 'el usuario scaneo el qr de la mesa antes de que existiera'}</p>
           </H2>
-          <Flex direction="col" align="center" className="w-full p-3 bg-white border rounded-md">
-            <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
-              <H1>Pagar la cuenta</H1>
-              <H2>${billData.pos_order?.Total || billData.total / 100}</H2>
+          <Flex direction="col" align="center" className="w-full px-4 py-3 bg-white border rounded-xl ">
+            <Flex direction="row" align="center" space="sm" justify="between" className="flex-shrink-0 w-full">
+              <H1>Cuenta total</H1>
+              <H1 className="relative">
+                ${billData.pos_order?.Total || billData.total / 100} {billData.amount_left !== Number(billData.total) && <LineThrough />}
+              </H1>
             </Flex>
-            <Spacer size="sm" />
+            <Spacer size="xs" />
+            <hr className="w-full " />
+            <Spacer size="xs" />
             {status === 'OPEN' ? (
-              <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
-                <H1>Por pagar</H1>
-                <H2>${billData.amount_left / 100}</H2>
-              </Flex>
+              <Fragment>
+                <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
+                  <H1>Por pagar</H1>
+                  <H1 className="relative">
+                    ${billData.amount_left / 100} <LineOnBottom />
+                  </H1>
+                </Flex>
+                <Spacer size="md" />
+                <button
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="flex flex-row items-center self-end px-2 space-x-2 border rounded-full bg-background-primary"
+                >
+                  <H4>Desgloce pagos</H4> {showDetails ? <FaChevronUp className="w-3 h-3" /> : <FaChevronDown className="w-3 h-3" />}
+                </button>
+                <Spacer size="xs" />
+                <AnimatePresence>
+                  {showDetails && (
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: showDetails ? 'auto' : 0 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="self-start w-full px-3 py-1 space-y-2 border rounded-xl "
+                    >
+                      {billData.payments.map((payment, index) => (
+                        <div key={index} className="flex flex-row items-center justify-between w-full space-x-2 ">
+                          <H4 as="div">{payment.customerId === user.stripeCustomerId ? <H4 bold="semibold">Pagaste</H4> : 'Pagaron'}</H4>
+                          <H4>${(payment.amount / 100).toFixed(2)}</H4>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Fragment>
             ) : null}
           </Flex>
 
-          <Spacer size="xl" />
+          <Spacer size="md" />
 
-          <div className="w-full max-w-lg mx-auto">
-            <div className="flex flex-col p-4 space-y-4 bg-white border rounded-md ">
+          <div className="relative w-full max-w-lg mx-auto">
+            <div className="relative flex flex-col p-4 space-y-4 bg-white border rounded-xl ">
               {billData.products?.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div key={index} className="flex items-center justify-between ">
+                  <div className="absolute left-0 w-[5px] rounded-tr-full rounded-br-full h-7 bg-buttons-main opacity-90" />
                   <Flex space="xs">
-                    <span className="box-border flex items-center justify-center w-6 h-6 font-semibold rounded-md bg-background-primary">
+                    <H5 bold="medium" className="box-border flex items-center justify-center w-6 h-6 rounded-md bg-background-primary">
                       {product.quantity}
-                    </span>
+                    </H5>
                     <span className="flex-1 overflow-hidden text-gray-600 w-52 whitespace-nowrap text-ellipsis text-over">
                       {product.name}
                     </span>
                   </Flex>
-                  <span className="font-extralight">${(product.price / 100).toFixed(2)}</span>
+                  <span className="font-light">${(product.price / 100).toFixed(2)}</span>
                 </div>
               ))}
             </div>

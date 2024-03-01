@@ -8,6 +8,19 @@ import xml2js from 'xml2js'
 const venueRouter = express.Router()
 const pool = new ConnectionPool(dbConfig)
 
+venueRouter.get('/:venueId/menus', async (req, res) => {
+  const { venueId } = req.params
+
+  const menus = await prisma.menu.findMany({
+    where: {
+      venueId,
+    },
+  })
+
+  res.set('Cache-Control', 'public, max-age=86400')
+
+  res.json(menus)
+})
 //ANCHOR ENDPOINTS
 //NOTE ESTE ENDPOINT SOLO SE EJECUTARA UNA VES Y SOLO CUANDO EN EL POS SE ABRA UNA MESA
 venueRouter.post('/order', async (req, res) => {
@@ -94,6 +107,7 @@ venueRouter.post('/comanda', async (req, res) => {
       include: {
         products: true,
         table: true,
+        payments: true,
       },
     })
     if (!bill) {
@@ -337,6 +351,7 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
         payments: {
           select: {
             amount: true,
+            customerId: true,
           },
         },
         table: {
@@ -365,13 +380,12 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
 })
 
 venueRouter.post('/:venueId/review', (req, res) => {
-  console.log('stars', req.body)
   res.json({ message: 'VenueId Works!' })
 })
 
 venueRouter.get('/listVenues', async (req, res) => {
   const venues = await prisma.venue.findMany({ include: { tables: true } })
-  console.log('stars', req.body)
+
   res.json(venues)
 })
 
