@@ -57,7 +57,7 @@ function App() {
   //   })
   // }, [])
 
-  lazy(() => import('./pages/Venues/Bills/BillId'))
+  // lazy(() => import('./pages/Venues/Bills/BillId'))
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Fragment>

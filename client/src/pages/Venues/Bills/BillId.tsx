@@ -19,7 +19,7 @@ import Edit from '@mui/icons-material/Edit'
 import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import clsx from 'clsx'
 import { Fragment, useEffect, useState } from 'react'
@@ -76,9 +76,10 @@ export const socket = io(URL, {
 })
 
 function BillId() {
-  const params = useParams<{ venueId: string; billId: string; tableId: string }>()
-  // const queryClient = useQueryClient()
-  const [billData, setBillData] = useState<Bill | null>(null)
+  const { venueId, billId } = useParams()
+  const queryClient = useQueryClient()
+
+  // const [billData, setBillData] = useState<Bill | null>(null)
   const [showDetails, setShowDetails] = useState<any>(false)
   const { user } = getUserLS()
 
@@ -86,23 +87,22 @@ function BillId() {
   const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
 
   const {
-    data: initialData,
+    data: billData,
     isPending,
     error,
     isError,
   } = useQuery<Bill>({
-    queryKey: ['bill_data'],
+    queryKey: ['bill_data', venueId, billId],
     queryFn: async () => {
       try {
-        // const response = await instance.post(`/api/v1/venues/${params.venueId}/bills/${params.billId}`)
-        const response = await instance.get(`/v1/venues/${params.venueId}/bills/${params.billId}`)
+        const response = await instance.get(`/v1/venues/${venueId}/bills/${billId}`)
         return response.data
       } catch (error) {
         throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')
       }
     },
     retry: false,
-    // staleTime: Infinity,
+    staleTime: Infinity,
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
     // refetchInterval: 15000,
     // refetchIntervalInBackground: true,
@@ -110,26 +110,23 @@ function BillId() {
   })
 
   useEffect(() => {
-    // Suponiendo que `params` contiene `venueId` y `billId`
-    socket.emit('joinRoom', { venueId: params.venueId, table: initialData?.tableNumber })
+    // Solo intentar unirse al room si `billData` y `billData.tableNumber` están definidos
+    if (billData && billData.tableNumber !== undefined) {
+      const roomInfo = { venueId: venueId, table: billData.tableNumber }
+      socket.emit('joinRoom', roomInfo)
 
-    socket.on('updateOrder', data => {
-      setBillData(data)
-      // Aquí puedes manejar la actualización en el estado del cliente
-    })
+      socket.on('updateOrder', data => {
+        queryClient.setQueryData(['bill_data'], data)
+        queryClient.invalidateQueries({ queryKey: ['bill_data'] })
+      })
 
-    // Asegurarse de dejar el room al desmontar el componente
-    return () => {
-      socket.emit('leaveRoom', { venueId: params.venueId, table: initialData?.tableNumber })
-      socket.off('updateOrder')
+      // Asegurarse de dejar el room al desmontar el componente
+      return () => {
+        socket.emit('leaveRoom', roomInfo)
+        socket.off('updateOrder')
+      }
     }
-  }, [params.venueId, initialData?.tableNumber])
-
-  useEffect(() => {
-    if (initialData) {
-      setBillData(initialData)
-    }
-  }, [initialData])
+  }, [queryClient, venueId, billData?.tableNumber, billData])
 
   // if (isFetching) return <Loading message="Buscando tu mesa" />
 

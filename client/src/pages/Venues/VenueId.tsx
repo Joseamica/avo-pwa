@@ -32,9 +32,7 @@ function VenueId() {
         />
       </div>
 
-      <Suspense fallback={<h2>Loading</h2>}>
-        <Outlet />
-      </Suspense>
+      <Outlet />
     </div>
   )
 }

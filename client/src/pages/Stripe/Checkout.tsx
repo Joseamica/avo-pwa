@@ -13,7 +13,6 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
-import ModalPadding from '@/components/Util/ModalPadding'
 
 const stripePromise = initStripe('https://avo-pwa.onrender.com/v1/stripe/publishable-key')
 
