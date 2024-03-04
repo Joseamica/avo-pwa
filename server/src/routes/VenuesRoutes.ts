@@ -371,9 +371,8 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
       },
     })
 
-    const amount_left =
-      bill.payments.length > 0 && Number(bill.total) - bill.payments?.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
+    const amount_left = Number(bill.total) - bill.payments?.reduce((acc, payment) => acc + Number(payment.amount), 0)
+    console.log('amount_left', amount_left)
     return res.json({ ...bill, amount_left })
   } catch (error) {
     console.error('Error al obtener información de la cuenta:', error)
