@@ -29,6 +29,7 @@ export async function createTables(branchId: string, numberOfTables: number) {
       data: {
         tableNumber: i,
         venue: { connect: { id: branchId } },
+        status: 'INACTIVE',
       },
     })
     tableNumbers.push(table.tableNumber)
