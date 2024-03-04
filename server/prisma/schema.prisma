@@ -426,14 +426,6 @@ enum PreferenceType {
   payment_methods
 }
 
-enum FeedbackType {
-  FOOD
-  SERVICE
-  ATMOSPHERE
-  PRICEQUALITY
-  NONE
-}
-
 enum NotificationMethod {
   email
   sms
