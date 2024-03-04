@@ -18,6 +18,14 @@ async function main() {
     },
   })
   const tableNumbers = await createTables(venue.id, 10)
+  // for (let i = 1; i <= 10; i++) {
+  //   await prisma.menu.create({
+  //     data: {
+  //       name: `Menu ${i}`,
+  //       venue: { connect: { id: venue.id } },
+  //     },
+  //   })
+  // }
   console.timeEnd(`🌱 Database has been seeded`)
 
   console.log({ venue, tableNumbers })
@@ -29,7 +37,6 @@ export async function createTables(branchId: string, numberOfTables: number) {
       data: {
         tableNumber: i,
         venue: { connect: { id: branchId } },
-        status: 'INACTIVE',
       },
     })
     tableNumbers.push(table.tableNumber)
