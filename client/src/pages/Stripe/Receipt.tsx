@@ -23,6 +23,7 @@ export default function Receipt({
       email: email,
     })
   }
+
   const [, notificationsActions] = useNotifications()
 
   function showNotification() {
@@ -42,7 +43,7 @@ export default function Receipt({
 
   return (
     <Modal isOpen={isOpen} closeModal={closeModal} title="Obtener mi recibo">
-      <form method="post" onSubmit={onSubmitEmail}>
+      <form method="post" onSubmit={onSubmitEmail} className="p-4">
         <Field
           labelProps={{ children: 'Email' }}
           inputProps={{

@@ -18,7 +18,7 @@ interface LoaderData {
 export async function loader({ params }) {
   const { venueId } = params
   const res = await instance.get(`/v1/venues/${venueId}/menus`)
-  console.log('res', res)
+
   const menus = res.data
   return json({ menus })
 }
@@ -44,7 +44,7 @@ export default function Menus() {
       {data.menus.map((menu: Menu) => {
         return (
           <div key={menu.id}>
-            <h1>{menu.name}</h1>
+            {/* <h1>{menu.name}</h1> */}
             <img loading="lazy" src={menu.imageUrl} alt={menu.name} width="500" height="500" className="rounded-xl" />
           </div>
         )

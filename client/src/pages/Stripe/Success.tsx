@@ -1,6 +1,7 @@
 import instance from '@/axiosConfig'
 import { Flex } from '@/components'
-import { Button, LinkButton } from '@/components/Button'
+import { IconButton, LinkButton } from '@/components/Button'
+import { LineOnBottom } from '@/components/LineThrough'
 import { Spacer } from '@/components/Util/Spacer'
 import { H1 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
@@ -8,6 +9,7 @@ import useNotifications from '@/store/notifications'
 import { getRandomPaymentMsg } from '@/utils/get-msgs'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { FaReceipt } from 'react-icons/fa'
 import { useSearchParams } from 'react-router-dom'
 import Receipt from './Receipt'
 import Review from './Review'
@@ -25,13 +27,12 @@ const Success: React.FC = () => {
       const response = await instance.get(`/v1/stripe/payment-intent/${paymentIntentId}`)
       return response.data
     },
-    networkMode: 'offlineFirst',
   })
 
   useEffect(() => {
     const paymentIntentsKey = 'paymentIntents'
     const paymentIntentId = searchParams.get('payment_intent')
-    let paymentIntents = JSON.parse(localStorage.getItem(paymentIntentsKey) || '[]')
+    const paymentIntents = JSON.parse(localStorage.getItem(paymentIntentsKey) || '[]')
 
     if (isSuccess && !isError && !paymentIntents.includes(paymentIntentId)) {
       openModal('review')
@@ -59,12 +60,16 @@ const Success: React.FC = () => {
     <div className="w-full max-w-lg py-3 mx-auto mt-40">
       <Flex justify="between" align="center" className="px-4 py-2 rounded-full bg-background-success">
         <H1 variant="success">Pagaste ✅</H1>
-        <H1 className="line-through">${data?.amount / 100}</H1>
+        <H1 className="relative">
+          ${data?.amount / 100}
+          <LineOnBottom />
+        </H1>
       </Flex>
       <Spacer size="xl" />
       <Receipt isOpen={isModalOpen.receipt} closeModal={() => closeModal('receipt')} paymentIntentId={paymentIntentId} />
-      <Review isOpen={isModalOpen.review} closeModal={() => closeModal('review')} />
-      <Button type="button" text="Obtener recibo" onClick={() => openModal('receipt')} />
+      <Review isOpen={isModalOpen.review} closeModal={() => closeModal('review')} venueId={data?.metadata.venueId} />
+      <IconButton icon={<FaReceipt />} text="Obtener recibo" onClick={() => openModal('receipt')} />
+      <Spacer size="sm" />
       <LinkButton
         to={`/venues/${data?.metadata.venueId}/bills/${data?.metadata.billId}`}
         reloadDocument={true}

@@ -30,12 +30,22 @@ const getPaymentMethods = async (req, res) => {
 
 const createPaymentIntent = async (req, res) => {
   const { amounts, customerId, currency, paymentMethodId, params, isInternationalCard, saveCard } = req.body
-  console.log('isInternationalCard', isInternationalCard)
+  // console.log('isInternationalCard', isInternationalCard)
   const rest_fee_percentage = isInternationalCard ? 0.04 : 0.03
   const rest_fee = Math.round(amounts.total * rest_fee_percentage) + 400
   const avoFee = amounts.userFee + rest_fee
-  console.log('avoFee', avoFee)
+  // console.log('avoFee', avoFee)
+
   try {
+    const { stripeAccountId } = await prisma.venue.findUnique({
+      where: {
+        id: params.venueId,
+      },
+      select: {
+        stripeAccountId: true,
+      },
+    })
+
     const setupFutureUsage = saveCard ? 'off_session' : undefined
 
     const paymentIntent = await stripe.paymentIntents.create({
@@ -47,7 +57,7 @@ const createPaymentIntent = async (req, res) => {
 
       application_fee_amount: avoFee,
       transfer_data: {
-        destination: 'acct_1Oks58PmsglnVXF2',
+        destination: stripeAccountId,
       },
       metadata: {
         venueId: params.venueId,
@@ -195,8 +205,7 @@ const webhookConfirmPayment = async (req: express.Request, res: express.Response
         },
       })
       const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-      console.log('amount_left', amount_left)
-      console.log('updatedBill', updatedBill)
+
       const roomId = `venue_${venueId}_table_${updatedBill.tableNumber}`
       req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left })
       console.log(`💵 Charge id: ${charge.id}`)

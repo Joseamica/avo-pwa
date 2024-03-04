@@ -118,7 +118,7 @@ function LinkButton({
       <div
         className={clsx(
           'flex items-center relative  justify-center  space-x-2    rounded-full border-gray text-xl',
-          { 'text-white bg-buttons-main border-4': variant === 'primary' },
+          { 'text-white bg-buttons-main ': variant === 'primary' },
           { 'text-buttons-main bg-white border': variant === 'secondary' },
           { 'px-11 py-6 ': size === 'lg' },
           { 'px-8 py-4': size === 'md' },

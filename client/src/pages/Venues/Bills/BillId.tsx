@@ -134,19 +134,7 @@ function BillId() {
   if (isError) return 'An error has occured: ' + error?.message
   if (!billData) return <div>Cargando datos de la factura...</div>
 
-  let status
-
-  if (billData?.pos_order?.Status === 4 || billData.status === 'OPEN') {
-    status = 'OPEN'
-  } else if (billData.status === 'PENDING') {
-    status = 'PENDING'
-  } else if (billData?.pos_order?.Status === 0 || billData.status === 'CLOSED') {
-    status = 'CLOSED'
-  } else if (billData.status === 'PRECREATED') {
-    status = 'PRECREATED'
-  } else {
-    status = 'EARLYACCESS'
-  }
+  const paymentsExist = billData.payments.length > 0
 
   return (
     <Fragment>
@@ -156,19 +144,19 @@ function BillId() {
         <Flex align="center" direction="col">
           <H4 bold="light">Mesa {billData.tableNumber} </H4>
           <Spacer size="sm" />
-
           {/* TODO - definir los estados y segun el estado ponerlo */}
           <H2
             className={clsx('text-white', {
-              'bg-green-500': status === 'OPEN',
-              'bg-red-500': status === 'CLOSED',
-              'bg-violet-500': status === 'EARLYACCESS',
-              'bg-yellow-500': status === 'PENDING',
-              'bg-gray-500': status === 'PRECREATED',
+              'bg-green-500': billData.status === 'OPEN',
+              'bg-red-500': billData.status === 'PAID',
+              'bg-sky-500': billData.status === 'COURTESY',
+              'bg-violet-500': billData.status === 'EARLYACCESS',
+              'bg-yellow-500': billData.status === 'PENDING',
+              'bg-gray-500': billData.status === 'CANCELED',
             })}
           >
-            STATUS {status}
-            <p>{status === 'EARLYACCESS' && 'el usuario scaneo el qr de la mesa antes de que existiera'}</p>
+            STATUS {billData.status}
+            <p>{billData.status === 'EARLYACCESS' && 'el usuario scaneo el qr de la mesa antes de que existiera'}</p>
           </H2>
           <Flex direction="col" align="center" className="w-full px-4 py-3 bg-white border rounded-xl ">
             <Flex direction="row" align="center" space="sm" justify="between" className="flex-shrink-0 w-full">
@@ -177,43 +165,56 @@ function BillId() {
                 ${billData.pos_order?.Total || billData.total / 100} {billData.amount_left !== Number(billData.total) && <LineThrough />}
               </H1>
             </Flex>
-            <Spacer size="xs" />
-            <hr className="w-full " />
-            <Spacer size="xs" />
-            {status === 'OPEN' ? (
+
+            {billData.status === 'OPEN' || billData.status === 'PAID' ? (
               <Fragment>
+                <Spacer size="xs" />
+                <hr className="w-full " />
+                <Spacer size="xs" />
                 <Flex direction="row" align="center" space="sm" justify="between" className="w-full">
                   <H1>Por pagar</H1>
                   <H1 className="relative">
-                    ${billData.amount_left / 100} <LineOnBottom />
+                    {billData.status === 'PAID' ? (
+                      '$0'
+                    ) : (
+                      <Fragment>
+                        ${billData.amount_left / 100} <LineOnBottom />
+                      </Fragment>
+                    )}
                   </H1>
                 </Flex>
-                <Spacer size="md" />
-                <button
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="flex flex-row items-center self-end px-2 space-x-2 border rounded-full bg-background-primary"
-                >
-                  <H4>Desgloce pagos</H4> {showDetails ? <FaChevronUp className="w-3 h-3" /> : <FaChevronDown className="w-3 h-3" />}
-                </button>
-                <Spacer size="xs" />
-                <AnimatePresence>
-                  {showDetails && (
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: showDetails ? 'auto' : 0 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="self-start w-full px-3 py-1 space-y-2 border rounded-xl "
+                {paymentsExist ? (
+                  <Fragment>
+                    <Spacer size="md" />
+                    <button
+                      onClick={() => setShowDetails(!showDetails)}
+                      className="flex flex-row items-center self-end px-2 space-x-2 border rounded-full bg-background-primary"
                     >
-                      {billData.payments.map((payment, index) => (
-                        <div key={index} className="flex flex-row items-center justify-between w-full space-x-2 ">
-                          <H4 as="div">{payment.customerId === user.stripeCustomerId ? <H4 bold="semibold">Pagaste</H4> : 'Pagaron'}</H4>
-                          <H4>${(payment.amount / 100).toFixed(2)}</H4>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <H4>Desgloce pagos</H4> {showDetails ? <FaChevronUp className="w-3 h-3" /> : <FaChevronDown className="w-3 h-3" />}
+                    </button>
+                    <Spacer size="xs" />
+                    <AnimatePresence>
+                      {showDetails && (
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: showDetails ? 'auto' : 0 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.5 }}
+                          className="self-start w-full px-3 py-1 space-y-2 border rounded-xl "
+                        >
+                          {billData.payments.map((payment, index) => (
+                            <div key={index} className="flex flex-row items-center justify-between w-full space-x-2 ">
+                              <H4 as="div">
+                                {payment.customerId === user.stripeCustomerId ? <H4 bold="semibold">Pagaste</H4> : 'Pagaron'}
+                              </H4>
+                              <H4>${(payment.amount / 100).toFixed(2)}</H4>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Fragment>
+                ) : null}
               </Fragment>
             ) : null}
           </Flex>
@@ -241,7 +242,7 @@ function BillId() {
 
           <Spacer size="xl" />
           <div className="sticky w-full bottom-5">
-            {status === 'OPEN' && (
+            {billData.status === 'OPEN' && (
               <Button onClick={() => openModal('payment_methods')} disabled={billData.amount_left <= 0} text={'Pagar'} />
             )}
           </div>

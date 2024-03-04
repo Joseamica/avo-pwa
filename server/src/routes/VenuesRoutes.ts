@@ -1,32 +1,16 @@
 import express from 'express'
-import sql, { ConnectionPool } from 'mssql'
-import dbConfig from '../config/DbConfig'
 import prisma from '../utils/prisma'
 
-import xml2js from 'xml2js'
-
 const venueRouter = express.Router()
-const pool = new ConnectionPool(dbConfig)
 
-venueRouter.get('/:venueId/menus', async (req, res) => {
-  const { venueId } = req.params
-
-  const menus = await prisma.menu.findMany({
-    where: {
-      venueId,
-    },
-  })
-
-  res.set('Cache-Control', 'public, max-age=86400')
-
-  res.json(menus)
-})
 //ANCHOR ENDPOINTS
 //NOTE ESTE ENDPOINT SOLO SE EJECUTARA UNA VES Y SOLO CUANDO EN EL POS SE ABRA UNA MESA
 venueRouter.post('/order', async (req, res) => {
   const { venueId, orden, mesa, total, status } = req.body
-
+  const tableStatus =
+    status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
   const date = new Date()
+  console.log('tableStatus', tableStatus)
   const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 24))
 
   const isBillFromToday = await prisma.bill.findFirst({
@@ -45,7 +29,7 @@ venueRouter.post('/order', async (req, res) => {
         key: `O${orden}-T${mesa}`,
         tableNumber: parseInt(mesa),
         posOrder: parseInt(orden),
-        status: status === '4' ? 'OPEN' : 'CLOSED',
+        status: tableStatus,
         total: total * 100,
         table: {
           connect: {
@@ -67,7 +51,7 @@ venueRouter.post('/order', async (req, res) => {
       data: {
         posOrder: parseInt(orden),
         total: total * 100,
-        status: status === '4' ? 'OPEN' : 'PENDING',
+        status: tableStatus,
       },
       include: {
         payments: true,
@@ -110,8 +94,8 @@ venueRouter.post('/comanda', async (req, res) => {
         payments: true,
       },
     })
-    if (!bill) {
-      return res.status(404).json({ message: 'La cuenta no existe' })
+    if (!bill || bill.posOrder !== parseInt(orden)) {
+      return res.status(404).json({ message: 'La cuenta no existe o no coincide' })
     }
     const totalActualizado =
       bill.products.reduce((acc, producto) => acc + Number(producto.price) * producto.quantity, 0) + precioNumerico * 100 * cantidadNumerica
@@ -165,6 +149,9 @@ venueRouter.post('/comanda', async (req, res) => {
   }
 })
 
+//ANCHOR ENDPOINTS
+venueRouter.post('/ventas', async (req, res) => {})
+
 venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
   const { venueId, tableNumber } = req.params
   try {
@@ -212,42 +199,56 @@ venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
   }
 })
 
-async function updateTableStatusesAndGetTables(venueId, mesasArray) {
-  // Primero, actualiza los estados de las mesas
-  await prisma.$transaction([
-    prisma.table.updateMany({
-      where: {
-        venueId: venueId,
-        tableNumber: {
-          in: mesasArray,
-        },
-      },
-      data: {
-        status: 'ACTIVE',
-      },
-    }),
-    prisma.table.updateMany({
-      where: {
-        venueId: venueId,
-        tableNumber: {
-          notIn: mesasArray,
-        },
-      },
-      data: {
-        status: 'INACTIVE',
-      },
-    }),
-  ])
+venueRouter.get('/:venueId/menus', async (req, res) => {
+  const { venueId } = req.params
 
-  // Luego, recupera todas las mesas para el venueId dado
-  const tables = await prisma.table.findMany({
+  const menus = await prisma.menu.findMany({
     where: {
-      venueId: venueId,
+      venueId,
     },
   })
 
-  return tables // Devuelve las mesas
-}
+  res.set('Cache-Control', 'public, max-age=86400')
+
+  res.json(menus)
+})
+
+// async function updateTableStatusesAndGetTables(venueId, mesasArray) {
+//   // Primero, actualiza los estados de las mesas
+//   await prisma.$transaction([
+//     prisma.table.updateMany({
+//       where: {
+//         venueId: venueId,
+//         tableNumber: {
+//           in: mesasArray,
+//         },
+//       },
+//       data: {
+//         status: 'ACTIVE',
+//       },
+//     }),
+//     prisma.table.updateMany({
+//       where: {
+//         venueId: venueId,
+//         tableNumber: {
+//           notIn: mesasArray,
+//         },
+//       },
+//       data: {
+//         status: 'INACTIVE',
+//       },
+//     }),
+//   ])
+
+//   // Luego, recupera todas las mesas para el venueId dado
+//   const tables = await prisma.table.findMany({
+//     where: {
+//       venueId: venueId,
+//     },
+//   })
+
+//   return tables // Devuelve las mesas
+// }
 
 //ANCHOR - TABLES
 // venueRouter.get('/:venueId/tables', async (req, res) => {
@@ -354,11 +355,11 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
             customerId: true,
           },
         },
-        table: {
-          select: {
-            tableNumber: true,
-          },
-        },
+        // table: {
+        //   select: {
+        //     tableNumber: true,
+        //   },
+        // },
         products: {
           select: {
             key: true,
@@ -372,15 +373,39 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
 
     const amount_left = Number(bill.total) - bill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
 
-    return res.json({ ...bill, amount_left, pos_order: bill.posOrder })
+    return res.json({ ...bill, amount_left })
   } catch (error) {
     console.error('Error al obtener información de la cuenta:', error)
     res.status(500).json({ message: 'Error interno del servidor.' })
   }
 })
 
-venueRouter.post('/:venueId/review', (req, res) => {
-  res.json({ message: 'VenueId Works!' })
+venueRouter.post('/:venueId/review', async (req, res) => {
+  const { stars, multipleStars } = req.body
+  const { venueId } = req.params
+  console.log('req.body', req.body)
+  console.log('stars', stars, multipleStars)
+  console.log('venueId', venueId)
+  try {
+    const createFeedback = await prisma.feedback.create({
+      data: {
+        venue: {
+          connect: {
+            id: venueId,
+          },
+        },
+        stars,
+        food: multipleStars.food,
+        service: multipleStars.service,
+        atmosphere: multipleStars.atmosphere,
+        priceQuality: multipleStars.price_quality,
+      },
+    })
+    res.status(200).json({ message: 'Review creada con exito' })
+  } catch (error) {
+    console.error('Error al dejar un review:', error)
+    res.status(500).json({ message: 'Error interno del servidor. (REVIEW)' })
+  }
 })
 
 venueRouter.get('/listVenues', async (req, res) => {
