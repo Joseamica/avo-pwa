@@ -24,14 +24,15 @@ const app = express()
 app.use(cookieParser())
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:4173',
-      'http://localhost:5000',
-      'https://localhost',
-      'http://192.168.100.7:5173',
-      'https://avo-pwa.pages.dev', // Corregido
-    ],
+    origin: '*',
+    // [
+    //   'http://localhost:5173',
+    //   'http://localhost:4173',
+    //   'http://localhost:5000',
+    //   'https://localhost',
+    //   'http://192.168.100.7:5173',
+    //   'https://avo-pwa.pages.dev', // Corregido
+    // ],
 
     methods: ['GET', 'POST'],
     credentials: true,
