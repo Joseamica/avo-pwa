@@ -3,6 +3,11 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding...')
   console.time(`🌱 Database has been seeded`)
+  const venueExist = await prisma.venue.findFirst()
+  if (venueExist) {
+    console.log('🌱 Database has been seeded')
+    return
+  }
   const venue = await prisma.venue.create({
     data: {
       name: 'Madre Cafecito',
