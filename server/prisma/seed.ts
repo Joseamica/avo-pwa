@@ -8,7 +8,7 @@ async function main() {
       name: 'Madre Cafecito',
       address: '-',
       city: 'CDMX',
-
+      email: 'test@gmail.com',
       image:
         'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2FPortada.png?alt=media&token=2960aaef-6a8a-4e2d-a197-f8eb1c167b3c',
       cuisine: 'Café',
