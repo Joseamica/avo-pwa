@@ -76,8 +76,7 @@ export const socket = io(URL, {
 function BillId() {
   const { venueId, billId } = useParams()
   const queryClient = useQueryClient()
-  console.log('socket', socket)
-  // const [billData, setBillData] = useState<Bill | null>(null)
+
   const [showDetails, setShowDetails] = useState<any>(false)
   const { user } = getUserLS()
 
@@ -104,7 +103,7 @@ function BillId() {
     // FIXME - Una solucion podria ser que si detecta que hay mas de 1 usuario, solo 1 usuario haga el fetch y los demas esperen a la actualizacion del socket
     // refetchInterval: 15000,
     // refetchIntervalInBackground: true,
-    refetchOnWindowFocus: true,
+    // refetchOnWindowFocus: true,
   })
 
   useEffect(() => {

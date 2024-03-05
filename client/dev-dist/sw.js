@@ -82,13 +82,13 @@ define(['./workbox-a2d9e19e'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "firebase-messaging-sw.js",
-    "revision": "f4a2a88ccaa2dd0153ccdbb00eda91fc"
+    "revision": "c81d894a8f5b9d0a8c3a5dbbd6e5e158"
   }, {
     "url": "registerSW.js",
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.ulvjoee6ro"
+    "revision": "0.bs1onthl248"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
