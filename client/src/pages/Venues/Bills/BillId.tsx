@@ -67,7 +67,7 @@ interface Bill {
   pos_order: { Status: number; Orden: number; Total: number }
 }
 
-const URL = '/'
+const URL = import.meta.env.PROD ? 'https://avo-pwa.onrender.com' : '/'
 
 export const socket = io(URL, {
   autoConnect: true,
