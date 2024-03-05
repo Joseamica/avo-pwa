@@ -1,5 +1,5 @@
 import { Fragment, lazy } from 'react'
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider, useLocation } from 'react-router-dom'
 
 // import CssBaseline from '@mui/material/CssBaseline'
 
@@ -33,7 +33,9 @@ import Login from './pages/Auth/Login'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Me from './pages/Auth/Me'
 import Admin from './pages/Venues/Bills/Admin'
-import { AuthProvider } from './auth/AuthProvider'
+import { AuthProvider, useAuth } from './auth/AuthProvider'
+import { PrivateRoute } from './PrivateRoute'
+import ProtectedRoutes from './pages/ProtectedRoutes'
 // import Page4 from './pages/Page4'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
@@ -72,36 +74,39 @@ function App() {
           <Route path="/" index element={<Layout />} />
 
           <Route path="venues/:venueId/bills/:billId/menus" element={<Menus />} loader={menusLoader} />
-          {/* <Route path="venues/:venueId/menus" element={<Menus />} loader={menusLoader} /> */}
+
           <Route path="venues/:venueId" element={<Venues.VenueId />}>
             <Route path="bills/:billId" element={<Bills.Bills />} errorElement={<Error />} />
-            <Route path="admin" element={<Admin />} />
           </Route>
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
             <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
-          <Route path="auth/login" element={<Login />} />
-          <Route path="auth/register" element={<Register />} />
-          <Route path="me" element={<Me />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route
+              path="admin"
+              element={
+                <PrivateRoute>
+                  <Admin />
+                </PrivateRoute>
+              }
+            />
+            <Route path="auth/login" element={<Login />} />
+            <Route path="auth/register" element={<Register />} />
+            <Route
+              path="me"
+              element={
+                <PrivateRoute>
+                  <Me />
+                </PrivateRoute>
+              }
+            />
+          </Route>
 
           <Route path="success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="*" element={<NotFound />} />
-        {/* <Route path="sockets" element={<Sockets />} />
-        <Route path="chat" element={<Page2 />} />
-        <Route path="auth" index element={<Auth />} />
-      <Route path="page-4" element={<Page4 />} /> */}
-
-        {/* <Route path="checkout" element={<Checkout />} /> */}
-        {/* </Suspense> */}
       </Fragment>,
-
-      // <>
-      //   {Object.values(routes).map(({ path, component: Component, children }) => {
-      //     return <Route key={path} path={path} element={<Component />} />
-      //   })}
-      // </>,
     ),
   )
 
@@ -113,9 +118,9 @@ function App() {
       <SW />
 
       {/* <Sidebar /> */}
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
+
+      <RouterProvider router={router} />
+
       <ReactQueryDevtools initialIsOpen position="bottom" />
     </Fragment>
   )

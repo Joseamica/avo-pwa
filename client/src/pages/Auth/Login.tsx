@@ -1,28 +1,15 @@
+import { useAuth } from '@/auth/AuthProvider'
 import api from '@/axiosConfig' // Asegúrate de que esta instancia de Axios esté configurada correctamente
 import { Field } from '@/components' // Asumiendo que estos componentes están correctamente importados
-import Loading from '@/components/Loading'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const { isLoading } = useQuery({
-    queryKey: ['login'],
-    queryFn: async () => {
-      const res = await api.get('/v1/auth/status', {
-        withCredentials: true,
-      })
-      if (res.data.loggedIn) {
-        navigate('/me')
-      }
-      return res.data
-    },
-  })
-
-  // Definición de la mutación usando useMutation
   const loginMutation = useMutation({
     mutationFn: ({ username, password }: { username: string | FormDataEntryValue; password: string | FormDataEntryValue }) =>
       api.post(
@@ -37,16 +24,14 @@ export default function Login() {
         },
       ),
     onSuccess: () => {
+      // FIXME - en algun punto tengo que cambiar el localStorage de persist:user para asignarle el stripeCustomerId y se guarden los datos del usuario
       navigate('/me')
+      login()
     },
     onError: (error: any) => {
       console.log(error)
       setError(error.response.data.error)
     },
-    // onSuccess: () => {
-    //   // Invalidar queries o realizar acciones después de un login exitoso
-    //   queryClient.invalidateQueries(['login'])
-    // },
   })
 
   const handleSubmit = event => {
@@ -59,7 +44,7 @@ export default function Login() {
     loginMutation.mutate({ username, password })
   }
 
-  if (isLoading) return <Loading message="Cargando..." />
+  // if (isLoading) return <Loading message="Cargando..." />
 
   // Mostrar formulario y manejar el estado de la mutación (cargando, error, éxito)
   return (

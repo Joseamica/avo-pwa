@@ -1,29 +1,43 @@
-// src/context/AuthProvider.tsx
-import { getUserLS } from '@/utils/localStorage/user'
-import React, { createContext, useContext, useState, type ReactNode, useCallback, useEffect } from 'react'
+import Loading from '@/components/Loading'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-// Define el tipo para el contexto de autenticación
-interface AuthContextType {
-  user: any // Cambia 'any' por el tipo de tu usuario
-  login: (username: string, password: string) => void
-  logout: () => void
-}
+const AuthContext = createContext(null)
 
-// Crea el contexto de autenticación
-const AuthContext = createContext<AuthContextType>(null!)
-
-// Define el tipo para las props del proveedor
-interface AuthProviderProps {
-  children: ReactNode
-}
-
-// Componente proveedor
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  // const [user, setUser] = useState(null);
-  const [user, setUser] = useState()
-
-  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>
-}
-
-// Hook personalizado para usar el contexto de autenticación
 export const useAuth = () => useContext(AuthContext)
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('isAuthenticated')
+    if (token) {
+      // Aquí podrías decodificar el token para obtener la información del usuario si es necesario
+      // y verificar si el token aún es válido según tu lógica de negocio
+      setIsAuthenticated(true)
+      navigate('/me')
+    }
+    setLoading(false)
+  }, [])
+
+  const login = async () => {
+    // Implementa la lógica de inicio de sesión
+    // Asegúrate de guardar el token en localStorage tras un inicio de sesión exitoso
+    localStorage.setItem('isAuthenticated', 'true')
+    // Actualiza el estado del usuario
+    setIsAuthenticated(true)
+  }
+
+  const logout = async () => {
+    // Limpia el localStorage y el estado de usuario
+    localStorage.removeItem('isAuthenticated')
+    localStorage.removeItem('persist:user')
+    localStorage.removeItem('paymentIntents')
+    setIsAuthenticated(false)
+  }
+  if (loading) return <Loading message="Cargando..." />
+
+  return <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>{!loading && children}</AuthContext.Provider>
+}

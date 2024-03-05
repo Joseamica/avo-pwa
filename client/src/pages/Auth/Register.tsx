@@ -1,3 +1,4 @@
+import { useAuth } from '@/auth/AuthProvider'
 import api from '@/axiosConfig'
 import { Field } from '@/components/Forms/Field'
 import Loading from '@/components/Loading'
@@ -15,6 +16,7 @@ const RegisterSchema = z.object({
 const Register = () => {
   const navigation = useNavigation()
   const [error, setError] = useState('')
+  const { login } = useAuth()
 
   const isSubmitting = navigation.state !== 'idle'
 
@@ -46,6 +48,7 @@ const Register = () => {
         },
       ),
     onSuccess: () => {
+      login()
       navigate('/me')
     },
     onError: (error: any) => {

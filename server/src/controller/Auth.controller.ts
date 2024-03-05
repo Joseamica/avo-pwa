@@ -6,6 +6,7 @@ import { generateAccessToken } from '../utils/auth'
 
 const getAuthStatus = async (req, res) => {
   const refreshToken = req.cookies.refreshToken
+
   if (!refreshToken) {
     // Si no hay cookie, envía una respuesta de error.
     return res.json({ loggedIn: false })
