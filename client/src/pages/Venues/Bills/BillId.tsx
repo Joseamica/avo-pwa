@@ -1,18 +1,17 @@
+import instance from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Button, IconButton } from '@/components/Button'
-import Modal from '@/components/Modal'
-import { Spacer } from '@/components/Util/Spacer'
-import { H1, H2, H4, H5 } from '@/components/Util/Typography'
-import useModal from '@/hooks/useModal'
-import Checkout from '@/pages/Stripe/Checkout'
-import { AnimatePresence, motion } from 'framer-motion'
-import instance from '@/axiosConfig'
 import { LineOnBottom, LineThrough } from '@/components/LineThrough'
 import Loading from '@/components/Loading'
+import Modal from '@/components/Modal'
 import ByProductModal from '@/components/Modals/ByProductModal'
 import CustomModal from '@/components/Modals/CustomModal'
 import EqualPartsModal from '@/components/Modals/EqualPartsModal'
 import ModalPadding from '@/components/Util/ModalPadding'
+import { Spacer } from '@/components/Util/Spacer'
+import { H1, H4, H5 } from '@/components/Util/Typography'
+import useModal from '@/hooks/useModal'
+import Checkout from '@/pages/Stripe/Checkout'
 import { getUserLS } from '@/utils/localStorage/user'
 import CallSplit from '@mui/icons-material/CallSplit'
 import Edit from '@mui/icons-material/Edit'
@@ -20,12 +19,11 @@ import ListAlt from '@mui/icons-material/ListAlt'
 import Payment from '@mui/icons-material/Payment'
 import SafetyDivider from '@mui/icons-material/SafetyDivider'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import clsx from 'clsx'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Fragment, useEffect, useState } from 'react'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 
 interface Tip {
   id: number
@@ -78,7 +76,7 @@ export const socket = io(URL, {
 function BillId() {
   const { venueId, billId } = useParams()
   const queryClient = useQueryClient()
-
+  console.log('socket', socket)
   // const [billData, setBillData] = useState<Bill | null>(null)
   const [showDetails, setShowDetails] = useState<any>(false)
   const { user } = getUserLS()
