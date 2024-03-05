@@ -34,12 +34,13 @@ import Register from './pages/Auth/Register'
 import ProtectedRoutes from './pages/ProtectedRoutes'
 import Success from './pages/Stripe/Success'
 // import Admin from './pages/Venues/Bills/Admin'
-import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import { loader as menusLoader } from './pages/Venues/Menus/Menus'
 import { PublicRoute } from './PublicRoute'
 // import Page4 from './pages/Page4'
 
 const Login = lazy(() => import('./pages/Auth/Login'))
 const Admin = lazy(() => import('./pages/Venues/Bills/Admin'))
+const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
 
 function App() {
   if ('serviceWorker' in navigator) {
@@ -74,7 +75,15 @@ function App() {
         <Route path="/" element={<Template />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="/" index element={<Layout />} />
 
-          <Route path="venues/:venueId/bills/:billId/menus" element={<Menus />} loader={menusLoader} />
+          <Route
+            path="venues/:venueId/bills/:billId/menus"
+            element={
+              <Suspense fallback={<div>Cargando...</div>}>
+                <Menus />
+              </Suspense>
+            }
+            loader={menusLoader}
+          />
 
           <Route path="venues/:venueId" element={<Venues.VenueId />}>
             <Route path="bills/:billId" element={<Bills.Bills />} errorElement={<Error />} />

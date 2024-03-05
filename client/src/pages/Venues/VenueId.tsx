@@ -2,7 +2,6 @@ import { LinkButton } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
 import HeaderAvo from '@/sections/Header/HeaderAvo'
 import { type IncognitoUser } from '@/utils/types/user'
-import { Suspense } from 'react'
 import { MdMenuBook } from 'react-icons/md'
 import { Outlet, useParams } from 'react-router-dom'
 
