@@ -69,7 +69,7 @@ interface Bill {
   pos_order: { Status: number; Orden: number; Total: number }
 }
 
-const URL = 'https://avo-pwa.pages.dev/'
+const URL = '/'
 
 export const socket = io(URL, {
   autoConnect: true,
