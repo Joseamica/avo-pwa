@@ -169,7 +169,7 @@ venueRouter.post('/comanda', async (req, res) => {
       },
     })
     const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-    console.log('updatedBill', updatedBill)
+
     const roomId = `venue_${venueId}_table_${updatedBill.tableNumber}`
     req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: updatedBill.posOrder })
     console.log('✅🍖 producto agregado')
@@ -404,7 +404,7 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
     })
 
     const amount_left = Number(bill.total) - bill.payments?.reduce((acc, payment) => acc + Number(payment.amount), 0)
-    console.log('amount_left', amount_left)
+
     return res.json({ ...bill, amount_left })
   } catch (error) {
     console.error('Error al obtener información de la cuenta:', error)
@@ -1068,7 +1068,7 @@ venueRouter.get('/listVenues', async (req, res) => {
 //       },
 //     },
 //   })
-//   console.log('updatedBill', updatedBill)
+
 //   const updated_amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
 //   const roomId = `venue_${venueId}_bill_${bill.id}`
 //   req.io.to(roomId).emit('updateOrder', { ...updatedBill, updated_amount_left, orden })
