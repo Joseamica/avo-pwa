@@ -37,14 +37,14 @@ const createPaymentIntent = async (req, res) => {
   // console.log('avoFee', avoFee)
 
   try {
-    const { stripeAccountId } = await prisma.venue.findUnique({
-      where: {
-        id: params.venueId,
-      },
-      select: {
-        stripeAccountId: true,
-      },
-    })
+    // const { stripeAccountId } = await prisma.venue.findUnique({
+    //   where: {
+    //     id: params.venueId,
+    //   },
+    //   select: {
+    //     stripeAccountId: true,
+    //   },
+    // })
 
     const setupFutureUsage = saveCard ? 'off_session' : undefined
 
@@ -57,7 +57,7 @@ const createPaymentIntent = async (req, res) => {
 
       application_fee_amount: avoFee,
       transfer_data: {
-        destination: stripeAccountId,
+        destination: 'acct_1NuRFGBAuNoVK1pM',
       },
       metadata: {
         venueId: params.venueId,
