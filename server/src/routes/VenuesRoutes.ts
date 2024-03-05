@@ -415,6 +415,7 @@ venueRouter.get('/listVenues', async (req, res) => {
 })
 
 // //ANCHOR - TABLE NUMBER
+
 // venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
 //   const { venueId, tableNumber } = req.params
 
