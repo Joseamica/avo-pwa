@@ -11,14 +11,14 @@ venueRouter.post('/order', async (req, res) => {
     status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
   const date = new Date()
   console.log('tableStatus', tableStatus)
-  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 24))
+  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 7))
 
   const isBillFromToday = await prisma.bill.findFirst({
     where: {
       tableNumber: parseInt(mesa),
-      // updatedAt: {
-      //   gte: fiveHoursAgo,
-      // },
+      updatedAt: {
+        gte: fiveHoursAgo,
+      },
     },
   })
 
