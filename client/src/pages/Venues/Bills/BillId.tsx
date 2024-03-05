@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import { LineOnBottom, LineThrough } from '@/components/LineThrough'
@@ -92,7 +92,7 @@ function BillId() {
     queryKey: ['bill_data', venueId, billId],
     queryFn: async () => {
       try {
-        const response = await instance.get(`/v1/venues/${venueId}/bills/${billId}`)
+        const response = await api.get(`/v1/venues/${venueId}/bills/${billId}`)
         return response.data
       } catch (error) {
         throw new Error(error.response?.data?.message || 'Error desconocido, verifica backend para ver que mensaje se envia.')

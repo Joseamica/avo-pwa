@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -9,7 +9,7 @@ export default function Admin() {
   const params = useParams()
   const loginMutation = useMutation({
     mutationFn: (tableNumber: any) =>
-      instance.post('/v1/admin/addTable', {
+      api.post('/v1/admin/create-table', {
         tableNumber,
         venueId: params.venueId,
         headers: {

@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Field } from '@/components'
 import { Button } from '@/components/Button'
 import Modal from '@/components/Modal'
@@ -18,7 +18,7 @@ export default function Receipt({
 
   const onSubmitEmail = async e => {
     e.preventDefault()
-    await instance.post(`/v1/stripe/update-payment-intent`, {
+    await api.post(`/v1/stripe/update-payment-intent`, {
       id: paymentIntentId,
       email: email,
     })

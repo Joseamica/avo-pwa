@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig' // Asegúrate de que esta instancia de Axios esté configurada correctamente
+import api from '@/axiosConfig' // Asegúrate de que esta instancia de Axios esté configurada correctamente
 import { Field } from '@/components' // Asumiendo que estos componentes están correctamente importados
 import Loading from '@/components/Loading'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -12,7 +12,7 @@ export default function Login() {
   const { isLoading } = useQuery({
     queryKey: ['login'],
     queryFn: async () => {
-      const res = await instance.get('/v1/auth/status', {
+      const res = await api.get('/v1/auth/status', {
         withCredentials: true,
       })
       if (res.data.loggedIn) {
@@ -25,7 +25,7 @@ export default function Login() {
   // Definición de la mutación usando useMutation
   const loginMutation = useMutation({
     mutationFn: ({ username, password }: { username: string | FormDataEntryValue; password: string | FormDataEntryValue }) =>
-      instance.post(
+      api.post(
         '/v1/auth/login',
         { username, password },
         {

@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Button } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
@@ -87,7 +87,7 @@ const CheckoutForm = ({
     try {
       const { user } = getUserLS()
 
-      const response = await instance.post(`/v1/stripe/create-payment-intent`, {
+      const response = await api.post(`/v1/stripe/create-payment-intent`, {
         currency: 'mxn',
         customerId: user.stripeCustomerId,
         isInternationalCard,

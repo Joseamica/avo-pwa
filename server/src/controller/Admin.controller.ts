@@ -1,12 +1,6 @@
-import express from 'express'
 import prisma from '../utils/prisma'
-import bcrypt from 'bcrypt'
 
-import jwt, { SignOptions } from 'jsonwebtoken'
-
-const adminRouter = express.Router()
-
-adminRouter.post('/addTable', async (req, res) => {
+export const createTable = async (req, res) => {
   const { name, seats, venueId, tableNumber } = req.body
   try {
     const isTableExist = await prisma.table.findUnique({
@@ -26,10 +20,9 @@ adminRouter.post('/addTable', async (req, res) => {
         venueId: venueId,
       },
     })
+    console.log(`✅ Table ${tableNumber} created`)
     res.json(table)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
-})
-
-export default adminRouter
+}

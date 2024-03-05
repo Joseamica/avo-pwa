@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Spacer } from '@/components/Util/Spacer'
 import { H2 } from '@/components/Util/Typography'
@@ -17,7 +17,7 @@ interface LoaderData {
 
 export async function loader({ params }) {
   const { venueId } = params
-  const res = await instance.get(`/v1/venues/${venueId}/menus`)
+  const res = await api.get(`/v1/venues/${venueId}/menus`)
 
   const menus = res.data
   return json({ menus })

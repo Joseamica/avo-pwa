@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Button } from '@/components/Button'
 import { Spacer } from '@/components/Util/Spacer'
 import { useStripe } from '@stripe/react-stripe-js'
@@ -39,7 +39,7 @@ export default function CheckoutCard({
   const completePayment = async () => {
     try {
       setLoading(true)
-      const response = await instance.post('/v1/stripe/create-payment-intent', {
+      const response = await api.post('/v1/stripe/create-payment-intent', {
         currency: 'mxn',
         customerId: customerId,
         isInternationalCard,
@@ -68,7 +68,6 @@ export default function CheckoutCard({
         setErrorMessage(error.message)
       } else {
         // Maneja el éxito del pago aquí
-        // TODO redirigir a success o cerrar todos los modales y mostrar notificacion
 
         navigate(`/success?payment_intent=${paymentIntent.id}`, { replace: true })
       }

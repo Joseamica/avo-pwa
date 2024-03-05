@@ -14,14 +14,13 @@ declare global {
 }
 
 // ANCHOR ROUTERS
-import router from './routes/router'
-import stripeRouter from './routes/StripeRoutes'
-import venueRouter from './routes/VenuesRoutes'
-import authRouter from './routes/AuthRoutes'
-import adminRouter from './routes/AdminRoutes'
+
+import stripeRouter from './routes/Stripe.routes'
+import venueRouter from './routes/Venues.routes'
+import authRouter from './routes/Auth.routes'
+import adminRouter from './routes/Admin.routes'
 
 const app = express()
-// const socketUtils = require('./utils/socketUtils')
 
 app.use(cookieParser())
 app.use(
@@ -47,6 +46,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   console.log('Estamos en desarrollo!')
 }
+
 app.use(
   '/.well-known',
   express.static(path.join(__dirname, '.well-known'), {
@@ -95,7 +95,7 @@ app.use((req, res, next) => {
 })
 
 // ANCHOR ROUTES
-app.use('/', router)
+
 app.use('/v1/admin', adminRouter)
 app.use('/v1/auth', authRouter)
 app.use('/v1/venues', venueRouter)
@@ -103,8 +103,7 @@ app.use('/v1/stripe', stripeRouter)
 
 // LISTEN
 const port = process.env.PORT || 5000
-console.log('port', port)
-console.log(process.env.PORT)
+
 server.listen(port, () => {
   console.log(`App running on port ${port}...`)
 })

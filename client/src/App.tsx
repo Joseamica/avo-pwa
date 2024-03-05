@@ -28,11 +28,12 @@ import Error from './pages/Error'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
 import Template from './Template'
-import Register, { action as registerAction } from './pages/Auth/Register'
+import Register from './pages/Auth/Register'
 import Login from './pages/Auth/Login'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import Me, { action as meAction } from './pages/Auth/Me'
+import Me from './pages/Auth/Me'
 import Admin from './pages/Venues/Bills/Admin'
+import { AuthProvider } from './auth/AuthProvider'
 // import Page4 from './pages/Page4'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
@@ -80,8 +81,8 @@ function App() {
             <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
           <Route path="auth/login" element={<Login />} />
-          <Route path="auth/register" element={<Register />} action={registerAction} />
-          <Route path="me" element={<Me />} action={meAction} />
+          <Route path="auth/register" element={<Register />} />
+          <Route path="me" element={<Me />} />
 
           <Route path="success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
@@ -112,7 +113,9 @@ function App() {
       <SW />
 
       {/* <Sidebar /> */}
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
       <ReactQueryDevtools initialIsOpen position="bottom" />
     </Fragment>
   )

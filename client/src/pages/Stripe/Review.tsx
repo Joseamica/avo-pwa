@@ -4,7 +4,7 @@ import Modal from '@/components/Modal'
 
 import { FaRegAngry, FaRegMeh, FaRegSmile, FaStar } from 'react-icons/fa'
 import { motion } from 'framer-motion'
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Spacer } from '@/components/Util/Spacer'
 import { H2, H3, H4 } from '@/components/Util/Typography'
@@ -45,7 +45,7 @@ export default function Review({ isOpen, closeModal, venueId }: { isOpen: boolea
 
   const { status, error, mutate } = useMutation({
     mutationFn: async () => {
-      return instance.post(`/v1/venues/${venueId}/review`, {
+      return api.post(`/v1/venues/${venueId}/review`, {
         stars,
         multipleStars,
       })

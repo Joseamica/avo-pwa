@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { IconButton, LinkButton } from '@/components/Button'
 import { LineOnBottom } from '@/components/LineThrough'
@@ -24,7 +24,7 @@ const Success: React.FC = () => {
   const { data, isLoading, isError, error, isSuccess } = useQuery({
     queryKey: ['paymentIntent', paymentIntentId],
     queryFn: async () => {
-      const response = await instance.get(`/v1/stripe/payment-intent/${paymentIntentId}`)
+      const response = await api.get(`/v1/stripe/payment-intent/${paymentIntentId}`)
       return response.data
     },
   })

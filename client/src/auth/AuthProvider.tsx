@@ -21,7 +21,6 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   // const [user, setUser] = useState(null);
   const [user, setUser] = useState()
-  console.log('user', user)
 
   return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>
 }

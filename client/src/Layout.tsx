@@ -3,13 +3,11 @@ import { Link, Outlet, json, useParams } from 'react-router-dom'
 
 import { useQuery } from '@tanstack/react-query'
 import { v4 as uuidv4 } from 'uuid'
-import instance from './axiosConfig'
+import api from './axiosConfig'
 import Loading from './components/Loading'
 import { H3 } from './components/Util/Typography'
 import { getRandomPastelHex } from './utils/misc'
 import { IncognitoUser } from './utils/types/user'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useAuth0 } from '@auth0/auth0-react'
 
 const User = IncognitoUser
 
@@ -25,7 +23,7 @@ export async function loader() {
       color: randomColor,
       createdAt: Date.now(),
     }
-    const stripeCustomer = await instance.post('/v1/stripe/create-incognito-customer', {
+    const stripeCustomer = await api.post('/v1/stripe/create-incognito-customer', {
       name: user.color + ' ' + uuidv4(),
     })
 
@@ -59,7 +57,7 @@ const Layout = () => {
     queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
-        const response = await instance.get(`/v1/venues/listVenues`)
+        const response = await api.get(`/v1/venues/listVenues`)
 
         return response.data
       } catch (error) {

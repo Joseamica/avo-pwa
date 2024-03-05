@@ -1,4 +1,4 @@
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Amex, Check, MasterCard, Visa } from '@/components/Icons'
 import Meta from '@/components/Meta'
@@ -38,8 +38,8 @@ const Checkout = ({ amount }: { amount: number }) => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['paymentMethods'],
     queryFn: async () => {
-      const response = await instance.post(`/v1/stripe/payment-methods`, {
-        // const response = await instance.post(`/api/v1/stripe/payment-methods`, {
+      const response = await api.post(`/v1/stripe/payment-methods`, {
+        // const response = await api.post(`/api/v1/stripe/payment-methods`, {
         customerId: user.stripeCustomerId,
       })
 

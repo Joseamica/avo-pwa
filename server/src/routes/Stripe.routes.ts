@@ -11,7 +11,7 @@ import {
   updatePaymentIntent,
   // confirmPayment,
   webhookConfirmPayment,
-} from '../controller/StripeController'
+} from '../controller/Stripe.controller'
 
 stripeRouter.get('/payment-intent/:id', getPaymentIntent)
 stripeRouter.get('/publishable-key', getPublishableKey)

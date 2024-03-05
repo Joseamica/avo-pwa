@@ -2,7 +2,7 @@ import { Link, Outlet, useParams } from 'react-router-dom'
 
 import Typography from '@mui/material/Typography'
 
-import instance from '@/axiosConfig'
+import api from '@/axiosConfig'
 import Loading from '@/components/Loading'
 import Meta from '@/components/Meta'
 import { H3 } from '@/components/Util/Typography'
@@ -17,8 +17,8 @@ function Tables() {
     queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
-        // const response = await instance.get(`/api/v1/venues/${params.venueId}/tables`)
-        const response = await instance.get(`/v1/venues/${params.venueId}/tables`)
+        // const response = await api.get(`/api/v1/venues/${params.venueId}/tables`)
+        const response = await api.get(`/v1/venues/${params.venueId}/tables`)
 
         return response.data
       } catch (error) {
