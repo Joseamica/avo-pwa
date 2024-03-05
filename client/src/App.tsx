@@ -1,5 +1,5 @@
-import { Fragment, lazy } from 'react'
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider, useLocation } from 'react-router-dom'
+import { Fragment, Suspense, lazy } from 'react'
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 
 // import CssBaseline from '@mui/material/CssBaseline'
 
@@ -15,8 +15,8 @@ import Bills from './pages/Venues/Bills'
 import Tables from './pages/Venues/Tables'
 
 import { registerSW } from 'virtual:pwa-register'
-import './index.css'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
+import './index.css'
 // import Auth from './pages/Auth'
 // import { loader as authLoader } from './pages/Auth/loader'
 // import Login, { action as loginAction } from './pages/Auth/Login'
@@ -25,20 +25,21 @@ import Layout, { action as layoutAction, loader as layoutLoader } from './Layout
 import Error from './pages/Error'
 // import Sockets from './pages/Socket/Socket'
 
-import Success from './pages/Stripe/Success'
-import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
-import Template from './Template'
-import Register from './pages/Auth/Register'
-import Login from './pages/Auth/Login'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import Me from './pages/Auth/Me'
-import Admin from './pages/Venues/Bills/Admin'
-import { AuthProvider, useAuth } from './auth/AuthProvider'
 import { PrivateRoute } from './PrivateRoute'
+import Template from './Template'
+// import Login from './pages/Auth/Login'
+import Me from './pages/Auth/Me'
+import Register from './pages/Auth/Register'
 import ProtectedRoutes from './pages/ProtectedRoutes'
+import Success from './pages/Stripe/Success'
+// import Admin from './pages/Venues/Bills/Admin'
+import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
+import { PublicRoute } from './PublicRoute'
 // import Page4 from './pages/Page4'
 
-// const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
+const Login = lazy(() => import('./pages/Auth/Login'))
+const Admin = lazy(() => import('./pages/Venues/Bills/Admin'))
 
 function App() {
   if ('serviceWorker' in navigator) {
@@ -83,15 +84,31 @@ function App() {
           </Route>
           <Route element={<ProtectedRoutes />}>
             <Route
-              path="admin"
+              path="venues/:venueId/admin"
               element={
                 <PrivateRoute>
-                  <Admin />
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <Admin />
+                  </Suspense>
                 </PrivateRoute>
               }
             />
-            <Route path="auth/login" element={<Login />} />
-            <Route path="auth/register" element={<Register />} />
+            <Route
+              path="auth/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="auth/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
             <Route
               path="me"
               element={

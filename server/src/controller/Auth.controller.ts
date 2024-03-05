@@ -65,7 +65,7 @@ const authLogin = async (req, res) => {
 
     const token = generateAccessToken(userForToken)
     console.log(`🧑🏼‍💻 ${username} inicio sesion`)
-    return res.json({ token: token, refreshToken: refreshToken })
+    return res.json({ token: token, refreshToken: refreshToken, user: user })
   } catch (error) {
     console.log(error)
   }

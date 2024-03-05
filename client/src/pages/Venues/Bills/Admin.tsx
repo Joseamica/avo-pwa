@@ -1,3 +1,4 @@
+import { useAuth } from '@/auth/AuthProvider'
 import api from '@/axiosConfig'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -7,6 +8,7 @@ export default function Admin() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const params = useParams()
+  const { isAdmin } = useAuth()
   const loginMutation = useMutation({
     mutationFn: (tableNumber: any) =>
       api.post('/v1/admin/create-table', {
@@ -26,6 +28,9 @@ export default function Admin() {
       setError(error.response.data.error)
     },
   })
+
+  if (!isAdmin) return <div>Not authorized</div>
+
   const handleSubmit = event => {
     event.preventDefault()
     const formData = new FormData(event.target)
