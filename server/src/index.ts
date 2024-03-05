@@ -99,6 +99,8 @@ app.use('/v1/stripe', stripeRouter)
 
 // LISTEN
 const port = process.env.PORT || 5000
+console.log('port', port)
+console.log(process.env.PORT)
 server.listen(port, () => {
   console.log(`App running on port ${port}...`)
 })
