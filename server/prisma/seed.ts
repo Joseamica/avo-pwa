@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcrypt'
+
 const prisma = new PrismaClient()
 
 const imageUrls = [
@@ -18,6 +20,7 @@ async function main() {
   await prisma.menu.deleteMany()
   await prisma.table.deleteMany()
   await prisma.venue.deleteMany()
+  await prisma.user.deleteMany()
   const venue = await prisma.venue.create({
     data: {
       name: 'Madre Cafecito',
@@ -43,9 +46,18 @@ async function main() {
       },
     })
   }
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash('admin', saltRounds)
+  const user = await prisma.user.create({
+    data: {
+      username: 'admin',
+      password: passwordHash,
+      role: 'ADMIN',
+    },
+  })
   console.timeEnd(`🌱 Database has been seeded`)
 
-  console.log({ venue, tableNumbers })
+  console.log({ venue, tableNumbers, user })
 }
 export async function createTables(branchId: string, numberOfTables: number) {
   const tableNumbers = []
