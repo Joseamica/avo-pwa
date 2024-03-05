@@ -20,14 +20,14 @@ function VenueId() {
         <LinkButton
           size="md"
           variant="secondary"
-          to={`/venues/${params.venueId}/menus`}
+          to={`/venues/${params.venueId}/bills/${params.billId}/menus`}
           state={{
             tableId: params.tableId,
             billId: params.billId,
             venueId: params.venueId,
           }}
           text="Carta"
-          // className="animate-sparkling"
+          // className="bg-background-primary"
           icon={<MdMenuBook />}
         />
       </div>

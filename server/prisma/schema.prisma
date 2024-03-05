@@ -119,6 +119,7 @@ model User {
   email             String?            @unique
   allergens         Allergens[]
   image             String?
+  role              RoleEnumType?      @default(USER)
   phone             String?
   password          String?
   color             String?
@@ -136,6 +137,32 @@ model User {
   updatedAt         DateTime?          @updatedAt
   createdAt         DateTime           @default(now())
   Password          Password?
+}
+
+// model User{
+//   @@map(name: "users")
+
+//   id String  @id @default(uuid())
+//   name String  @db.VarChar(255)
+//   email String @unique
+//   photo String? @default("default.png")
+//   verified Boolean? @default(false) 
+
+//   password String
+//   role RoleEnumType? @default(user)
+
+//   verificationCode String? @db.Text @unique
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@unique([email, verificationCode])
+//   @@index([email, verificationCode])
+// }
+
+enum RoleEnumType {
+  USER
+  ADMIN
 }
 
 model Allergens {

@@ -17,6 +17,8 @@ declare global {
 import router from './routes/router'
 import stripeRouter from './routes/StripeRoutes'
 import venueRouter from './routes/VenuesRoutes'
+import authRouter from './routes/AuthRoutes'
+import adminRouter from './routes/AdminRoutes'
 
 const app = express()
 // const socketUtils = require('./utils/socketUtils')
@@ -24,15 +26,15 @@ const app = express()
 app.use(cookieParser())
 app.use(
   cors({
-    origin: '*',
-    // [
-    //   'http://localhost:5173',
-    //   'http://localhost:4173',
-    //   'http://localhost:5000',
-    //   'https://localhost',
-    //   'http://192.168.100.7:5173',
-    //   'https://avo-pwa.pages.dev', // Corregido
-    // ],
+    // origin: '*',
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:4173',
+      'http://localhost:5000',
+      'https://localhost',
+      'http://192.168.100.7:5173',
+      'https://avo-pwa.pages.dev', // Corregido
+    ],
 
     methods: ['GET', 'POST'],
     credentials: true,
@@ -90,6 +92,8 @@ app.use((req, res, next) => {
 
 // ANCHOR ROUTES
 app.use('/', router)
+app.use('/v1/admin', adminRouter)
+app.use('/v1/auth', authRouter)
 app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)
 

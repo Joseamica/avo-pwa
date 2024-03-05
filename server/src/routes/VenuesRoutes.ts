@@ -44,24 +44,55 @@ venueRouter.post('/order', async (req, res) => {
     console.log('✅ Bill nueva creada:', bill)
     return res.status(200).send('Bill nueva creada')
   } else {
-    const updatedBill = await prisma.bill.update({
-      where: {
-        id: isBillFromToday.id,
-      },
-      data: {
-        posOrder: parseInt(orden),
-        total: total * 100,
-        status: tableStatus,
-      },
-      include: {
-        payments: true,
-      },
-    })
-    const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+    if (tableStatus === 'PAID' || tableStatus === 'CANCELED') {
+      const updatedBill = await prisma.bill.update({
+        where: {
+          id: isBillFromToday.id,
+        },
+        data: {
+          posOrder: parseInt(orden),
+          total: total * 100,
+          status: tableStatus,
+          //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
+          table: {
+            disconnect: {
+              tableId: {
+                venueId: venueId,
+                tableNumber: parseInt(mesa),
+              },
+            },
+          },
+        },
+        include: {
+          payments: true,
+        },
+      })
+      const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
 
-    const roomId = `venue_${venueId}_table_${mesa}`
-    req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
-    return res.status(200).send('Bill actualizada con exito')
+      const roomId = `venue_${venueId}_table_${mesa}`
+      req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
+      return res.status(200).send('Bill actualizada con exito desconectando mesa')
+    } else {
+      const updatedBill = await prisma.bill.update({
+        where: {
+          id: isBillFromToday.id,
+        },
+        data: {
+          posOrder: parseInt(orden),
+          total: total * 100,
+          status: tableStatus,
+          //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
+        },
+        include: {
+          payments: true,
+        },
+      })
+      const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+
+      const roomId = `venue_${venueId}_table_${mesa}`
+      req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
+      return res.status(200).send('Bill actualizada con exito')
+    }
   }
 })
 
@@ -166,6 +197,7 @@ venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
         bill: true,
       },
     })
+
     if (!table) {
       return res.status(404).json({ message: 'La mesa no esta en la base de datos de este restaurante' })
     }

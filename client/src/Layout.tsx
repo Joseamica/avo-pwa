@@ -8,6 +8,8 @@ import Loading from './components/Loading'
 import { H3 } from './components/Util/Typography'
 import { getRandomPastelHex } from './utils/misc'
 import { IncognitoUser } from './utils/types/user'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { useAuth0 } from '@auth0/auth0-react'
 
 const User = IncognitoUser
 
@@ -44,6 +46,9 @@ export async function action() {
 
 const Layout = () => {
   const params = useParams<{ venueId: string; tableId: string }>()
+  // const { isAuthenticated } = useAuth0()
+  // console.log('isAuthenticated', isAuthenticated)
+
   const {
     isPending,
     error,

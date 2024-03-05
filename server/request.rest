@@ -1,10 +1,33 @@
 
-GET http://localhost:5000/do-something
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9zZSIsImlhdCI6MTcwNDkzNjgwMywiZXhwIjoxNzA0OTM2ODE4fQ.yaC4_b1XsSthZXAyKT6rtB3nI9HiGEU1-VyJEpu_lzs
+###
+POST http://localhost:5000/v1/venues/order
+Content-Type: application/json
+
+{
+  "venueId": "clsdc47cc0002gx3lsjx112r1",
+  "billId": 2,
+  "orden": "2",
+  "mesa": "100",
+  "total": "130",
+  "status": "0"
+}
 
 
 ###
+POST http://localhost:5000/v1/venues/comanda
+Content-Type: application/json
 
+{
+  "venueId": "clsdc47cc0002gx3lsjx112r1",
+  "billId": 2,
+  "key": "435979",
+  "nombre": "., Burrito",
+  "orden": "2",
+  "cantidad": 1,
+  "precio": 77
+}
+
+###
 # gets new token
 POST http://localhost:5000/token
 Content-Type: application/json

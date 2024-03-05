@@ -8,7 +8,7 @@ export async function action({ request }) {
   })
 
   if (res.ok) {
-    return redirect('/')
+    return redirect('/auth/login')
   }
   return json({ error: 'Error al cerrar sesión' })
 }

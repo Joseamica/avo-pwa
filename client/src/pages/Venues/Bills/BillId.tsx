@@ -145,7 +145,7 @@ function BillId() {
           <H4 bold="light">Mesa {billData.tableNumber} </H4>
           <Spacer size="sm" />
           {/* TODO - definir los estados y segun el estado ponerlo */}
-          <H2
+          {/* <H2
             className={clsx('text-white', {
               'bg-green-500': billData.status === 'OPEN',
               'bg-red-500': billData.status === 'PAID',
@@ -157,7 +157,7 @@ function BillId() {
           >
             STATUS {billData.status}
             <p>{billData.status === 'EARLYACCESS' && 'el usuario scaneo el qr de la mesa antes de que existiera'}</p>
-          </H2>
+          </H2> */}
           <Flex direction="col" align="center" className="w-full px-4 py-3 bg-white border rounded-xl ">
             <Flex direction="row" align="center" space="sm" justify="between" className="flex-shrink-0 w-full">
               <H1>Cuenta total</H1>
@@ -220,26 +220,26 @@ function BillId() {
           </Flex>
 
           <Spacer size="md" />
-
-          <div className="relative w-full max-w-lg mx-auto">
-            <div className="relative flex flex-col p-4 space-y-4 bg-white border rounded-xl ">
-              {billData.products?.map((product, index) => (
-                <div key={index} className="flex items-center justify-between ">
-                  <div className="absolute left-0 w-[5px] rounded-tr-full rounded-br-full h-7 bg-buttons-main opacity-90" />
-                  <Flex space="xs">
-                    <H5 bold="medium" className="box-border flex items-center justify-center w-6 h-6 rounded-md bg-background-primary">
-                      {product.quantity}
-                    </H5>
-                    <span className="flex-1 overflow-hidden text-gray-600 w-52 whitespace-nowrap text-ellipsis text-over">
-                      {product.name}
-                    </span>
-                  </Flex>
-                  <span className="font-light">${(product.price / 100).toFixed(2)}</span>
-                </div>
-              ))}
+          {billData.status === 'OPEN' || billData.status === 'PAID' ? (
+            <div className="relative w-full max-w-lg mx-auto">
+              <div className="relative flex flex-col p-4 space-y-4 bg-white border rounded-xl ">
+                {billData.products?.map((product, index) => (
+                  <div key={index} className="flex items-center justify-between ">
+                    <div className="absolute left-0 w-[5px] rounded-tr-full rounded-br-full h-7 bg-buttons-main opacity-90" />
+                    <Flex space="xs">
+                      <H5 bold="medium" className="box-border flex items-center justify-center w-6 h-6 rounded-md bg-background-primary">
+                        {product.quantity}
+                      </H5>
+                      <span className="flex-1 overflow-hidden text-gray-600 w-52 whitespace-nowrap text-ellipsis text-over">
+                        {product.name}
+                      </span>
+                    </Flex>
+                    <span className="font-light">${(product.price / 100).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-
+          ) : null}
           <Spacer size="xl" />
           <div className="sticky w-full bottom-5">
             {billData.status === 'OPEN' && (
@@ -294,8 +294,6 @@ function BillId() {
           </Modal>
         </ModalPadding>
       </Modal>
-
-      <ReactQueryDevtools initialIsOpen position="bottom" />
     </Fragment>
   )
 }

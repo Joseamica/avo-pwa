@@ -1,9 +1,6 @@
-import { MenuBook } from '@mui/icons-material'
-import { Menu } from '@mui/material'
 import clsx from 'clsx'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Spacer } from './Util/Spacer'
 
 function InnerButton({
   children,
@@ -119,7 +116,7 @@ function LinkButton({
         className={clsx(
           'flex items-center relative  justify-center  space-x-2    rounded-full border-gray text-xl',
           { 'text-white bg-buttons-main ': variant === 'primary' },
-          { 'text-buttons-main bg-white border': variant === 'secondary' },
+          { 'text-buttons-main bg-background-primary border': variant === 'secondary' },
           { 'px-11 py-6 ': size === 'lg' },
           { 'px-8 py-4': size === 'md' },
           { ' px-5 py-2 ': size === 'sm' },
@@ -269,4 +266,4 @@ function Button2({ children, variant = 'primary', size = 'lg', className, ...but
 //   )
 // })
 
-export { Button2, LinkButton, IconButton }
+export { Button2, IconButton, LinkButton }

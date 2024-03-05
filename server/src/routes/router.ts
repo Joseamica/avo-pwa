@@ -76,28 +76,6 @@ router.get('/auth/status', async (req, res) => {
 //   res.send('Estas autenticado')
 // })
 
-router.get('/menus', async (req, res) => {
-  const menus = [
-    {
-      id: 1,
-      name: 'Botanas',
-      url: 'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/Screenshot%202023-08-01%20at%2014.48.41.png?alt=media&token=d608bbc9-0834-4077-89b9-d42df017c6ee',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    },
-    {
-      id: 2,
-      name: 'Ensaladas',
-      url: 'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/Screenshot%202023-08-01%20at%2015.59.06.png?alt=media&token=af094c58-6371-4d38-aac0-ad79bf75434b',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    },
-  ]
-  res.set('Cache-Control', 'public, max-age=86400')
-
-  res.json(menus)
-})
-
 router.get('/api/users', async (req, res) => {
   const users = await prisma.user.findMany()
   res.json(users)

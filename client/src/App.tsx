@@ -28,6 +28,11 @@ import Error from './pages/Error'
 import Success from './pages/Stripe/Success'
 import Menus, { loader as menusLoader } from './pages/Venues/Menus/Menus'
 import Template from './Template'
+import Register, { action as registerAction } from './pages/Auth/Register'
+import Login from './pages/Auth/Login'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import Me, { action as meAction } from './pages/Auth/Me'
+import Admin from './pages/Venues/Bills/Admin'
 // import Page4 from './pages/Page4'
 
 // const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
@@ -65,14 +70,19 @@ function App() {
         <Route path="/" element={<Template />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="/" index element={<Layout />} />
 
-          <Route path="venues/:venueId/menus" element={<Menus />} loader={menusLoader} />
+          <Route path="venues/:venueId/bills/:billId/menus" element={<Menus />} loader={menusLoader} />
           {/* <Route path="venues/:venueId/menus" element={<Menus />} loader={menusLoader} /> */}
           <Route path="venues/:venueId" element={<Venues.VenueId />}>
             <Route path="bills/:billId" element={<Bills.Bills />} errorElement={<Error />} />
+            <Route path="admin" element={<Admin />} />
           </Route>
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
             <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
+          <Route path="auth/login" element={<Login />} />
+          <Route path="auth/register" element={<Register />} action={registerAction} />
+          <Route path="me" element={<Me />} action={meAction} />
+
           <Route path="success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -80,10 +90,7 @@ function App() {
         {/* <Route path="sockets" element={<Sockets />} />
         <Route path="chat" element={<Page2 />} />
         <Route path="auth" index element={<Auth />} />
-        <Route path="auth/login" element={<Login />} loader={authLoader} action={loginAction} />
-        <Route path="auth/register" element={<Register />} loader={authLoader} action={registerAction} />
-        <Route path="me" element={<Me />} action={meAction} />
-        <Route path="page-4" element={<Page4 />} /> */}
+      <Route path="page-4" element={<Page4 />} /> */}
 
         {/* <Route path="checkout" element={<Checkout />} /> */}
         {/* </Suspense> */}
@@ -106,6 +113,7 @@ function App() {
 
       {/* <Sidebar /> */}
       <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen position="bottom" />
     </Fragment>
   )
 }

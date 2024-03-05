@@ -1,3 +1,4 @@
+import instance from '@/axiosConfig'
 import { Button } from '@/components/Button'
 import Form from '@/components/Form'
 import { Field } from '@/components/Forms/Field'
@@ -14,20 +15,12 @@ const RegisterSchema = z.object({
 export async function action({ request, params }) {
   const formData = Object.fromEntries(await request.formData())
   try {
-    const res = await fetch('http://localhost:5000/register', {
-      method: 'POST',
-      body: JSON.stringify({ username: formData.username, password: formData.password }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
+    const res = await instance.post('/v1/auth/register', {
+      withCredentials: true,
+      username: formData.username,
+      password: formData.password,
     })
-    if (res.ok) {
-      return redirect(formData.redirectTo || '/')
-    } else {
-      const error = await res.json()
-      return json({ res: error })
-    }
+    console.log(res)
   } catch (e) {
     return json({ res: { error: 'Error desconocido' } }, { status: 500 })
   }

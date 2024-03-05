@@ -1,4 +1,4 @@
-import { type ComponentType, StrictMode } from 'react'
+import { StrictMode, type ComponentType } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import { RecoilRoot } from 'recoil'
@@ -15,6 +15,7 @@ function render(App: ComponentType) {
   root.render(
     <StrictMode>
       {/* <AuthProvider> */}
+      {/* <Auth0Provider domain="" clientId="" authorizationParams={{ redirect_uri: window.location.origin }}> */}
       <RecoilRoot>
         <HelmetProvider>
           <ThemeProvider>
@@ -24,7 +25,7 @@ function render(App: ComponentType) {
           </ThemeProvider>
         </HelmetProvider>
       </RecoilRoot>
-      {/* </AuthProvider> */}
+      {/* </Auth0Provider> */}
     </StrictMode>,
   )
 }
