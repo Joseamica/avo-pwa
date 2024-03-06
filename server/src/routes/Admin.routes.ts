@@ -4,6 +4,7 @@ import {
   createTable,
   deleteBill,
   deleteTable,
+  getBill,
   getBills,
   getMenus,
   getTable,
@@ -25,6 +26,7 @@ adminRouter.delete('/:venueId/delete-table', deleteTable)
 adminRouter.get('/:venueId/get-menus', getMenus)
 //BILLS
 adminRouter.get('/:venueId/get-bills', getBills)
+adminRouter.get('/:venueId/:billId', getBill)
 adminRouter.delete('/:venueId/delete-bill', deleteBill)
 
 export default adminRouter

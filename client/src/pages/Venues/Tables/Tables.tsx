@@ -12,14 +12,20 @@ import clsx from 'clsx'
 
 function Tables() {
   const params = useParams()
-  // const data = useLoaderData() as any
-  const { isPending, error, data, isError, isLoading, isFetching, isRefetching } = useQuery<any>({
-    queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
+
+  const {
+    isPending,
+    error,
+    data: tables,
+    isError,
+    isLoading,
+    isFetching,
+    isRefetching,
+  } = useQuery<any>({
+    queryKey: ['tables_datas'], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
-        // const response = await api.get(`/api/v1/venues/${params.venueId}/tables`)
         const response = await api.get(`/v1/venues/${params.venueId}/tables`)
-
         return response.data
       } catch (error) {
         throw new Error('error', error.message)
@@ -32,7 +38,8 @@ function Tables() {
   if (isError) return <H3 variant="error">Error: {error?.message}</H3>
   if (isFetching) return <Loading message="Buscando tu mesa (Fetching)" />
   if (isRefetching) return <Loading message="Refetching" />
-  if (!data) return <H3 variant="error">No hay mesas</H3>
+  if (!tables) return <H3 variant="error">No hay mesas</H3>
+
   return (
     <>
       <Meta title="Tables" />
@@ -40,7 +47,7 @@ function Tables() {
         <Typography variant="h3">Tables</Typography>
 
         <ol className="flex flex-wrap gap-2">
-          {data?.map((table: any) => {
+          {tables?.map((table: any) => {
             return (
               <li key={table.tableNumber}>
                 <Link

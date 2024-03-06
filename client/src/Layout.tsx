@@ -54,7 +54,7 @@ const Layout = () => {
     isLoading,
     data: venues,
   } = useQuery<any>({
-    queryKey: ['tables_data', params.venueId], // Incluye params.venueId en queryKey
+    queryKey: ['tables_data'], // Incluye params.venueId en queryKey
     queryFn: async () => {
       try {
         const response = await api.get(`/v1/venues/listVenues`)

@@ -7,15 +7,20 @@ const venueRouter = express.Router()
 //NOTE ESTE ENDPOINT SOLO SE EJECUTARA UNA VES Y SOLO CUANDO EN EL POS SE ABRA UNA MESA
 venueRouter.post('/order', async (req, res) => {
   const { venueId, orden, mesa, total, status } = req.body
-  const tableStatus =
+  const billStatus =
     status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
   const date = new Date()
-  console.log('tableStatus', tableStatus)
+
   const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 7))
 
   const isBillFromToday = await prisma.bill.findFirst({
     where: {
       tableNumber: parseInt(mesa),
+      table: {
+        some: {
+          venueId: venueId,
+        },
+      },
       updatedAt: {
         gte: fiveHoursAgo,
       },
@@ -29,7 +34,7 @@ venueRouter.post('/order', async (req, res) => {
         key: `O${orden}-T${mesa}`,
         tableNumber: parseInt(mesa),
         posOrder: parseInt(orden),
-        status: tableStatus,
+        status: billStatus,
         total: total * 100,
         table: {
           connect: {
@@ -44,7 +49,8 @@ venueRouter.post('/order', async (req, res) => {
     console.log('✅ Bill nueva creada:', bill)
     return res.status(200).send('Bill nueva creada')
   } else {
-    if (tableStatus === 'PAID' || tableStatus === 'CANCELED') {
+    console.log('🔎 billExiste')
+    if (billStatus === 'PAID' || billStatus === 'CANCELED') {
       const updatedBill = await prisma.bill.update({
         where: {
           id: isBillFromToday.id,
@@ -52,7 +58,7 @@ venueRouter.post('/order', async (req, res) => {
         data: {
           posOrder: parseInt(orden),
           total: total * 100,
-          status: tableStatus,
+          status: billStatus,
           //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
           table: {
             disconnect: {
@@ -80,7 +86,7 @@ venueRouter.post('/order', async (req, res) => {
         data: {
           posOrder: parseInt(orden),
           total: total * 100,
-          status: tableStatus,
+          status: billStatus,
           //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
         },
         include: {
@@ -197,7 +203,6 @@ venueRouter.get('/:venueId/tables/:tableNumber', async (req, res) => {
         bill: true,
       },
     })
-
     if (!table) {
       return res.status(404).json({ message: 'La mesa no esta en la base de datos de este restaurante' })
     }

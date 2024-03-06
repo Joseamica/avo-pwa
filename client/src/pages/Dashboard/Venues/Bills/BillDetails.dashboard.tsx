@@ -17,7 +17,7 @@ export default function BillDetailsDashboard() {
       return response.data
     },
   })
-  console.log('billDetails', billDetails)
+
   if (isLoading) return <div>Cargando...</div>
   if (isError) return <div>Error al cargar los detalles de la mesa</div>
   if (!billDetails) return <div>No se encontraron detalles para la mesa {billId}</div>

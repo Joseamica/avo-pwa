@@ -36,12 +36,12 @@ export const getVenue = async (req, res) => {
   const { venueId } = req.params
   try {
     console.log('venueId', venueId)
-    const venues = await prisma.venue.findUnique({
+    const venue = await prisma.venue.findUnique({
       where: {
         id: venueId,
       },
     })
-    res.json(venues)
+    res.json(venue)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -103,8 +103,43 @@ export const getMenus = async (req, res) => {
 
 //FIXME - tiene que estar filtrado por VENUE, pero para eso tiene que tener primero una mesa, y para eso tiene que tener un venue
 export const getBills = async (req, res) => {
-  const bills = await prisma.bill.findMany({})
+  const { venueId } = req.params
+
+  const bills = await prisma.bill.findMany({
+    where: {
+      table: {
+        some: {
+          venueId: venueId,
+        },
+      },
+    },
+  })
   res.json(bills)
+}
+
+export const getBill = async (req, res) => {
+  const { venueId, billId } = req.params
+
+  try {
+    const bill = await prisma.bill.findUnique({
+      where: {
+        id: billId,
+        table: {
+          some: {
+            venueId: venueId,
+          },
+        },
+      },
+      include: {
+        payments: true,
+        products: true,
+        table: true,
+      },
+    })
+    res.json(bill)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
 }
 
 export const deleteBill = async (req, res) => {
