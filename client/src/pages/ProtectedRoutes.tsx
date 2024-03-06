@@ -1,3 +1,4 @@
+import { PrivateRoute } from '@/PrivateRoute'
 import { AuthProvider } from '@/auth/AuthProvider'
 
 import { Outlet } from 'react-router-dom'

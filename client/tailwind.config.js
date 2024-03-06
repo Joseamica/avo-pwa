@@ -25,7 +25,7 @@ export default {
 
       colors: {
         buttons: {
-          main: '#003366',
+          main: '#000',
           secondary: '#F5F5DC',
           disabled: '#9798A1',
           tip: '#F6F6F9',

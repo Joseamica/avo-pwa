@@ -1,4 +1,4 @@
-import { Fragment, Suspense, lazy } from 'react'
+import { Fragment, Suspense } from 'react'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 
 // import CssBaseline from '@mui/material/CssBaseline'
@@ -9,7 +9,7 @@ import AppErrorBoundaryFallback from '@/error-handling/fallbacks/App'
 import Notifications from '@/sections/Notifications'
 import SW from '@/sections/SW'
 import NotFound from './pages/NotFound'
-// import Page2 from './pages/Page2'
+
 import Venues from './pages/Venues'
 import Bills from './pages/Venues/Bills'
 import Tables from './pages/Venues/Tables'
@@ -17,31 +17,33 @@ import Tables from './pages/Venues/Tables'
 import { registerSW } from 'virtual:pwa-register'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'
 import './index.css'
-// import Auth from './pages/Auth'
-// import { loader as authLoader } from './pages/Auth/loader'
-// import Login, { action as loginAction } from './pages/Auth/Login'
-// import Me, { action as meAction } from './pages/Auth/Me'
-// import Register, { action as registerAction } from './pages/Auth/Register'
+
 import Error from './pages/Error'
-// import Sockets from './pages/Socket/Socket'
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PrivateRoute } from './PrivateRoute'
 import Template from './Template'
-// import Login from './pages/Auth/Login'
+
 import Me from './pages/Auth/Me'
 import Register from './pages/Auth/Register'
 import ProtectedRoutes from './pages/ProtectedRoutes'
 import Success from './pages/Stripe/Success'
-// import Admin from './pages/Venues/Bills/Admin'
-import { loader as menusLoader } from './pages/Venues/Menus/Menus'
+
 import { PublicRoute } from './PublicRoute'
-// import Page4 from './pages/Page4'
+import { loader as menusLoader } from './pages/Venues/Menus/Menus'
 
-const Login = lazy(() => import('./pages/Auth/Login'))
-const Admin = lazy(() => import('./pages/Venues/Bills/Admin'))
-const Menus = lazy(() => import('./pages/Venues/Menus/Menus'))
+import asyncComponentLoader from '@/utils/loader'
 
+const Login = asyncComponentLoader(() => import('./pages/Auth/Login'))
+const Admin = asyncComponentLoader(() => import('./pages/Venues/Bills/Admin'))
+const Menus = asyncComponentLoader(() => import('./pages/Venues/Menus/Menus'))
+const Dashboard = asyncComponentLoader(() => import('./pages/Dashboard/Dashboard'))
+const VenueDetails = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueDetails.dashboard'))
+const TableListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Tables/TableList.dashboard'))
+const TableDetailsDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Tables/TableDetails.dashboard'))
+const BillListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillList.dashboard'))
+const MenusListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Menus/FIXMenusList.dashboard'))
+const DashboardVenues = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueList.dashboard'))
 function App() {
   if ('serviceWorker' in navigator) {
     // && !/localhost/.test(window.location)) {
@@ -91,7 +93,70 @@ function App() {
           <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
             <Route path=":tableNumber" element={<Tables.TableNumber />} />
           </Route>
+
           <Route element={<ProtectedRoutes />}>
+            <Route
+              path="dashboard"
+              element={
+                <PrivateRoute>
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <Dashboard />
+                  </Suspense>
+                </PrivateRoute>
+              }
+            >
+              <Route
+                path="venues"
+                element={
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <DashboardVenues />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="venues/:venueId"
+                element={
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <VenueDetails />
+                  </Suspense>
+                }
+              >
+                <Route
+                  path="tables"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <TableListDashboard />
+                    </Suspense>
+                  }
+                />
+
+                <Route
+                  path="tables/:tableNumber"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <TableDetailsDashboard />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="bills"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <BillListDashboard />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="menus"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <MenusListDashboard />
+                    </Suspense>
+                  }
+                />
+              </Route>
+            </Route>
+
             <Route
               path="venues/:venueId/admin"
               element={
@@ -144,7 +209,9 @@ function App() {
       <SW />
 
       {/* <Sidebar /> */}
-
+      {/* <BrowserRouter>
+        <Pages />
+      </BrowserRouter> */}
       <RouterProvider router={router} />
 
       <ReactQueryDevtools initialIsOpen position="bottom" />

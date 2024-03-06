@@ -1,4 +1,3 @@
-import { config } from '../config'
 import prisma from '../utils/prisma'
 import express from 'express'
 
@@ -10,7 +9,7 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 const getPublishableKey = async (req, res) => {
   // res.json({ publishable_key: config.stripePublishableKey })
-  res.json({ publishable_key: config.stripePublishableKey })
+  res.json({ publishable_key: process.env.STRIPE_PUBLISHABLE_KEY })
 }
 
 const getPaymentMethods = async (req, res) => {

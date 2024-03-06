@@ -9,8 +9,8 @@ export default function Admin() {
   const [success, setSuccess] = useState('')
   const params = useParams()
   const { isAdmin } = useAuth()
-  console.log('isAdmin', isAdmin)
-  const loginMutation = useMutation({
+
+  const tableMutation = useMutation({
     mutationFn: (tableNumber: any) =>
       api.post('/v1/admin/create-table', {
         tableNumber,
@@ -36,7 +36,7 @@ export default function Admin() {
     event.preventDefault()
     const formData = new FormData(event.target)
     const tableNumber = formData.get('tableNumber')
-    loginMutation.mutate(tableNumber)
+    tableMutation.mutate(tableNumber)
   }
 
   return (

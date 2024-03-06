@@ -91,7 +91,7 @@ export default function CheckoutCard({
         stripe={stripe}
       />
       <Spacer size="jumbo" />
-      <div className="fixed inset-x-4 bottom-4">
+      <div className="fixed pb-6 inset-x-4">
         <div className="flex-1">
           <Button
             size="md"

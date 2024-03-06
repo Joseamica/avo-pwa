@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
-  console.log('isAdmin', isAdmin)
+
   useEffect(() => {
     const token = localStorage.getItem('isAuthenticated')
     const admin = localStorage.getItem('isAdmin')
