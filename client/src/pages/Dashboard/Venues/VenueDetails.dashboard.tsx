@@ -30,15 +30,17 @@ export default function VenueDetails() {
       </Flex>
       <hr />
       <Flex dir="row" align="center" className="">
-        <div className="flex flex-col self-start w-1/4 divide-y-2 divide-black bg-violet-200">
-          <Link to={`tables`} className="font-bold">
-            Tables
+        <div className="flex flex-col self-start w-1/4 divide-y divide-black bg-violet-700">
+          <Link to={`tables`} className="py-4 pl-4 font-semibold text-violet-100">
+            • Tables
           </Link>
-          <Link to={`bills`} className="font-bold">
-            Bills
+
+          <Link to={`bills`} className="py-4 pl-4 font-semibold text-violet-100">
+            • Bills
           </Link>
-          <Link to={`menus`} className="font-bold">
-            Menus
+
+          <Link to={`menus`} className="py-4 pl-4 font-semibold text-violet-100">
+            • Menus
           </Link>
         </div>
         <div className="w-3/4">

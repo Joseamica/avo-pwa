@@ -41,9 +41,10 @@ const Dashboard = asyncComponentLoader(() => import('./pages/Dashboard/Dashboard
 const VenueDetails = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueDetails.dashboard'))
 const TableListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Tables/TableList.dashboard'))
 const TableDetailsDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Tables/TableDetails.dashboard'))
-const BillListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillList.dashboard'))
 const MenusListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Menus/FIXMenusList.dashboard'))
 const DashboardVenues = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueList.dashboard'))
+const BillListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillList.dashboard'))
+const BillDetailsDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillDetails.dashboard'))
 function App() {
   if ('serviceWorker' in navigator) {
     // && !/localhost/.test(window.location)) {
@@ -143,6 +144,14 @@ function App() {
                   element={
                     <Suspense fallback={<div>Cargando...</div>}>
                       <BillListDashboard />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="bills/:billId"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <BillDetailsDashboard />
                     </Suspense>
                   }
                 />

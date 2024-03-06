@@ -28,7 +28,7 @@ export default function MenusListDashboard() {
     // tableMutation.mutate(tableNumber)
   }
   return (
-    <div>
+    <div className="bg-blue-200">
       <form onSubmit={handleSubmit} className="mx-auto ">
         <input type="number" name="tableNumber" className="border-2 rounded-full" />
         <button className="w-20 px-2 py-1 border rounded-full">Add</button>

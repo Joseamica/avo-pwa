@@ -1,6 +1,7 @@
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import clsx from 'clsx'
 import { Fragment, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
@@ -48,14 +49,23 @@ export default function BillListDashboard() {
   if (isError) return <div>Error al cargar los detalles de la mesa</div>
 
   return (
-    <div>
+    <div className="bg-blue-200 ">
       <div>
         {bills.map(bill => {
           return (
             // ANCHOR TABLE NUMBERS
             <Flex dir="row" space="sm" key={bill.id}>
-              <Link to={`${bill.id}`} className="w-16 px-2 py-1 text-white bg-black rounded-full">
-                {bill.posOrder}
+              <Link
+                to={`${bill.id}`}
+                className={clsx('w-fit px-2 py-1 rounded-full', {
+                  'bg-violet-500': bill.status === 'OPEN',
+                  'bg-red-500': bill.status === 'CLOSED',
+                  'bg-green-500': bill.status === 'PAID',
+                  'bg-teal-200': bill.status === 'EARLYACCESS',
+                  'bg-yellow-200': bill.status === 'PENDING',
+                })}
+              >
+                {bill.posOrder ?? bill.status}
               </Link>
               <div>
                 {!showVerification ? (
