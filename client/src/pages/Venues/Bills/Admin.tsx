@@ -9,6 +9,7 @@ export default function Admin() {
   const [success, setSuccess] = useState('')
   const params = useParams()
   const { isAdmin } = useAuth()
+  console.log('isAdmin', isAdmin)
   const loginMutation = useMutation({
     mutationFn: (tableNumber: any) =>
       api.post('/v1/admin/create-table', {

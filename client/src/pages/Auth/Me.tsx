@@ -11,7 +11,7 @@ export default function Me() {
 
   const queryClient = useQueryClient()
 
-  const loginMutation = useMutation({
+  const logoutMutation = useMutation({
     mutationFn: () =>
       api.post('/v1/auth/logout', '', {
         withCredentials: true,
@@ -32,7 +32,7 @@ export default function Me() {
       <button
         onClick={e => {
           e.preventDefault()
-          loginMutation.mutate()
+          logoutMutation.mutate()
         }}
       >
         Logout

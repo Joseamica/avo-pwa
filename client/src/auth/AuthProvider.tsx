@@ -9,13 +9,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
-
+  console.log('isAdmin', isAdmin)
   useEffect(() => {
     const token = localStorage.getItem('isAuthenticated')
+    const admin = localStorage.getItem('isAdmin')
     if (token) {
       // Aquí podrías decodificar el token para obtener la información del usuario si es necesario
       // y verificar si el token aún es válido según tu lógica de negocio
       setIsAuthenticated(true)
+    }
+    if (admin) {
+      setIsAdmin(true)
     }
     setLoading(false)
   }, [])

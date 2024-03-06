@@ -24,9 +24,10 @@ export default function Login() {
         },
       ),
     onSuccess: data => {
+      console.log('data', data.data.user.role)
       // FIXME - en algun punto tengo que cambiar el localStorage de persist:user para asignarle el stripeCustomerId y se guarden los datos del usuario
-      navigate('/me')
       login({ isAdmin: data.data.user.role === 'ADMIN' ? true : false })
+      navigate('/me')
     },
     onError: (error: any) => {
       console.log(error)
