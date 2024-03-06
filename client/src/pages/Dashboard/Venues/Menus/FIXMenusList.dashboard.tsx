@@ -54,9 +54,9 @@ export default function MenusListDashboard() {
                       <span className="text-xs">Erase?</span>
                     </Flex>
                     <Flex dir="row" space="sm">
-                      <button onClick={() => deleteMenuMutation.mutate(menu.tableNumber)}>
+                      {/* <button onClick={() => deleteMenuMutation.mutate(menu.tableNumber)}>
                         <span className="px-2 text-xs text-white border rounded-full bg-background-warning">Yes</span>
-                      </button>
+                      </button> */}
                       <button onClick={() => setShowVerification(false)}>
                         <span className="px-2 text-xs border rounded-full">No</span>
                       </button>
