@@ -5,7 +5,7 @@ import { Currency } from '@/utils/currency'
 import ByProduct from '../Payments/ByProduct'
 import Checkout from '@/pages/Stripe/Checkout'
 import { Button } from '../Button'
-import ModalPadding from '../Util/ModalPadding'
+import { ModalPadding } from '../Util/ModalPadding'
 
 type ByProductModalProps = {
   isOpen: boolean

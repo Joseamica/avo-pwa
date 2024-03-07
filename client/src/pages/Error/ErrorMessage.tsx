@@ -2,10 +2,11 @@ import { H2 } from '@/components/Util/Typography'
 import React from 'react'
 
 interface ErrorMessageProps {
-  message: string
+  message?: string
+  responseError: React.ReactNode
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
+const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, responseError }) => {
   const funnyErrorMessages = [
     '¡Oops! Algo salió mal. Pero no te preocupes, no eres tú, somos nosotros.',
     '¡Ay caramba! Algo no está bien aquí.',
@@ -32,8 +33,11 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
         <H2 variant="error" className="text-red-200">
           ¡Error!
         </H2>
+
         <p className="text-red-200">{message}</p>
         <p className="text-red-200">{randomErrorMessage}</p>
+
+        <p className="px-2 my-2 text-red-200 border rounded-full">Error from axios: {responseError}</p>
       </div>
     </div>
   )

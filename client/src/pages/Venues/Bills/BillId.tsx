@@ -4,14 +4,11 @@ import { Button, IconButton } from '@/components/Button'
 import { LineOnBottom, LineThrough } from '@/components/LineThrough'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
-import ByProductModal from '@/components/Modals/ByProductModal'
-import CustomModal from '@/components/Modals/CustomModal'
-import EqualPartsModal from '@/components/Modals/EqualPartsModal'
-import ModalPadding from '@/components/Util/ModalPadding'
+import { ByProductModal, CustomModal, EqualPartsModal } from '@/components/Modals'
+
 import { Spacer } from '@/components/Util/Spacer'
-import { H1, H4, H5 } from '@/components/Util/Typography'
+import { H1, H4, H5, ModalPadding } from '@/components'
 import useModal from '@/hooks/useModal'
-import ErrorPage from '@/pages/Error/Error'
 import ErrorMessage from '@/pages/Error/ErrorMessage'
 import Checkout from '@/pages/Stripe/Checkout'
 import { getUserLS } from '@/utils/localStorage/user'
@@ -27,10 +24,10 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
 
-interface Tip {
-  id: number
-  amount: number
-}
+// interface Tip {
+//   id: number
+//   amount: number
+// }
 
 interface User {
   id: number
@@ -131,7 +128,7 @@ function BillId() {
 
   if (isPending) return <Loading message="Buscando tu mesa" />
   //FIXME - cambiar a un componente de error y un mensaje amigable!
-  if (isError) return <ErrorMessage message={'Ocurrio un error'} />
+  if (isError) return <ErrorMessage responseError={error.message} />
   if (!billData) return <div>Cargando datos de la factura...</div>
 
   const paymentsExist = billData.payments.length > 0
