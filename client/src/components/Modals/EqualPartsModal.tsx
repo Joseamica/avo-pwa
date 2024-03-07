@@ -2,43 +2,30 @@ import React, { useState } from 'react'
 import Modal from '../Modal'
 import Checkout from '@/pages/Stripe/Checkout'
 import { Currency } from '@/utils/currency'
-
 import EqualParts from '../Payments/EqualParts'
 import { Flex } from '../Util/Flex'
 import { Button } from '../Button'
 
-/**
- * Renders a modal component for equal parts payment.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {boolean} props.isInnerModalOpen - Indicates whether the inner modal is open.
- * @param {Function} props.closeInnerModal - The function to close the inner modal.
- * @param {Function} props.openInnerModal - The function to open the inner modal.
- * @param {any} props.data - The data for the modal.
- * @param {any} props.payingFor - The item being paid for.
- * @param {Function} props.setPayingFor - The function to set the item being paid for.
- * @param {any} props.partySize - The size of the party.
- * @param {Function} props.setPartySize - The function to set the size of the party.
- * @param {any} props.totalEqualParts - The total amount for equal parts payment.
- * @param {any} props.isPending - Indicates whether the payment is pending.
- * @returns {JSX.Element} The rendered modal component.
- */
-type EqualPartsModalProps = {
-  isInnerModalOpen: any
-  closeInnerModal: any
-  openInnerModal: any
-  amountLeft: number
-  isPending: any
-}
+// Asumiendo que useModal ya está implementado en el contexto de tu aplicación
+// y que modalState y las funciones openModal y closeModal se obtienen desde ahí.
 
-export default function EqualPartsModal({
-  isInnerModalOpen,
-  closeInnerModal,
-  openInnerModal,
-  amountLeft,
-  isPending,
-}: EqualPartsModalProps) {
+type EqualPartsModalProps = {
+  modalState: Record<string, boolean>
+  isOpen: boolean // El tipo correcto para un valor booleano
+  closeModal: (modalKey: string) => void
+  openModal: (modalKey: string) => void
+  amountLeft: number
+  isPending: boolean
+}
+export default function EqualPartsModal({ modalState, isOpen, closeModal, openModal, amountLeft, isPending }: EqualPartsModalProps) {
+  const handleClose = () => {
+    closeModal('payment_methods.split_bill.equal_parts')
+  }
+
+  const handleOpenCheckout = () => {
+    openModal('payment_methods.split_bill.equal_parts.checkout')
+  }
+
   const [payingFor, setPayingFor] = useState(1) // Total de personas que pagan
   const [partySize, setPartySize] = useState(2) // Total de personas en la mesa
 
@@ -47,16 +34,16 @@ export default function EqualPartsModal({
 
   return (
     <Modal
-      isOpen={isInnerModalOpen.equal_parts}
-      closeModal={() => closeInnerModal('equal_parts')}
+      isOpen={isOpen}
+      closeModal={handleClose}
       title="Pagar partes iguales"
       footer={
         <Flex direction="col">
           <Flex direction="row" justify="between" align="center" className="mb-4">
             <span className="text-[21px] leading-6">Estás pagando</span>
-            <span className="text-[21px] leading-6"> {Currency(totalEqualParts)}</span>
+            <span className="text-[21px] leading-6">{Currency(totalEqualParts)}</span>
           </Flex>
-          <Button onClick={() => openInnerModal('checkout')} disabled={isPending} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending} text={'Confirmar'} />
         </Flex>
       }
     >
@@ -67,7 +54,11 @@ export default function EqualPartsModal({
         partySize={partySize}
         setPartySize={setPartySize}
       />
-      <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Método de pago">
+      <Modal
+        isOpen={!!modalState['payment_methods.split_bill.equal_parts.checkout']}
+        closeModal={() => closeModal('payment_methods.split_bill.equal_parts.checkout')}
+        title="Método de pago"
+      >
         <Checkout amount={totalEqualParts} />
       </Modal>
     </Modal>

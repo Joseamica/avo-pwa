@@ -7,25 +7,11 @@ import Checkout from '@/pages/Stripe/Checkout'
 import { Button } from '../Button'
 import ModalPadding from '../Util/ModalPadding'
 
-/**
- * Renders a modal component for selecting and paying for products.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {boolean} props.isInnerModalOpen - Flag indicating if the inner modal is open.
- * @param {Function} props.closeInnerModal - Function to close the inner modal.
- * @param {Function} props.openInnerModal - Function to open the inner modal.
- * @param {Object} props.data - The data for the modal.
- * @param {Function} props.handleSelectProducts - Function to handle the selection of products.
- * @param {Array} props.selectedProducts - The selected products.
- * @param {number} props.totalSelectedProducts - The total amount of selected products.
- * @param {boolean} props.isPending - Flag indicating if the payment is pending.
- * @returns {JSX.Element} The rendered modal component.
- */
 type ByProductModalProps = {
-  isInnerModalOpen: any
-  closeInnerModal: any
-  openInnerModal: any
+  isOpen: boolean
+  modalState: Record<string, boolean>
+  openModal: any
+  closeModal: any
   orderedProducts: {
     id: number
     key: string
@@ -43,13 +29,20 @@ type ByProductModalProps = {
   isPending: boolean
 }
 
-export default function ByProductModal({
-  isInnerModalOpen,
-  closeInnerModal,
-  openInnerModal,
-  orderedProducts,
-  isPending,
-}: ByProductModalProps) {
+/**
+ * Renders a modal for paying by product.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {boolean} props.isOpen - Indicates whether the modal is open or not.
+ * @param {Object} props.modalState - The state of the modal.
+ * @param {Function} props.openModal - The function to open the modal.
+ * @param {Function} props.closeModal - The function to close the modal.
+ * @param {Array} props.orderedProducts - The array of ordered products.
+ * @param {boolean} props.isPending - Indicates whether the payment is pending or not.
+ * @returns {JSX.Element} The rendered component.
+ */
+export default function ByProductModal({ isOpen, modalState, openModal, closeModal, orderedProducts, isPending }: ByProductModalProps) {
   // NOTE - Per product
   const [selectedProducts, setSelectedProducts] = useState([])
   const totalSelectedProducts = selectedProducts.reduce((acc, curr) => acc + parseInt(curr.price), 0)
@@ -58,11 +51,19 @@ export default function ByProductModal({
     setSelectedProducts(isSelected ? selectedProducts.filter(product => product.key !== key) : [...selectedProducts, { key, price }])
   }
 
+  const handleClose = () => {
+    closeModal('payment_methods.split_bill.by_product')
+  }
+
+  const handleOpenCheckout = () => {
+    openModal('payment_methods.split_bill.by_product.checkout')
+  }
+
   return (
     <Modal
       isFullScreen={true}
-      isOpen={isInnerModalOpen.by_product}
-      closeModal={() => closeInnerModal('by_product')}
+      isOpen={isOpen}
+      closeModal={closeModal}
       title="Pagar por producto"
       footer={
         <Flex direction="col">
@@ -70,13 +71,13 @@ export default function ByProductModal({
             <span className="text-[21px] leading-6">Total seleccionado</span>
             <span className="text-[21px] leading-6"> {Currency(totalSelectedProducts)}</span>
           </Flex>
-          <Button onClick={() => openInnerModal('checkout')} disabled={isPending || selectedProducts.length <= 0} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending || selectedProducts.length <= 0} text={'Confirmar'} />
         </Flex>
       }
     >
       <ModalPadding>
         <ByProduct orderedProducts={orderedProducts} handleSelectProducts={handleSelectProducts} selectedProducts={selectedProducts} />
-        <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Método de pago">
+        <Modal isOpen={!!modalState['payment_methods.split_bill.by_product.checkout']} closeModal={handleClose} title="Método de pago">
           <Checkout amount={totalSelectedProducts} />
         </Modal>
       </ModalPadding>

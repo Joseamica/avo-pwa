@@ -18,7 +18,7 @@ const Success: React.FC = () => {
   const [searchParams] = useSearchParams()
   const paymentIntentId = searchParams.get('payment_intent')
 
-  const { openModal, closeModal, isModalOpen } = useModal()
+  const { modalState, openModal, closeModal } = useModal()
   const [, notificationsActions] = useNotifications()
 
   const { data, isLoading, isError, error, isSuccess } = useQuery({
@@ -66,8 +66,8 @@ const Success: React.FC = () => {
         </H1>
       </Flex>
       <Spacer size="xl" />
-      <Receipt isOpen={isModalOpen.receipt} closeModal={() => closeModal('receipt')} paymentIntentId={paymentIntentId} />
-      <Review isOpen={isModalOpen.review} closeModal={() => closeModal('review')} venueId={data?.metadata.venueId} />
+      <Receipt isOpen={!!modalState['receipt']} closeModal={() => closeModal('receipt')} paymentIntentId={paymentIntentId} />
+      <Review isOpen={!!modalState['review']} closeModal={() => closeModal('review')} venueId={data?.metadata.venueId} />
       <IconButton icon={<FaReceipt />} text="Obtener recibo" onClick={() => openModal('receipt')} />
       <Spacer size="sm" />
       <LinkButton

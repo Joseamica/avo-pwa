@@ -21,23 +21,32 @@ import { Flex } from '../Util/Flex'
  * @returns {JSX.Element} The custom modal component.
  */
 type CustomModalProps = {
-  isInnerModalOpen: any
-  closeInnerModal: any
-  openInnerModal: any
+  modalState: Record<string, boolean>
+  closeModal: (modalKey: string) => void
+  openModal: (modalKey: string) => void
   isPending: boolean
+  isOpen: boolean // El tipo correcto para un valor booleano
 }
-
-export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInnerModal, isPending }: CustomModalProps) {
+export default function CustomModal({ modalState, isOpen, closeModal, openModal, isPending }: CustomModalProps) {
   const [customAmount, setCustomAmount] = useState(0)
 
   const handleAmountChange = e => {
     const amountInCents = e.target.value * 100
     setCustomAmount(amountInCents)
   }
+
+  const handleOpenCheckout = () => {
+    openModal('custom.checkout')
+  }
+
+  const handleClose = () => {
+    closeModal('payment_methods.split_bill.custom')
+  }
+
   return (
     <Modal
-      isOpen={isInnerModalOpen.custom}
-      closeModal={() => closeInnerModal('custom')}
+      isOpen={isOpen}
+      closeModal={handleClose}
       title="Pagar monto personalizado"
       footer={
         <Flex direction="col">
@@ -45,7 +54,7 @@ export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInn
             <span className="text-[21px] leading-6">Total seleccionado</span>
             <span className="text-[21px] leading-6"> {Currency(customAmount)}</span>
           </Flex>
-          <Button onClick={() => openInnerModal('checkout')} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} />
         </Flex>
       }
     >
@@ -70,7 +79,8 @@ export default function CustomModal({ isInnerModalOpen, closeInnerModal, openInn
         />
         <span className="text-[14px] w-32  flex justify-center text-center rounded-3xl shrink-0 px-2 text-texts-disabled">Min. $10.00</span>
       </div>
-      <Modal isOpen={isInnerModalOpen.checkout} closeModal={() => closeInnerModal('checkout')} title="Método de pago">
+      <Modal isOpen={!!modalState['custom.checkout']} closeModal={() => closeModal('custom.checkout')} title="Método de pago">
+        {' '}
         <Checkout amount={customAmount} />
       </Modal>
     </Modal>

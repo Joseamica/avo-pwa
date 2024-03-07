@@ -81,7 +81,7 @@ function BillId() {
   const { user } = getUserLS()
 
   //TODO -  convert to useReducer
-  const { isModalOpen, openModal, closeModal, isInnerModalOpen, openInnerModal, closeInnerModal } = useModal()
+  const { modalState, openModal, closeModal } = useModal()
 
   const {
     data: billData,
@@ -246,47 +246,68 @@ function BillId() {
         </Flex>
       </div>
       {/* TODO modify icons */}
-      <Modal isOpen={isModalOpen.payment_methods} closeModal={() => closeModal('payment_methods')} title="Método de pago">
+      <Modal isOpen={!!modalState['payment_methods']} closeModal={() => closeModal('payment_methods')} title="Método de pago">
         <ModalPadding>
-          <IconButton icon={<CallSplit />} onClick={() => openModal('split_bill')} text={'Dividir Cuenta'} />
+          <IconButton icon={<CallSplit />} onClick={() => openModal('payment_methods.split_bill')} text={'Dividir Cuenta'} />
           <Spacer size="sm" />
-          <IconButton icon={<Payment />} onClick={() => openModal('pay_full_bill')} text={'Pagar Cuenta Completa'} />
+          <IconButton icon={<Payment />} onClick={() => openModal('payment_methods.pay_full_bill')} text={'Pagar Cuenta Completa'} />
 
           {/* ANCHOR SplitBill */}
-          <Modal isOpen={isModalOpen.split_bill} closeModal={() => closeModal('split_bill')} title="Dividir cuenta">
+          <Modal
+            isOpen={!!modalState['payment_methods.split_bill']}
+            closeModal={() => closeModal('payment_methods.split_bill')}
+            title="Dividir cuenta"
+          >
             <ModalPadding>
-              <IconButton icon={<ListAlt />} onClick={() => openInnerModal('by_product')} text={'Pagar por producto'} />
+              <IconButton
+                icon={<ListAlt />}
+                onClick={() => openModal('payment_methods.split_bill.by_product')}
+                text={'Pagar por producto'}
+              />
               <Spacer size="sm" />
-              <IconButton icon={<SafetyDivider />} onClick={() => openInnerModal('equal_parts')} text={'Pagar partes iguales'} />
+              <IconButton
+                icon={<SafetyDivider />}
+                onClick={() => openModal('payment_methods.split_bill.equal_parts')}
+                text={'Pagar partes iguales'}
+              />
               <Spacer size="sm" />
-              <IconButton icon={<Edit />} onClick={() => openInnerModal('custom')} text={'Pagar monto personalizado'} />
-              {/* ANCHOR innerModal - ByProduct */}
+              <IconButton
+                icon={<Edit />}
+                onClick={() => openModal('payment_methods.split_bill.custom')}
+                text={'Pagar monto personalizado'}
+              />
               <ByProductModal
-                isInnerModalOpen={isInnerModalOpen}
-                closeInnerModal={closeInnerModal}
-                openInnerModal={openInnerModal}
+                modalState={modalState}
+                isOpen={!!modalState['payment_methods.split_bill.by_product']}
+                openModal={openModal}
+                closeModal={() => closeModal('payment_methods.split_bill.by_product')}
                 orderedProducts={billData.products}
                 isPending={isPending}
               />
-              {/* ANCHOR innerModal - EqualParts */}
+
               <EqualPartsModal
-                isInnerModalOpen={isInnerModalOpen}
-                closeInnerModal={closeInnerModal}
-                openInnerModal={openInnerModal}
-                amountLeft={billData.amount_left}
-                isPending={isPending}
+                isOpen={!!modalState['payment_methods.split_bill.equal_parts']}
+                modalState={modalState}
+                closeModal={closeModal} // Pasando la función que maneja el cierre de modales
+                openModal={openModal} // Pasando la función que maneja la apertura de modales
+                amountLeft={billData.amount_left} // La cantidad que queda por pagar
+                isPending={isPending} // Estado de si la operación está pendiente
               />
-              {/* ANCHOR innerModal - Custom */}
               <CustomModal
-                isInnerModalOpen={isInnerModalOpen}
-                closeInnerModal={closeInnerModal}
-                openInnerModal={openInnerModal}
+                isOpen={!!modalState['payment_methods.split_bill.custom']}
+                openModal={openModal}
+                closeModal={closeModal}
                 isPending={isPending}
+                modalState={modalState}
               />
             </ModalPadding>
           </Modal>
           {/* ANCHOR FullBill */}
-          <Modal isOpen={isModalOpen.pay_full_bill} closeModal={() => closeModal('pay_full_bill')} title="Pagar cuenta completa">
+          <Modal
+            isOpen={!!modalState['payment_methods.pay_full_bill']}
+            closeModal={() => closeModal('payment_methods.pay_full_bill')}
+            title="Pagar cuenta completa"
+          >
             <Checkout amount={billData.amount_left} />
           </Modal>
         </ModalPadding>
