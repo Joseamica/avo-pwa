@@ -11,6 +11,8 @@ import ModalPadding from '@/components/Util/ModalPadding'
 import { Spacer } from '@/components/Util/Spacer'
 import { H1, H4, H5 } from '@/components/Util/Typography'
 import useModal from '@/hooks/useModal'
+import ErrorPage from '@/pages/Error/Error'
+import ErrorMessage from '@/pages/Error/ErrorMessage'
 import Checkout from '@/pages/Stripe/Checkout'
 import { getUserLS } from '@/utils/localStorage/user'
 import CallSplit from '@mui/icons-material/CallSplit'
@@ -128,7 +130,8 @@ function BillId() {
   // if (isFetching) return <Loading message="Buscando tu mesa" />
 
   if (isPending) return <Loading message="Buscando tu mesa" />
-  if (isError) return 'An error has occured: ' + error?.message
+  //FIXME - cambiar a un componente de error y un mensaje amigable!
+  if (isError) return <ErrorMessage message={'Ocurrio un error'} />
   if (!billData) return <div>Cargando datos de la factura...</div>
 
   const paymentsExist = billData.payments.length > 0

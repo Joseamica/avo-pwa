@@ -45,6 +45,8 @@ const MenusListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/
 const DashboardVenues = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueList.dashboard'))
 const BillListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillList.dashboard'))
 const BillDetailsDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillDetails.dashboard'))
+const TableNumber = asyncComponentLoader(() => import('./pages/Venues/Tables/TableNumber'))
+
 function App() {
   if ('serviceWorker' in navigator) {
     // && !/localhost/.test(window.location)) {
@@ -77,7 +79,16 @@ function App() {
         {/* <Suspense fallback={<div>Cargando...</div>}> */}
         <Route path="/" element={<Template />} action={layoutAction} loader={layoutLoader} errorElement={<Error />}>
           <Route path="/" index element={<Layout />} />
-
+          <Route
+            path="venues/:venueId/tables/:tableNumber"
+            element={
+              <Suspense fallback={<div>Cargando...</div>}>
+                <TableNumber />
+              </Suspense>
+            }
+          >
+            {/* <Route path=":tableNumber" element={<Tables.TableNumber />} /> */}
+          </Route>
           <Route
             path="venues/:venueId/bills/:billId/menus"
             element={
@@ -91,10 +102,8 @@ function App() {
           <Route path="venues/:venueId" element={<Venues.VenueId />}>
             <Route path="bills/:billId" element={<Bills.Bills />} errorElement={<Error />} />
           </Route>
-          <Route path="venues/:venueId/tables" element={<Tables.Tables />}>
-            <Route path=":tableNumber" element={<Tables.TableNumber />} />
-          </Route>
 
+          {/* ANCHOR DASHBOARD */}
           <Route element={<ProtectedRoutes />}>
             <Route
               path="dashboard"

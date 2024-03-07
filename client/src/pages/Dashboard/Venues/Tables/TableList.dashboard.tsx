@@ -2,8 +2,14 @@ import { useAuth } from '@/auth/AuthProvider'
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
+
+// API call functions
+const fetchTables = async venueId => {
+  const response = await api.get(`/v1/admin/${venueId}/get-tables`)
+  return response.data
+}
 
 export default function TableListDashboard() {
   const { venueId } = useParams()
@@ -19,10 +25,7 @@ export default function TableListDashboard() {
     error: tableError,
   } = useQuery({
     queryKey: ['tables_list', venueId],
-    queryFn: async () => {
-      const response = await api.get(`/v1/admin/${venueId}/get-tables`)
-      return response.data
-    },
+    queryFn: () => fetchTables(venueId),
   })
 
   const { isAdmin } = useAuth()
@@ -82,7 +85,7 @@ export default function TableListDashboard() {
 
   return (
     <div className="py-2 bg-blue-200">
-      <div className="flex flex-col flex-wrap gap-2">
+      <div className="flex flex-col flex-wrap ">
         <form onSubmit={handleSubmit} className="mx-auto ">
           <input type="number" name="tableNumber" className="border-2 rounded-full" />
           <button className="w-20 px-2 py-1 border rounded-full">Add</button>
@@ -90,37 +93,42 @@ export default function TableListDashboard() {
           {success && <p>{success}</p>}
         </form>
 
-        {tables.map(table => {
-          return (
-            // ANCHOR TABLE NUMBERS
-            <Flex dir="row" space="sm" key={table.tableNumber}>
-              <Link to={`${table.tableNumber}`} className="w-16 px-2 py-1 text-white bg-black rounded-full">
-                {table.tableNumber}
-              </Link>
-              <div>
-                {!showVerification ? (
-                  <button className="w-6 h-6 border rounded-full bg-background-warning" onClick={() => setShowVerification(true)}>
-                    X
-                  </button>
-                ) : (
-                  <Fragment>
-                    <Flex dir="col">
-                      <span className="text-xs">Erase?</span>
-                    </Flex>
-                    <Flex dir="row" space="sm">
-                      <button onClick={() => deleteTableMutation.mutate(table.tableNumber)}>
-                        <span className="px-2 text-xs text-white border rounded-full bg-background-warning">Yes</span>
-                      </button>
-                      <button onClick={() => setShowVerification(false)}>
-                        <span className="px-2 text-xs border rounded-full">No</span>
-                      </button>
-                    </Flex>
-                  </Fragment>
-                )}
-              </div>
-            </Flex>
-          )
-        })}
+        <div className="divide-y-2">
+          {tables.map(table => {
+            return (
+              // ANCHOR TABLE NUMBERS
+              <Flex dir="row" space="sm" key={table.tableNumber}>
+                <Link to={`${table.tableNumber}`} className="w-full text-white bg-black">
+                  {table.tableNumber}
+                </Link>
+                <div>
+                  {!showVerification ? (
+                    <button
+                      className="w-6 h-6 text-white border rounded-full bg-background-warning"
+                      onClick={() => setShowVerification(true)}
+                    >
+                      X
+                    </button>
+                  ) : (
+                    <>
+                      <Flex dir="col">
+                        <span className="text-xs">Erase?</span>
+                      </Flex>
+                      <Flex dir="row" space="sm">
+                        <button onClick={() => deleteTableMutation.mutate(table.tableNumber)}>
+                          <span className="px-2 text-xs text-white border rounded-full bg-background-warning">Yes</span>
+                        </button>
+                        <button onClick={() => setShowVerification(false)}>
+                          <span className="px-2 text-xs border rounded-full">No</span>
+                        </button>
+                      </Flex>
+                    </>
+                  )}
+                </div>
+              </Flex>
+            )
+          })}
+        </div>
       </div>
 
       <Outlet />
