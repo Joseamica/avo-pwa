@@ -36,7 +36,7 @@ export default {
           disabled: '#9CA3AF',
           avoqado: '#336B42',
           success: '#2E3A23',
-          error: '#E57373',
+          error: '#FFC0CB',
         },
         borders: {
           button: '#D3D3D3',
@@ -59,3 +59,8 @@ export default {
 
 //Color main: #003366
 //Color mas clarito de main: #0055A4
+/* Verdes explorar: #336B42
+ * ##02735E
+ * ##0CF25D
+ * #5BFF24
+ */
