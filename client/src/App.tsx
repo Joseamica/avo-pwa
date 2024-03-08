@@ -12,7 +12,6 @@ import NotFound from './pages/NotFound'
 
 import Venues from './pages/Venues'
 import Bills from './pages/Venues/Bills'
-import Tables from './pages/Venues/Tables'
 
 import { registerSW } from 'virtual:pwa-register'
 import Layout, { action as layoutAction, loader as layoutLoader } from './Layout'

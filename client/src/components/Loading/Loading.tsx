@@ -1,6 +1,6 @@
-import { DNA, MutatingDots, Rings } from 'react-loader-spinner'
-import { H2, H3 } from '../Util/Typography'
+import { Rings } from 'react-loader-spinner'
 import { Flex } from '../Util/Flex'
+import { H3 } from '../Util/Typography'
 
 // function Loading() {
 //   return (

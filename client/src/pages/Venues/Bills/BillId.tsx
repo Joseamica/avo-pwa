@@ -1,11 +1,10 @@
 import api from '@/axiosConfig'
-import { Flex } from '@/components'
+import { Flex, H3 } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import { LineOnBottom, LineThrough } from '@/components/LineThrough'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
 import { ByProductModal, CustomModal, EqualPartsModal } from '@/components/Modals'
-
 import { Spacer } from '@/components/Util/Spacer'
 import { H1, H4, H5, ModalPadding } from '@/components'
 import useModal from '@/hooks/useModal'
@@ -23,11 +22,6 @@ import { Fragment, useEffect, useState } from 'react'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-
-// interface Tip {
-//   id: number
-//   amount: number
-// }
 
 interface User {
   id: number
@@ -74,6 +68,7 @@ export const socket = io(URL, {
 
 function BillId() {
   const { venueId, billId } = useParams()
+
   const queryClient = useQueryClient()
 
   const [showDetails, setShowDetails] = useState<any>(false)
@@ -312,6 +307,9 @@ function BillId() {
           </Modal>
         </ModalPadding>
       </Modal>
+      <div className="relative w-full text-center">
+        {billData?.products.length <= 0 ? <H3 variant="secondary">Aún no existen productos en esta orden.</H3> : null}
+      </div>
     </Fragment>
   )
 }
