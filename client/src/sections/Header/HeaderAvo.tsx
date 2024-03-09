@@ -33,7 +33,7 @@ function HeaderAvo({ iconColor, venueInfo }: { iconColor: string; venueInfo: any
         className="object-cover w-full max-h-56 rounded-b-3xl bg-day-bg_principal brightness-50"
       />
       <div className="absolute flex flex-row right-7 top-7">
-        <Link to={venueInfo.instagram} target="_blank">
+        <Link to={venueInfo?.instagram ?? 'https://www.instagram.com/madre_cafecito/'} target="_blank">
           <FaInstagram className="w-10 h-10 fill-white" />
         </Link>
         {/* <UserProfileLink iconColor={iconColor} /> */}
