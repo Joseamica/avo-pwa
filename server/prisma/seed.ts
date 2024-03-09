@@ -27,9 +27,11 @@ async function main() {
       address: '-',
       city: 'CDMX',
       email: 'test@gmail.com',
+      logo: 'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2FAZUL%20SIN%20FONDO%20(4)%201.png?alt=media&token=d8dfb7de-58d5-4706-bd3f-3f20ffbe7f9b',
       image:
         'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2FPortada.png?alt=media&token=2960aaef-6a8a-4e2d-a197-f8eb1c167b3c',
       cuisine: 'Café',
+      instagram: 'https://www.instagram.com/madre_cafecito/',
       tipPercentage1: '0.1',
       tipPercentage2: '0.15',
       tipPercentage3: '0.2',
@@ -55,6 +57,33 @@ async function main() {
       role: 'ADMIN',
     },
   })
+  const avoqadoMenu = await prisma.avoqadoMenu.create({
+    data: {
+      name: 'Menu 1',
+      venue: { connect: { id: venue.id } },
+    },
+  })
+  const category = await prisma.category.create({
+    data: {
+      name: 'Dulce',
+      avoqadoMenuId: avoqadoMenu.id,
+    },
+  })
+
+  const waffle = await prisma.avoqadoProduct.create({
+    data: {
+      name: 'Waffles con compota de duraznos',
+      description: 'Acompañado de helado de la casa y frutos rojos.',
+      price: 120,
+      orderByNumber: 1,
+      available: true,
+      imageUrl:
+        'https://firebasestorage.googleapis.com/v0/b/avoqado-d0a24.appspot.com/o/1.%20Madre%20Cafecito%2F3.%20DULCE%2FWAFFLES%20DURAZNOS.jpg?alt=media&token=7a9d99cb-f3f8-42da-ba56-af27bdb90dfd',
+      calories: 300,
+      categoryId: category.id,
+    },
+  })
+
   console.timeEnd(`🌱 Database has been seeded`)
 
   console.log({ venue, tableNumbers, user })

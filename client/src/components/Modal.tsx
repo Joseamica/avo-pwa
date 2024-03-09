@@ -37,10 +37,14 @@ const Modal = ({
   if (!isOpen) return null
   const modalContentMaxHeight = '100vh' // Adjust as needed
 
+  const handleBackgroundClick = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    closeModal()
+  }
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={closeModal}>
-        <div className="fixed inset-0 bg-black/70" aria-hidden="true" />
+      <Dialog as="div" className="relative z-50 " onClose={() => null} static>
+        <div className="fixed inset-0 bg-black/70" aria-hidden="true" onClick={e => handleBackgroundClick(e)} />
 
         <div className={`fixed inset-x-0 bottom-0    ${scrollable ? 'overflow-y-auto' : null}`}>
           <div className="flex items-center justify-center min-h-full text-center ">

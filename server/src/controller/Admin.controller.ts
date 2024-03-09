@@ -28,6 +28,7 @@ export const createTable = async (req, res) => {
 }
 
 export const getVenues = async (req, res) => {
+  //FIXME - se tiene que agarrar solamente las venues que estan asociadas al "chain", en el que sera otorgado o guardado en el usuario "admin" para que pueda acceder a las venues
   const venues = await prisma.venue.findMany()
   res.json(venues)
 }
@@ -35,7 +36,6 @@ export const getVenues = async (req, res) => {
 export const getVenue = async (req, res) => {
   const { venueId } = req.params
   try {
-    console.log('venueId', venueId)
     const venue = await prisma.venue.findUnique({
       where: {
         id: venueId,

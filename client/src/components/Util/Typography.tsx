@@ -53,15 +53,6 @@ type TitleProps = {
     }
 )
 
-const sizes = {
-  h1: 'leading-tight text-[21px] md:text-2xl',
-  h2: 'leading-tight text-lg md:text-xl',
-  h3: 'text-lg  sm:text-base',
-  h4: 'text-base sm:text-sm',
-  h5: 'text-sm sm:text-xs',
-  h6: 'text-xs sm:text-[10px]',
-}
-
 const variants = {
   primary: 'text-texts-primary',
   secondary: 'text-texts-secondary',
@@ -81,8 +72,19 @@ const boldness = {
   extrabold: 'font-extrabold',
 }
 
+const sizes = {
+  h1: 'leading-tight text-[21px] md:text-2xl',
+  h2: 'leading-tight text-lg md:text-xl',
+  h3: 'text-lg  sm:text-base',
+  h4: 'text-base sm:text-sm',
+  h5: 'text-sm sm:text-xs',
+  h6: 'text-xs sm:text-[10px]',
+  h7: 'text-[10px] line-height-[0.80rem]',
+  h8: 'text-[8px] line-height-[0.75rem]',
+}
+
 function Title({ variant = 'primary', bold = 'normal', size, as, className, htmlFor, ...rest }: TitleProps & { size: keyof typeof sizes }) {
-  const Tag = as ?? size
+  const Tag = as || 'label'
   return <Tag htmlFor={htmlFor} className={clsx(sizes[size], boldness[bold], variants[variant], className)} {...rest} />
 }
 
@@ -133,4 +135,7 @@ export function H5(props: TitleProps) {
 }
 export function H6(props: TitleProps) {
   return <Title {...props} size="h6" />
+}
+export function H7(props: TitleProps) {
+  return <Title {...props} size="h7" />
 }

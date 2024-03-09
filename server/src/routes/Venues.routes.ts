@@ -10,7 +10,6 @@ venueRouter.post('/order', async (req, res) => {
   const billStatus =
     status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
   const date = new Date()
-
   const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 7))
 
   const isBillFromToday = await prisma.bill.findFirst({
@@ -244,10 +243,32 @@ venueRouter.get('/:venueId/menus', async (req, res) => {
       venueId,
     },
   })
+  const avoqadoMenus = await prisma.avoqadoMenu.findFirst({
+    where: {
+      venueId,
+    },
+    include: {
+      categories: {
+        orderBy: {
+          orderByNumber: 'asc',
+        },
+        include: {
+          avoqadoProducts: {
+            where: {
+              available: true,
+            },
+            orderBy: {
+              orderByNumber: 'asc',
+            },
+          },
+        },
+      },
+    },
+  })
 
-  res.set('Cache-Control', 'public, max-age=86400')
+  // res.set('Cache-Control', 'public, max-age=86400')
 
-  res.json(menus)
+  res.json({ menus, avoqadoMenus })
 })
 
 // async function updateTableStatusesAndGetTables(venueId, mesasArray) {
@@ -420,9 +441,7 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
 venueRouter.post('/:venueId/review', async (req, res) => {
   const { stars, multipleStars } = req.body
   const { venueId } = req.params
-  console.log('req.body', req.body)
-  console.log('stars', stars, multipleStars)
-  console.log('venueId', venueId)
+
   try {
     const createFeedback = await prisma.feedback.create({
       data: {
@@ -449,6 +468,17 @@ venueRouter.get('/listVenues', async (req, res) => {
   const venues = await prisma.venue.findMany({ include: { tables: true } })
 
   res.json(venues)
+})
+
+venueRouter.get('/:venueId/get-info', async (req, res) => {
+  const { venueId } = req.params
+  const venue = await prisma.venue.findUnique({
+    where: {
+      id: venueId,
+    },
+  })
+
+  res.json(venue)
 })
 
 // //ANCHOR - TABLE NUMBER

@@ -29,7 +29,6 @@ import ProtectedRoutes from './pages/ProtectedRoutes'
 import Success from './pages/Stripe/Success'
 
 import { PublicRoute } from './PublicRoute'
-import { loader as menusLoader } from './pages/Venues/Menus/Menus'
 
 import asyncComponentLoader from '@/utils/loader'
 
@@ -95,7 +94,6 @@ function App() {
                 <Menus />
               </Suspense>
             }
-            loader={menusLoader}
           />
 
           <Route path="venues/:venueId" element={<Venues.VenueId />}>

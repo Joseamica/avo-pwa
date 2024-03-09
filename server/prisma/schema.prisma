@@ -19,20 +19,21 @@ model Chain {
 }
 
 model Venue {
-  id       String  @id @default(cuid())
-  name     String
-  chain    Chain?  @relation(fields: [chainId], references: [id])
-  chainId  String?
-  address  String
-  city     String
-  country  String?
-  utc      String? @default("-6")
-  phone    String?
-  email    String? @unique
-  language String? @default("es")
-  image    String
-  logo     String?
-
+  id              String         @id @default(cuid())
+  name            String
+  chain           Chain?         @relation(fields: [chainId], references: [id])
+  chainId         String?
+  address         String
+  city            String
+  country         String?
+  utc             String?        @default("-6")
+  instagram       String?
+  phone           String?
+  email           String?        @unique
+  language        String?        @default("es")
+  image           String
+  logo            String?
+  showMenuImage   Boolean?       @default(false)
   cuisine         String
   wifiName        String?
   wifiPassword    String?
@@ -46,6 +47,7 @@ model Venue {
   payments        Payment[]
   notifications   Notification[]
   menus           Menu[]
+  avoqadoMenus    AvoqadoMenu[]
   stripeAccountId String?
   updatedAt       DateTime?      @updatedAt
   createdAt       DateTime       @default(now())
@@ -82,6 +84,19 @@ model Menu {
   createdAt   DateTime   @default(now())
   venue       Venue?     @relation(fields: [venueId], references: [id])
   venueId     String?
+}
+
+model AvoqadoMenu {
+  id         String     @id @default(cuid())
+  name       String?
+  venueId    String
+  venue      Venue      @relation(fields: [venueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  categories Category[]
+  // personalizeMenu Boolean?         @default(false)
+  imageCover String?
+  // availabilities  Availabilities[]
+  updatedAt  DateTime?  @updatedAt
+  createdAt  DateTime   @default(now())
 }
 
 model Role {
@@ -166,12 +181,14 @@ enum RoleEnumType {
 }
 
 model Allergens {
-  id        String    @id @default(cuid())
-  name      String
-  updatedAt DateTime? @updatedAt
-  createdAt DateTime  @default(now())
-  user      User?     @relation(fields: [userId], references: [id])
-  userId    String?
+  id               String          @id @default(cuid())
+  name             String
+  updatedAt        DateTime?       @updatedAt
+  createdAt        DateTime        @default(now())
+  user             User?           @relation(fields: [userId], references: [id])
+  userId           String?
+  avoqadoProduct   AvoqadoProduct? @relation(fields: [avoqadoProductId], references: [id])
+  avoqadoProductId String?
 }
 
 model Session {
@@ -224,19 +241,44 @@ model UserTable {
 }
 
 model Category {
-  id             String           @id @default(cuid())
-  name           String
-  image          String?
-  displayBill    Int?
-  description    String?
-  pdf            Boolean?         @default(false)
-  active         Boolean?
-  products       Product[]
-  availabilities Availabilities[]
-  updatedAt      DateTime?        @updatedAt
-  createdAt      DateTime         @default(now())
-  menu           Menu?            @relation(fields: [menuId], references: [id])
-  menuId         String?
+  id              String           @id @default(cuid())
+  name            String
+  image           String?
+  displayBill     Int?
+  description     String?
+  orderByNumber   Int?
+  pdf             Boolean?         @default(false)
+  active          Boolean?
+  products        Product[]
+  availabilities  Availabilities[]
+  menu            Menu?            @relation(fields: [menuId], references: [id])
+  menuId          String?
+  avoqadoMenu     AvoqadoMenu?     @relation(fields: [avoqadoMenuId], references: [id])
+  avoqadoMenuId   String?
+  avoqadoProducts AvoqadoProduct[]
+  updatedAt       DateTime?        @updatedAt
+  createdAt       DateTime         @default(now())
+}
+
+model AvoqadoProduct {
+  id            String      @id @default(cuid())
+  key           String?
+  name          String
+  imageUrl      String?
+  description   String?
+  orderByNumber Int?
+  //best name for turning off or on
+  instagramUrl  String?
+  price         Decimal
+  available     Boolean?
+  categoryId    String?
+  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  calories      Int?
+  allergens     Allergens[]
+
+  updatedAt DateTime? @updatedAt
+  createdAt DateTime  @default(now())
+  // BillDetails BillDetails[]
 }
 
 model Product {

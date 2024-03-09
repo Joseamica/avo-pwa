@@ -308,7 +308,7 @@ function BillId() {
         </ModalPadding>
       </Modal>
       <div className="relative w-full text-center">
-        {billData?.products.length <= 0 ? <H3 variant="secondary">Aún no existen productos en esta orden.</H3> : null}
+        {billData?.products.length <= 0 ? <H4 variant="secondary">Aún no existen productos en esta orden.</H4> : null}
       </div>
     </Fragment>
   )
