@@ -54,6 +54,7 @@ export default function Receipt({
         />
         <Button
           type="submit"
+          size="md"
           text="Obtener recibo"
           onClick={() => {
             showNotification()

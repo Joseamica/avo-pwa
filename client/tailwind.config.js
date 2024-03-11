@@ -36,7 +36,7 @@ export default {
           disabled: '#9CA3AF',
           avoqado: '#336B42',
           success: '#2E3A23',
-          error: '#FFC0CB',
+          error: '#FF4E4D',
         },
         borders: {
           button: '#D3D3D3',
@@ -47,6 +47,7 @@ export default {
           primary: '#F6F6F9',
           success: '#D1FFDD',
           warning: '#E57373',
+          error: '#FFE6E6',
         },
         main: {
           warning: '#E57373',

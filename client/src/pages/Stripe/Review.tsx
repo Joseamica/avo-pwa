@@ -1,15 +1,16 @@
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import Modal from '@/components/Modal'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 
-import { FaRegAngry, FaRegMeh, FaRegSmile, FaStar } from 'react-icons/fa'
-import { motion } from 'framer-motion'
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
-import { Spacer } from '@/components/Util/Spacer'
-import { H2, H3, H4 } from '@/components/Util/Typography'
-import { useParams } from 'react-router-dom'
 import { Button } from '@/components/Button'
+import { Spacer } from '@/components/Util/Spacer'
+import { H4 } from '@/components/Util/Typography'
+import useNotifications from '@/store/notifications'
+import { getRandomReviewMsg } from '@/utils/get-msgs'
+import { motion } from 'framer-motion'
+import { FaRegAngry, FaRegMeh, FaRegSmile, FaStar } from 'react-icons/fa'
 
 const iconStyles = {
   base: 'w-8 h-8',
@@ -17,6 +18,22 @@ const iconStyles = {
   neutral: 'fill-[#E0821E]',
   happy: 'fill-green-500',
   default: 'fill-gray-400',
+}
+
+const modalVariants = {
+  hidden: {
+    scale: 0.95, // Un poco más pequeño cuando no hay estrellas
+    opacity: 0,
+  },
+  visible: {
+    scale: 1, // Tamaño normal
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 10,
+    },
+  },
 }
 
 const getIconConfig = (index, type) => {
@@ -36,6 +53,8 @@ export default function Review({ isOpen, closeModal, venueId }: { isOpen: boolea
     price_quality: 0,
   })
 
+  const [, notificationsActions] = useNotifications()
+
   const categoryNames = {
     food: 'Comida',
     service: 'Servicio',
@@ -53,6 +72,12 @@ export default function Review({ isOpen, closeModal, venueId }: { isOpen: boolea
     onSuccess: () => {
       // Aquí puedes manejar lo que sucede después de una mutación exitosa, como cerrar el modal
       closeModal()
+      notificationsActions.push({
+        options: {
+          variant: 'reviewNotification',
+        },
+        message: getRandomReviewMsg(),
+      })
     },
     onError: error => {
       // Aquí puedes manejar el error, por ejemplo, mostrando una notificación
@@ -69,37 +94,47 @@ export default function Review({ isOpen, closeModal, venueId }: { isOpen: boolea
   }
 
   return (
-    <Modal isOpen={isOpen} closeModal={closeModal} title="Evalúa">
-      <motion.div className={`flex flex-col items-center space-y-4 bg-white p-4 ${stars > 0 && 'h-full'}`}>
-        <div className="flex flex-row items-center justify-center py-10 bg-white">
+    <Modal isOpen={isOpen} closeModal={closeModal} title="Califícanos">
+      <motion.div className={`p-4 bg-white ${stars > 0 && 'h-full'}`}>
+        <div className="flex flex-row items-center justify-center bg-white py-7">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} onClick={() => setStars(i + 1)}>
-              <FaStar className={`${stars > 0 ? 'h-12 w-12' : 'h-8 w-8'} ${i + 1 <= stars ? 'fill-buttons-main' : 'fill-gray-400'}`} />
+              <FaStar className={`${stars > 0 ? 'h-12 w-12' : 'h-10 w-10'} ${i + 1 <= stars ? 'fill-yellow-300' : 'fill-zinc-300'}`} />
             </div>
           ))}
         </div>
-        {stars > 0 && (
-          <>
-            <H2 className="text-center">Comparta su experiencia con Madre Cafecito</H2>
-            <div className="text-center">
-              <H3>Evalúa nuestros servicios.</H3>
-              <Spacer spaceY="2" />
-              {Object.keys(multipleStars).map(category => (
-                <Flex key={category} align="center">
-                  <H4 className="w-32 text-start">{categoryNames[category]}</H4>
-                  <div className="flex flex-row items-center justify-center p-4 bg-white">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <div key={index} onClick={() => handleStarClick(category, index + 1)}>
-                        {getIconConfig(index, multipleStars[category])}
+        <motion.div
+          initial="hidden" // Estado inicial antes de montar el modal
+          animate={stars > 0 ? 'visible' : 'hidden'} // Estado final del modal
+          variants={modalVariants} // Las variantes definidas previamente
+          className="flex flex-col items-center h-full space-y-4 "
+        >
+          {stars > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-xl text-center">Comparta su experiencia con Madre Cafecito</h3>
+              <div className="p-3 text-center border rounded-2xl bg-background-primary">
+                <H4 variant="secondary">Evalúa nuestros servicios.</H4>
+                <Spacer spaceY="2" />
+                <div className="space-y-2">
+                  {Object.keys(multipleStars).map(category => (
+                    <Flex key={category} align="center" className="px-4 bg-white border rounded-full">
+                      <H4 className="w-32 text-start">{categoryNames[category]}</H4>
+                      <div className="flex flex-row items-center justify-center py-3 ">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <div key={index} onClick={() => handleStarClick(category, index + 1)}>
+                            {getIconConfig(index, multipleStars[category])}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </Flex>
-              ))}
+                    </Flex>
+                  ))}
+                </div>
+              </div>
+              <Spacer size="xs" />
+              <Button onClick={() => mutate()} text="Enviar" />
             </div>
-          </>
-        )}
-        <Button onClick={() => mutate()} text="Enviar" />
+          )}
+        </motion.div>
       </motion.div>
     </Modal>
   )

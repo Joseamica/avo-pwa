@@ -1,20 +1,28 @@
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { Amex, Check, MasterCard, Visa } from '@/components/Icons'
+import Loading from '@/components/Loading'
 import Meta from '@/components/Meta'
 import { Spacer } from '@/components/Util/Spacer'
 import { H2, H4 } from '@/components/Util/Typography'
+import useNotifications from '@/store/notifications'
 import getIcon from '@/utils/get-icon'
 import { getUserLS } from '@/utils/localStorage/user'
 import { initStripe } from '@/utils/stripe'
 import { Elements } from '@stripe/react-stripe-js'
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import ErrorMessage from '../Error/ErrorMessage'
+import ErrorParagraph from '../Error/ErrorParagraph'
 import CheckoutCard from './CheckoutCard'
 import CheckoutForm from './CheckoutForm'
 
-const stripePromise = initStripe('https://avo-pwa.onrender.com/v1/stripe/publishable-key')
+const stripePublishableKey =
+  import.meta.env.MODE === 'production'
+    ? 'https://avo-pwa.onrender.com/v1/stripe/publishable-key'
+    : 'http://localhost:5000/v1/stripe/publishable-key'
+const stripePromise = initStripe(stripePublishableKey)
 
 /**
  * Checkout component for processing payments.
@@ -28,6 +36,7 @@ const Checkout = ({ amount }: { amount: number }) => {
   const [isPaymentFormVisible, setIsPaymentFormVisible] = useState(false as boolean)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState() as any
+  const [, notificationsActions] = useNotifications()
 
   //CHECKOUT CARD ONLY
   const [paymentMethodId, setPaymentMethodId] = useState('' as string)
@@ -47,6 +56,10 @@ const Checkout = ({ amount }: { amount: number }) => {
     },
   })
 
+  useEffect(() => {
+    setErrorMessage(null)
+  }, [isPaymentFormVisible])
+
   if (amount / 100 < 10) {
     return <div>El monto mínimo es de $10</div>
   }
@@ -55,12 +68,8 @@ const Checkout = ({ amount }: { amount: number }) => {
   const userFee = Math.round((amount * 0.025) / (1 - 0.025))
   const total = Math.round(amount + tip + userFee)
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-  if (isError) {
-    return <span>Error: {error.message}</span>
-  }
+  if (isLoading) return <Loading message="Cargando stripe..." />
+  if (isError) return <ErrorMessage responseError={error.message} />
 
   const handlePaymentOptions = (paymentMethodId?: string) => {
     if (paymentMethodId) {
@@ -90,10 +99,10 @@ const Checkout = ({ amount }: { amount: number }) => {
           currency: 'mxn',
           setup_future_usage: 'off_session',
           appearance: {
-            theme: 'stripe',
+            theme: 'flat',
             variables: {
-              colorBackground: '#F6F6F9',
-              // colorText: '#30313d',
+              // colorBackground: errorMessage ? '#E57373' : '#f8f9fa',
+              // colorText: errorMessage ? '#FF3B3C' : '#000',
               // colorDanger: '#df1b41',
               fontFamily: 'Ideal Sans, system-ui, sans-serif',
               spacingUnit: '5px',
@@ -160,6 +169,11 @@ const Checkout = ({ amount }: { amount: number }) => {
           </button>
         </div>
         <Spacer size="md" />
+        {errorMessage && (
+          <div className="px-4 ">
+            <ErrorParagraph message={errorMessage} />
+          </div>
+        )}
         {isPaymentFormVisible ? (
           <CheckoutForm
             setErrorMessage={setErrorMessage}
@@ -172,6 +186,7 @@ const Checkout = ({ amount }: { amount: number }) => {
             setLoading={setLoading}
             tipPercentage={tipPercentage}
             setTipPercentage={setTipPercentage}
+            notificationsActions={notificationsActions}
           />
         ) : (
           <CheckoutCard
@@ -191,7 +206,6 @@ const Checkout = ({ amount }: { amount: number }) => {
           />
         )}
       </Elements>
-      {errorMessage && <div>{errorMessage}</div>}
     </div>
   )
 }

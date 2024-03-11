@@ -36,14 +36,21 @@ const createPaymentIntent = async (req, res) => {
   // console.log('avoFee', avoFee)
 
   try {
-    // const { stripeAccountId } = await prisma.venue.findUnique({
-    //   where: {
-    //     id: params.venueId,
-    //   },
-    //   select: {
-    //     stripeAccountId: true,
-    //   },
-    // })
+    const s = await prisma.venue.findUnique({
+      where: {
+        id: params.venueId,
+      },
+      select: {
+        stripeAccountId: true,
+      },
+    })
+    const stripeAccountId = s.stripeAccountId
+    console.log('stripeAccountId', stripeAccountId)
+    if (!s.stripeAccountId) {
+      return res
+        .status(500)
+        .json('Error al crear el intento de pago, stripeAccountId no existe en la base de datos, por favor contacte al restaurante')
+    }
 
     const setupFutureUsage = saveCard ? 'off_session' : undefined
 
@@ -56,7 +63,7 @@ const createPaymentIntent = async (req, res) => {
 
       application_fee_amount: avoFee,
       transfer_data: {
-        destination: 'acct_1NuRFGBAuNoVK1pM',
+        destination: stripeAccountId,
       },
       metadata: {
         venueId: params.venueId,

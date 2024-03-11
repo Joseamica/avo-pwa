@@ -15,6 +15,7 @@ const CheckoutForm = ({
   loading,
   setLoading,
   setErrorMessage,
+  notificationsActions,
 }: {
   amounts: {
     amount: number
@@ -26,6 +27,7 @@ const CheckoutForm = ({
   loading: boolean
   setLoading: (value: boolean) => void
   setErrorMessage: (value: string) => void
+  notificationsActions: any
 }) => {
   const stripe = useStripe()
   const elements = useElements()
@@ -36,6 +38,13 @@ const CheckoutForm = ({
 
   const handleError = error => {
     setLoading(false)
+    notificationsActions.push({
+      options: {
+        variant: 'errorNotification',
+      },
+      message: error.message,
+    })
+    setShowTipModal(false)
     setErrorMessage(error.message)
   }
 
@@ -158,6 +167,7 @@ const CheckoutForm = ({
         stripe={stripe}
       />
       <Spacer size="md" />
+
       <Button
         size="md"
         className="p-4 mb-5 rounded-full bottom-4 disabled:bg-zinc-400"

@@ -1,6 +1,8 @@
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
+import Loading from '@/components/Loading'
 import { H1, H2 } from '@/components/Util/Typography'
+import ErrorMessage from '@/pages/Error/ErrorMessage'
 import { useQuery } from '@tanstack/react-query'
 import { Fragment } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
@@ -19,8 +21,8 @@ export default function VenueDetails() {
       return response.data
     },
   })
-  if (isLoading) return <div>Loading...</div>
-  if (isError) return <div>Error: {error.message}</div>
+  if (isLoading) return <Loading message="Cargando el restaurante..." />
+  if (isError) return <ErrorMessage responseError={error.message} />
 
   return (
     <Fragment>

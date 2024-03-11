@@ -15,6 +15,12 @@ declare module 'notistack' {
     paymentNotification: {
       message?: string
     }
+    reviewNotification: {
+      message?: string
+    }
+    errorNotification: {
+      message?: string
+    }
   }
 }
 
