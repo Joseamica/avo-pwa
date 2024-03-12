@@ -1,12 +1,11 @@
 import api from '@/axiosConfig'
-import { Flex, H3 } from '@/components'
+import { Flex, H1, H4, H5, H6, ModalPadding } from '@/components'
 import { Button, IconButton } from '@/components/Button'
 import { LineOnBottom, LineThrough } from '@/components/LineThrough'
 import Loading from '@/components/Loading'
 import Modal from '@/components/Modal'
 import { ByProductModal, CustomModal, EqualPartsModal } from '@/components/Modals'
 import { Spacer } from '@/components/Util/Spacer'
-import { H1, H4, H5, ModalPadding } from '@/components'
 import useModal from '@/hooks/useModal'
 import ErrorMessage from '@/pages/Error/ErrorMessage'
 import Checkout from '@/pages/Stripe/Checkout'
@@ -22,7 +21,21 @@ import { Fragment, useEffect, useState } from 'react'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-
+const modalVariants = {
+  hidden: {
+    scale: 0.95, // Un poco más pequeño cuando no hay estrellas
+    opacity: 0,
+  },
+  visible: {
+    scale: 1, // Tamaño normal
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 10,
+    },
+  },
+}
 interface User {
   id: number
   name: string
@@ -74,7 +87,6 @@ function BillId() {
   const [showDetails, setShowDetails] = useState<any>(false)
   const { user } = getUserLS()
 
-  //TODO -  convert to useReducer
   const { modalState, openModal, closeModal } = useModal()
 
   const {
@@ -122,7 +134,6 @@ function BillId() {
   // if (isFetching) return <Loading message="Buscando tu mesa" />
 
   if (isPending) return <Loading message="Buscando tu mesa" />
-  //FIXME - cambiar a un componente de error y un mensaje amigable!
   if (isError) return <ErrorMessage responseError={error.message} />
   if (!billData) return <div>Cargando datos de la factura...</div>
 
@@ -180,26 +191,38 @@ function BillId() {
                     <Spacer size="md" />
                     <button
                       onClick={() => setShowDetails(!showDetails)}
-                      className="flex flex-row items-center self-end px-2 space-x-2 border rounded-full bg-background-primary"
+                      className="flex flex-row items-center self-start px-2 py-1 space-x-2 border rounded-full bg-background-primary"
                     >
-                      <H4>Desgloce pagos</H4> {showDetails ? <FaChevronUp className="w-3 h-3" /> : <FaChevronDown className="w-3 h-3" />}
+                      <H6>Desgloce pagos</H6> {showDetails ? <FaChevronUp className="w-3 h-3" /> : <FaChevronDown className="w-3 h-3" />}
                     </button>
                     <Spacer size="xs" />
                     <AnimatePresence>
                       {showDetails && (
                         <motion.div
-                          initial={{ height: 0 }}
-                          animate={{ height: showDetails ? 'auto' : 0 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.5 }}
-                          className="self-start w-full px-3 py-1 space-y-2 border rounded-xl "
+                          initial={{ opacity: 0, maxHeight: 0 }}
+                          animate={{ opacity: 1, maxHeight: 500 }} // Asumiendo que 500px es suficiente para cubrir el contenido expandido. Ajusta según sea necesario.
+                          exit={{ opacity: 0, maxHeight: 0 }}
+                          transition={{
+                            opacity: { duration: 0.2 }, // Más rápido para el opacity para una sensación de respuesta más inmediata.
+                            maxHeight: {
+                              duration: 0.5, // Puede necesitar ajuste basado en el contenido real y la altura deseada.
+                              damping: 20, // Añade un poco de amortiguación para hacer la transición más natural.
+                            },
+                          }}
+                          className="self-start w-full px-3 py-1 space-y-1 "
                         >
                           {billData.payments.map((payment, index) => (
                             <div key={index} className="flex flex-row items-center justify-between w-full space-x-2 ">
-                              <H4 as="div">
-                                {payment.customerId === user.stripeCustomerId ? <H4 bold="semibold">Pagaste</H4> : 'Pagaron'}
-                              </H4>
-                              <H4>${(payment.amount / 100).toFixed(2)}</H4>
+                              <div>
+                                {payment.customerId === user.stripeCustomerId ? (
+                                  <H6 className="tracking-tighter" variant="secondary">
+                                    Pagaste
+                                  </H6>
+                                ) : (
+                                  'Pagaron'
+                                )}
+                              </div>
+                              <H6 className="tracking-tight">${(payment.amount / 100).toFixed(2)}</H6>
                             </div>
                           ))}
                         </motion.div>

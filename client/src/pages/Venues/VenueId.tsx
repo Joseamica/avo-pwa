@@ -20,9 +20,9 @@ function VenueId() {
       return response.data
     },
 
-    staleTime: 1000 * 60 * 60, // 1 hour in ms
-    gcTime: 1000 * 60 * 60 * 24, // 24 hours in ms
-    refetchOnWindowFocus: false, // Disables automatic refetching when browser window is focused.
+    // staleTime: 1000 * 60 * 60, // 1 hour in ms
+    // gcTime: 1000 * 60 * 60 * 24, // 24 hours in ms
+    // refetchOnWindowFocus: false, // Disables automatic refetching when browser window is focused.
   })
   if (isLoading) return <Loading message="Cargando el menu..." />
   if (isError) return <ErrorMessage responseError={error.message} />

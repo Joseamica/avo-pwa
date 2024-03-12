@@ -71,7 +71,7 @@ export default function ByProductModal({ isOpen, modalState, openModal, closeMod
             <span className="text-[21px] leading-6">Total seleccionado</span>
             <span className="text-[21px] leading-6"> {Currency(totalSelectedProducts)}</span>
           </Flex>
-          <Button onClick={handleOpenCheckout} disabled={isPending || selectedProducts.length <= 0} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending || selectedProducts.length <= 0} text={'Confirmar'} size="md" />
         </Flex>
       }
     >

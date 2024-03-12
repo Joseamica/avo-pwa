@@ -43,7 +43,7 @@ export default function EqualPartsModal({ modalState, isOpen, closeModal, openMo
             <span className="text-[21px] leading-6">Estás pagando</span>
             <span className="text-[21px] leading-6">{Currency(totalEqualParts)}</span>
           </Flex>
-          <Button onClick={handleOpenCheckout} disabled={isPending} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending} text={'Confirmar'} size="md" />
         </Flex>
       }
     >

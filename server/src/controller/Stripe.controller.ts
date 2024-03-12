@@ -87,8 +87,10 @@ const getPaymentIntent = async (req, res) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(id)
+    const charge_id = paymentIntent.latest_charge
+    const charge = await stripe.charges.retrieve(`${charge_id}`)
 
-    res.json(paymentIntent)
+    res.json(charge)
   } catch (err) {
     console.log(err)
     res.status(500).json('Error getting payment intent')

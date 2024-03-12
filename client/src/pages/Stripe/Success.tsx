@@ -1,6 +1,7 @@
 import api from '@/axiosConfig'
 import { Flex } from '@/components'
 import { LinkButton } from '@/components/Button'
+import { Amex, MasterCard, Visa } from '@/components/Icons'
 import Loading from '@/components/Loading'
 import { Spacer } from '@/components/Util/Spacer'
 import { H1, H3, H4, H5 } from '@/components/Util/Typography'
@@ -10,9 +11,9 @@ import { getRandomPaymentMsg } from '@/utils/get-msgs'
 import { RandomShapesSVG } from '@/utils/random-shapes'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
-import { FaCheckCircle } from 'react-icons/fa'
-import { MdDownload } from 'react-icons/md'
-import { useSearchParams } from 'react-router-dom'
+import { FaCheckCircle, FaEye } from 'react-icons/fa'
+import { MdSend } from 'react-icons/md'
+import { Link, useSearchParams } from 'react-router-dom'
 import ErrorMessage from '../Error/ErrorMessage'
 import Receipt from './Receipt'
 import Review from './Review'
@@ -55,10 +56,9 @@ const Success: React.FC = () => {
   if (isLoading) return <Loading message="Cargando el pago..." />
   if (isError) return <ErrorMessage responseError={error.message} />
 
+  const card = data.payment_method_details.card
   return (
-    // <div className="absolute inset-x-0 flex justify-center h-full bg-blue-200">
-
-    <div className="flex flex-col h-screen bg-background-primary">
+    <div className="flex flex-col h-screen overflow-hidden bg-background-primary">
       <div className="relative flex-1 p-8 bg-white rounded-b-3xl">
         <RandomShapesSVG />
         <div className="relative flex flex-col items-center justify-center w-full space-y-4 ">
@@ -75,12 +75,16 @@ const Success: React.FC = () => {
               Pago Exitoso
             </H3>
             <Spacer size="sm" />
-            <h1 className="text-5xl">${data?.amount / 100}</h1>
+            <h1 className="text-5xl bg-white">${data?.amount / 100}</h1>
+            <Spacer size="sm" />
+            <Flex align="center" space="md" className="bg-white">
+              <H3>{card.brand === 'visa' ? <Visa /> : card.brand === 'amex' ? <Amex /> : <MasterCard />}</H3>
+              <H4 variant="secondary">***{card.last4}</H4>
+            </Flex>
           </div>
         </div>
       </div>
       <div className="flex flex-col justify-between flex-1 p-5 bg-background-primary">
-        {/* Contenido de la segunda mitad */}
         <div>
           <Flex direction="col">
             <H4 variant="secondary" className="font-light">
@@ -98,17 +102,28 @@ const Success: React.FC = () => {
             </H5>
           </Flex>
           <Spacer size="md" />
-          <button className="flex flex-row justify-between w-full" onClick={() => openModal('receipt')}>
+          <div className="flex flex-row justify-between w-full">
             <Flex direction="col">
               <H4 variant="secondary" className="self-start">
                 Recibo
               </H4>
-              <H5 bold="semibold">{paymentIntentId.substring(5, 8) + '...' + paymentIntentId.slice(-8)}</H5>
+              <H5 bold="semibold">{data.id.slice(-8)}</H5>
             </Flex>
-            <div className="flex items-center justify-center w-10 h-10 p-2 bg-white border rounded-full">
-              <MdDownload />
+            <div className="flex space-x-2">
+              <Link to={data.receipt_url} className="flex flex-row items-center pl-4 space-x-2 border rounded-full">
+                <span>Ver</span>
+                <div className="flex items-center justify-center w-10 h-10 p-2 bg-white border rounded-full">
+                  <FaEye />
+                </div>
+              </Link>
+              <button onClick={() => openModal('receipt')} className="flex flex-row items-center pl-4 space-x-2 border rounded-full">
+                <span>Enviar</span>
+                <div className="flex items-center justify-center w-10 h-10 p-2 bg-white border rounded-full">
+                  <MdSend />
+                </div>
+              </button>
             </div>
-          </button>
+          </div>
           <Spacer size="sm" />
           <hr />
           <Spacer size="sm" />
@@ -116,7 +131,7 @@ const Success: React.FC = () => {
             <Flex direction="row" align="center" justify="between">
               <H4 variant="secondary">Monto</H4>
               <H3 bold="medium" className="tracking-tighter ">
-                ${data?.metadata.amount / 100}
+                ${(data?.metadata.amount / 100).toFixed(2)}
               </H3>
             </Flex>
             <Flex direction="row" align="center" justify="between">
@@ -134,7 +149,7 @@ const Success: React.FC = () => {
             <Flex direction="row" align="center" justify="between">
               <H4 variant="secondary">Total</H4>
               <H3 bold="medium" className="tracking-tighter ">
-                ${data?.amount / 100}
+                ${(data?.amount / 100).toFixed(2)}
               </H3>
             </Flex>
           </Flex>

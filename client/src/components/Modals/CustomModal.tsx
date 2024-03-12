@@ -54,7 +54,7 @@ export default function CustomModal({ modalState, isOpen, closeModal, openModal,
             <span className="text-[21px] leading-6">Total seleccionado</span>
             <span className="text-[21px] leading-6"> {Currency(customAmount)}</span>
           </Flex>
-          <Button onClick={handleOpenCheckout} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} />
+          <Button onClick={handleOpenCheckout} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} size="md" />
         </Flex>
       }
     >
