@@ -60,7 +60,7 @@ const Modal = ({
               <div className={`fixed inset-x-0 bottom-0 max-w-lg mx-auto  ${scrollable ? 'overflow-hidden' : ''}`}>
                 <Dialog.Panel
                   className={`w-full text-left align-middle transition-all transform flex flex-col   ${
-                    isFullScreen ? 'fixed inset-0 bg-background-primary' : 'bg-background-primary shadow-xl rounded-t-3xl'
+                    isFullScreen ? 'h-screen bg-background-primary' : 'bg-background-primary shadow-xl rounded-t-3xl'
                   }`}
                   style={{ maxHeight: modalContentMaxHeight }}
                 >

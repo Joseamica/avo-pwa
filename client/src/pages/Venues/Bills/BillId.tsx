@@ -21,21 +21,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
-const modalVariants = {
-  hidden: {
-    scale: 0.95, // Un poco más pequeño cuando no hay estrellas
-    opacity: 0,
-  },
-  visible: {
-    scale: 1, // Tamaño normal
-    opacity: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-      damping: 10,
-    },
-  },
-}
+
 interface User {
   id: number
   name: string
