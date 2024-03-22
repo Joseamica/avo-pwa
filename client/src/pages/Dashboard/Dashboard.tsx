@@ -119,7 +119,7 @@ export default function Dashboard() {
                   // Tus otros props permanecen igual...
                 }}
                 labelProps={{ children: 'Nombre' }}
-                errors={fieldErrors.name?.[0]} // Muestra el mensaje de error para 'name' si existe
+                // errors={fieldErrors.name?.[0]} // Muestra el mensaje de error para 'name' si existe
               />
               <Field
                 inputProps={{
@@ -129,7 +129,7 @@ export default function Dashboard() {
                   // required: true, // Añade esto
                 }}
                 labelProps={{ children: 'Imagen' }}
-                errors={fieldErrors.image?.[0]} // Muestra el mensaje de error para 'name' si existe
+                // errors={fieldErrors.image?.[0]} // Muestra el mensaje de error para 'name' si existe
               />
               <Field
                 inputProps={{
@@ -178,7 +178,7 @@ export default function Dashboard() {
                 <option value="WANSOFT">WANSOFT</option>
                 <option value="SOFTRESTAURANT">SOFTRESTAURANT</option>
               </select>
-              {fieldErrors.pos && <div className="tu-clase-css-para-errores">{fieldErrors.pos[0]}</div>}
+              {/* {fieldErrors.pos && <div className="tu-clase-css-para-errores">{fieldErrors.pos[0]}</div>} */}
               <Field
                 inputProps={{
                   placeholder: 'STRIPE',
