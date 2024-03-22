@@ -10,7 +10,7 @@
     "tsc": "tsc",
     "prebuild": "npm install",
     "setup": "prisma db push && prisma generate && prisma migrate deploy && prisma db seed",
-    "build": " tsc",
+    "build": "prisma db push && prisma generate && prisma migrate deploy && prisma db seed",
     "start": "node build/src/index.js",
     "dev": "nodemon --watch 'src/**/*' --watch 'routes/**/*' --exec 'ts-node' src/index.ts"
   },
