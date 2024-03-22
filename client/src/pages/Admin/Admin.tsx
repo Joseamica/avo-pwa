@@ -49,7 +49,7 @@ export default function Admin() {
 
   if (isLoading) return <Loading message="Cargando el restaurante..." />
   if (isError) return <ErrorMessage responseError={queryError.message} />
-
+  console.log('chains', chains)
   // if (chains.length > 0) {
   //   return <div>
   //       <Flex dir="row" justify="between" align="center" className="p-4 text-black bg-background-primary">

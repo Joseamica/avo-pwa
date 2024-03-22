@@ -9,6 +9,7 @@ export const getChain = async (req, res) => {
         id: userId,
       },
     })
+
     if (!user.chainId) {
       return res.status(400).json({ error: 'User does not have a chain' })
     }
@@ -23,6 +24,7 @@ export const getChain = async (req, res) => {
 
     res.status(200).json({ chain, user })
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: error.message })
   }
 }

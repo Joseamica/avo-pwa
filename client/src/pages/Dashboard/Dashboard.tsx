@@ -1,7 +1,7 @@
 import api from '@/axiosConfig'
 import { Button, Field, Flex } from '@/components'
 import Loading from '@/components/Loading'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, Outlet } from 'react-router-dom'
 import ErrorMessage from '../Error/ErrorMessage'
 import Modal from '@/components/Modal'
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [error, setError] = useState(null)
   const [fieldErrors, setFieldErrors] = useState({})
+  const queryClient = useQueryClient()
 
   // NOTE el userId se asigna en el login
   //FIXME - cambiar el key de user a algo mas complejo asignandole algo mas
@@ -41,17 +42,18 @@ export default function Dashboard() {
 
   const addVenueMutation = useMutation({
     mutationFn: (adminData: {
-      name: string | FormDataEntryValue
-      image: string | FormDataEntryValue
-      logo: string | FormDataEntryValue
-      tip_one: string | FormDataEntryValue
-      tip_two: string | FormDataEntryValue
-      tip_three: string | FormDataEntryValue
-      pos: string | FormDataEntryValue
-      stripe: string | FormDataEntryValue
+      name: string
+      image: string
+      logo: string
+      tip_one: string
+      tip_two: string
+      tip_three: string
+      pos: string
+      stripe: string
     }) => api.post(`/v1/dashboard/${data.chain.id}/create-venue`, adminData),
     onSuccess: data => {
       setShowAddModal(false)
+      queryClient.invalidateQueries({ queryKey: ['chain'] })
     },
     onError: (error: any) => {
       setError(error?.response.data.error) // Asume que tu backend envía un campo 'error' con la descripción del error
@@ -72,7 +74,7 @@ export default function Dashboard() {
     }
 
     // Validación con Zod
-    const result = venueSchema.safeParse(formValues)
+    const result = venueSchema.safeParse(formValues) as { success: boolean; data: any; error: any }
     if (!result.success) {
       // Actualiza el estado de errores con los mensajes específicos por campo
       const errors = result.error.flatten().fieldErrors
@@ -95,7 +97,6 @@ export default function Dashboard() {
       </Flex>
       <div className="p-4">
         {data.chain.venues.map(venue => {
-          console.log(venue)
           return (
             <Link to={`venues/${venue.id}`} key={venue.id}>
               {venue.name}
@@ -111,11 +112,12 @@ export default function Dashboard() {
           <Fragment>
             <form onSubmit={handleSubmit} className="p-4">
               <Field
-                inputProps={
-                  {
-                    // Tus otros props permanecen igual...
-                  }
-                }
+                inputProps={{
+                  placeholder: 'Nombre...',
+                  name: 'name',
+                  type: 'text',
+                  // Tus otros props permanecen igual...
+                }}
                 labelProps={{ children: 'Nombre' }}
                 errors={fieldErrors.name?.[0]} // Muestra el mensaje de error para 'name' si existe
               />

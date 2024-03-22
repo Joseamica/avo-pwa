@@ -34,7 +34,6 @@ model Venue {
   language        String?        @default("es")
   image           String
   logo            String?
-  showMenuImage   Boolean?       @default(false)
   cuisine         String?
   wifiName        String?
   wifiPassword    String?
@@ -53,6 +52,23 @@ model Venue {
   posName         PosNames?
   updatedAt       DateTime?      @updatedAt
   createdAt       DateTime       @default(now())
+  configuration   Configuration? @relation(fields: [configurationId], references: [id])
+  configurationId String?
+}
+
+model Configuration {
+  id              String    @id @default(cuid())
+  dynamicMenu     Boolean?  @default(false)
+  branding        Boolean?  @default(false)
+  posName         PosNames?
+  stripeAccountId String?
+  tipPercentage1  String    @default("0.10")
+  tipPercentage2  String    @default("0.15")
+  tipPercentage3  String    @default("0.20")
+  paymentMethods  String[]  @default(["card"])
+  venues          Venue[]
+  updatedAt       DateTime? @updatedAt
+  createdAt       DateTime  @default(now())
 }
 
 enum PosNames {

@@ -166,7 +166,7 @@ const venueRouter = express.Router()
 
 venueRouter.post('/order', async (req, res) => {
   console.log(req.body)
-  const { orden, mesa, total, status, impreso, venueId } = req.body
+  const { folio, mesa, total, status, impreso, venueId } = req.body
   const venue = await prisma.venue.findUnique({
     where: {
       id: venueId,
@@ -187,7 +187,7 @@ venueRouter.post('/order', async (req, res) => {
     },
   })
   const bill = table?.bill
-  console.log('bill', bill)
+
   if (pos === 'SOFTRESTAURANT') {
     const billStatusSR =
       status === 'Abierta'
@@ -221,6 +221,24 @@ venueRouter.post('/order', async (req, res) => {
           payments: true,
         },
       })
+      return res.status(200).json({ message: 'se ha actualizado la cuenta a pagada o cancelada' })
+    }
+    if (bill && billStatusSR === 'OPEN') {
+      console.log('CUENTA EXISTE Y ESTA ABIERTA')
+      const updatedBill = await prisma.bill.update({
+        where: {
+          id: bill.id,
+        },
+        data: {
+          status: billStatusSR,
+          total: parseInt(total) * 100,
+          posOrder: parseInt(folio),
+        },
+        include: {
+          payments: true,
+        },
+      })
+      return res.status(200).json({ message: 'se ha actualizado la cuenta a abierta' })
     }
   }
   return res.status(200).json({ message: 'ok' })
@@ -228,7 +246,7 @@ venueRouter.post('/order', async (req, res) => {
 
 //ANCHOR ENDPOINTS
 venueRouter.post('/comanda', async (req, res) => {
-  const { venueId, orden, key, cantidad, nombre, precio } = req.body
+  const { venueId, orden, key, cantidad, nombre, precio, foliodet } = req.body
 
   if (!venueId) {
     return res.status(400).json({ message: 'No se recibieron datos' })
@@ -241,7 +259,7 @@ venueRouter.post('/comanda', async (req, res) => {
   try {
     const bill = await prisma.bill.findFirst({
       where: {
-        posOrder: parseInt(orden),
+        posOrder: parseInt(foliodet),
         status: 'OPEN',
         table: {
           some: {
@@ -255,7 +273,7 @@ venueRouter.post('/comanda', async (req, res) => {
         payments: true,
       },
     })
-    if (!bill || bill.posOrder !== parseInt(orden)) {
+    if (!bill || bill.posOrder !== parseInt(foliodet)) {
       return res.status(404).json({ message: 'La cuenta no existe o no coincide' })
     }
     const totalActualizado =
@@ -597,13 +615,17 @@ venueRouter.get('/listVenues', async (req, res) => {
 
 venueRouter.get('/:venueId/get-info', async (req, res) => {
   const { venueId } = req.params
-  const venue = await prisma.venue.findUnique({
-    where: {
-      id: venueId,
-    },
-  })
-
-  res.json(venue)
+  try {
+    const venue = await prisma.venue.findUnique({
+      where: {
+        id: venueId,
+      },
+    })
+    res.json(venue)
+  } catch (error) {
+    console.error('Error al obtener información del restaurante:', error)
+    res.status(500).json({ message: 'Error interno del servidor.' })
+  }
 })
 
 // //ANCHOR - TABLE NUMBER
