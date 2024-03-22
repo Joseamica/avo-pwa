@@ -16,6 +16,7 @@ model Chain {
   venues    Venue[]
   updatedAt DateTime? @updatedAt
   createdAt DateTime  @default(now())
+  users     User[]
 }
 
 model Venue {
@@ -23,8 +24,8 @@ model Venue {
   name            String
   chain           Chain?         @relation(fields: [chainId], references: [id])
   chainId         String?
-  address         String
-  city            String
+  address         String?
+  city            String?
   country         String?
   utc             String?        @default("-6")
   instagram       String?
@@ -34,7 +35,7 @@ model Venue {
   image           String
   logo            String?
   showMenuImage   Boolean?       @default(false)
-  cuisine         String
+  cuisine         String?
   wifiName        String?
   wifiPassword    String?
   tipPercentage1  String         @default("0.10")
@@ -49,8 +50,14 @@ model Venue {
   menus           Menu[]
   avoqadoMenus    AvoqadoMenu[]
   stripeAccountId String?
+  posName         PosNames?
   updatedAt       DateTime?      @updatedAt
   createdAt       DateTime       @default(now())
+}
+
+enum PosNames {
+  WANSOFT
+  SOFTRESTAURANT
 }
 
 model Bill {
@@ -152,6 +159,8 @@ model User {
   updatedAt         DateTime?          @updatedAt
   createdAt         DateTime           @default(now())
   Password          Password?
+  chain             Chain?             @relation(fields: [chainId], references: [id])
+  chainId           String?
 }
 
 // model User{
@@ -178,6 +187,7 @@ model User {
 enum RoleEnumType {
   USER
   ADMIN
+  SUPERADMIN
 }
 
 model Allergens {

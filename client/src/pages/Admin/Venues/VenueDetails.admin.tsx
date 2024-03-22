@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Fragment } from 'react'
 import { Link, Outlet, useParams } from 'react-router-dom'
 
-export default function VenueDetails() {
+export default function VenueDetailsAdmin() {
   const { venueId } = useParams()
   const {
     data: venue,
@@ -31,27 +31,6 @@ export default function VenueDetails() {
         <H2>{venue.city}</H2>
       </Flex>
       <hr />
-      <Flex dir="row" align="center" className="">
-        <div className="flex flex-col self-start w-1/4 divide-y divide-black bg-violet-700">
-          <Link to={`tables`} className="py-4 pl-4 font-semibold text-violet-100">
-            • Tables
-          </Link>
-
-          <Link to={`bills`} className="py-4 pl-4 font-semibold text-violet-100">
-            • Bills
-          </Link>
-
-          <Link to={`menus`} className="py-4 pl-4 font-semibold text-violet-100">
-            • Menus
-          </Link>
-          <Link to={`admins`} className="py-4 pl-4 font-semibold text-violet-100">
-            • Administradores
-          </Link>
-        </div>
-        <div className="w-3/4">
-          <Outlet />
-        </div>
-      </Flex>
     </Fragment>
   )
 }

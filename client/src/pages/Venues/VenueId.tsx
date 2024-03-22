@@ -13,7 +13,7 @@ function VenueId() {
   const params = useParams<{ venueId: string; billId: string; tableId: string }>()
   const user = JSON.parse(localStorage.getItem('persist:user')) as { user: IncognitoUser }
   const { data, error, isLoading, isError } = useQuery({
-    queryKey: ['venue', params],
+    queryKey: ['venue'],
     queryFn: async () => {
       const response = await api.get(`/v1/venues/${params.venueId}/get-info`)
 
@@ -22,7 +22,7 @@ function VenueId() {
 
     // staleTime: 1000 * 60 * 60, // 1 hour in ms
     // gcTime: 1000 * 60 * 60 * 24, // 24 hours in ms
-    // refetchOnWindowFocus: false, // Disables automatic refetching when browser window is focused.
+    refetchOnWindowFocus: false, // Disables automatic refetching when browser window is focused.
   })
   if (isLoading) return <Loading message="Cargando el menu..." />
   if (isError) return <ErrorMessage responseError={error.message} />

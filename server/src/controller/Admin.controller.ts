@@ -1,153 +1,83 @@
 import prisma from '../utils/prisma'
+import bcrypt from 'bcrypt'
 
-export const createTable = async (req, res) => {
-  const { name, seats, venueId, tableNumber } = req.body
+export const getChains = async (req, res) => {
+  const chains = await prisma.chain.findMany()
+  res.json(chains)
+}
+
+export const getChain = async (req, res) => {
+  const { chainId } = req.params
   try {
-    const isTableExist = await prisma.table.findUnique({
+    const chain = await prisma.chain.findUnique({
       where: {
-        tableId: {
-          tableNumber: parseInt(tableNumber),
-          venueId: venueId,
-        },
-      },
-    })
-    if (isTableExist) {
-      return res.status(400).json({ error: 'Table already exist' })
-    }
-    const table = await prisma.table.create({
-      data: {
-        tableNumber: parseInt(tableNumber),
-        venueId: venueId,
-      },
-    })
-    console.log(`✅ Table ${tableNumber} created`)
-    res.json(table)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-}
-
-export const getVenues = async (req, res) => {
-  //FIXME - se tiene que agarrar solamente las venues que estan asociadas al "chain", en el que sera otorgado o guardado en el usuario "admin" para que pueda acceder a las venues
-  const venues = await prisma.venue.findMany()
-  res.json(venues)
-}
-
-export const getVenue = async (req, res) => {
-  const { venueId } = req.params
-  try {
-    const venue = await prisma.venue.findUnique({
-      where: {
-        id: venueId,
-      },
-    })
-    res.json(venue)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
-}
-
-export const getTables = async (req, res) => {
-  const { venueId } = req.params
-  const tables = await prisma.table.findMany({
-    where: {
-      venueId,
-    },
-    orderBy: {
-      tableNumber: 'asc',
-    },
-  })
-  res.json(tables)
-}
-
-export const getTable = async (req, res) => {
-  const { venueId } = req.params
-  const { tableNumber } = req.body
-  const table = await prisma.table.findUnique({
-    where: {
-      tableId: {
-        tableNumber: parseInt(tableNumber),
-        venueId: venueId,
-      },
-    },
-  })
-  res.json(table)
-}
-
-export const deleteTable = async (req, res) => {
-  const { venueId } = req.params
-  const { tableNumber } = req.body
-  const table = await prisma.table.delete({
-    where: {
-      tableId: {
-        tableNumber: parseInt(tableNumber),
-        venueId: venueId,
-      },
-    },
-  })
-  res.json(table)
-}
-
-export const getMenus = async (req, res) => {
-  const { venueId } = req.params
-  const tables = await prisma.menu.findMany({
-    where: {
-      venueId,
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  })
-  res.json(tables)
-}
-
-//FIXME - tiene que estar filtrado por VENUE, pero para eso tiene que tener primero una mesa, y para eso tiene que tener un venue
-export const getBills = async (req, res) => {
-  const { venueId } = req.params
-
-  const bills = await prisma.bill.findMany({
-    where: {
-      table: {
-        some: {
-          venueId: venueId,
-        },
-      },
-    },
-  })
-  res.json(bills)
-}
-
-export const getBill = async (req, res) => {
-  const { venueId, billId } = req.params
-
-  try {
-    const bill = await prisma.bill.findUnique({
-      where: {
-        id: billId,
-        table: {
-          some: {
-            venueId: venueId,
-          },
-        },
+        id: chainId,
       },
       include: {
-        payments: true,
-        products: true,
-        table: true,
+        venues: true,
+        _count: {
+          select: { venues: true },
+        },
       },
     })
-    res.json(bill)
+    res.json(chain)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
 
-export const deleteBill = async (req, res) => {
-  const { billId } = req.body
-  const table = await prisma.bill.delete({
+export const createChain = async (req, res) => {
+  const { name } = req.body
+  console.log(name)
+  try {
+    const isChainExist = await prisma.chain.findFirst({
+      where: {
+        name: name,
+      },
+    })
+    if (isChainExist) {
+      return res.status(400).json({ error: 'Chain already exist' })
+    }
+    const chain = await prisma.chain.create({
+      data: {
+        name,
+      },
+    })
+    console.log(`✅ Chain ${name} created`)
+    res.json(chain)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
+export const createAdmin = async (req, res) => {
+  const { username, password } = req.body
+  const { chainId } = req.params
+
+  const usernameExists = await prisma.user.findUnique({
     where: {
-      id: billId,
+      username: username,
+      // chainId: chainId,
     },
   })
-  res.json(table)
+
+  if (usernameExists) return res.status(400).json({ error: 'Username already exists' })
+
+  if (!username || !password) return res.status(400).json({ error: 'Username and password are required' })
+  try {
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
+    const user = await prisma.user.create({
+      data: {
+        username: username,
+        password: passwordHash,
+        role: 'ADMIN',
+        chainId: chainId,
+      },
+    })
+
+    res.json(user)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
 }

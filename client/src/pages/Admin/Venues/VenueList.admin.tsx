@@ -2,7 +2,7 @@ import api from '@/axiosConfig'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
-export default function DashboardVenues() {
+export default function VenueListAdmin() {
   const {
     data: venues,
     isLoading,
@@ -20,7 +20,7 @@ export default function DashboardVenues() {
 
   return (
     <div>
-      <div>
+      <div className="bg-sky-500">
         {venues.map(venue => {
           return (
             <Link to={venue.id} key={venue.id}>

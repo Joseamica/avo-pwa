@@ -49,10 +49,10 @@ export default function CustomModal({ modalState, isOpen, closeModal, openModal,
       closeModal={handleClose}
       title="Pagar monto personalizado"
       footer={
-        <Flex direction="col">
+        <Flex direction="col" space="md">
           <Flex direction="row" justify="between" align="center" className="mb-4">
-            <span className="text-[21px] leading-6">Total seleccionado</span>
-            <span className="text-[21px] leading-6"> {Currency(customAmount)}</span>
+            <span className="text-[20px] leading-6">Total seleccionado</span>
+            <span className="text-[20px] leading-6"> {Currency(customAmount)}</span>
           </Flex>
           <Button onClick={handleOpenCheckout} disabled={isPending || customAmount / 100 < 10} text={'Confirmar'} size="md" />
         </Flex>
@@ -70,17 +70,18 @@ export default function CustomModal({ modalState, isOpen, closeModal, openModal,
           inputMode="decimal"
           onChange={handleAmountChange} // Handle input changes
           className={clsx(
-            ` flex h-20 w-full bg-transparent text-6xl placeholder:p-2 placeholder:text-6xl focus:outline-none focus:ring-0`,
+            ` flex h-32 w-full bg-transparent text-6xl placeholder:p-2 placeholder:text-6xl focus:outline-none focus:ring-0`,
             {
               // 'animate-pulse placeholder:text-warning': actionData?.amountToPay,
             },
           )}
           placeholder="10.00"
         />
-        <span className="text-[14px] w-32  flex justify-center text-center rounded-3xl shrink-0 px-2 text-texts-disabled">Min. $10.00</span>
+        <span className="text-[14px] w-32  flex justify-center text-center rounded-3xl shrink-0 px-2 text-texts-disabled bg-background-primary border">
+          Min. $10.00
+        </span>
       </div>
       <Modal isOpen={!!modalState['custom.checkout']} closeModal={() => closeModal('custom.checkout')} title="Método de pago">
-        {' '}
         <Checkout amount={customAmount} />
       </Modal>
     </Modal>

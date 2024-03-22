@@ -13,7 +13,7 @@ export default function BillDetailsDashboard() {
   } = useQuery({
     queryKey: ['bill_details', venueId, billId],
     queryFn: async () => {
-      const response = await api.get(`/v1/admin/${venueId}/${billId}`)
+      const response = await api.get(`/v1/dashboard/${venueId}/${billId}`)
       return response.data
     },
   })

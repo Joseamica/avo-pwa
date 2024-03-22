@@ -7,7 +7,7 @@ import { Link, Outlet, useParams } from 'react-router-dom'
 
 // API call functions
 const fetchTables = async venueId => {
-  const response = await api.get(`/v1/admin/${venueId}/get-tables`)
+  const response = await api.get(`/v1/dashboard/${venueId}/get-tables`)
   return response.data
 }
 
@@ -32,7 +32,7 @@ export default function TableListDashboard() {
 
   const tableMutation = useMutation({
     mutationFn: (tableNumber: any) =>
-      api.post('/v1/admin/create-table', {
+      api.post('/v1/dashboard/create-table', {
         tableNumber,
         venueId: venueId,
         headers: {

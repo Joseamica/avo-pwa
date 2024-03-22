@@ -48,6 +48,7 @@ export default {
           success: '#D1FFDD',
           warning: '#E57373',
           error: '#FFE6E6',
+          admin: '#003366',
         },
         main: {
           warning: '#E57373',

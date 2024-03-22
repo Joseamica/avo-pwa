@@ -57,6 +57,15 @@ async function main() {
       role: 'ADMIN',
     },
   })
+  const superAdminPasswordHash = await bcrypt.hash('superadmin', saltRounds)
+
+  const superadmin = await prisma.user.create({
+    data: {
+      username: 'superadmin',
+      password: superAdminPasswordHash,
+      role: 'SUPERADMIN',
+    },
+  })
   const avoqadoMenu = await prisma.avoqadoMenu.create({
     data: {
       name: 'Menu 1',
@@ -86,7 +95,7 @@ async function main() {
 
   console.timeEnd(`🌱 Database has been seeded`)
 
-  console.log({ venue, tableNumbers, user })
+  console.log({ venue, tableNumbers, user, superadmin })
 }
 export async function createTables(branchId: string, numberOfTables: number) {
   const tableNumbers = []

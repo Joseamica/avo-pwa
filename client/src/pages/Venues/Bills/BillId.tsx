@@ -73,7 +73,7 @@ function BillId() {
   const [showDetails, setShowDetails] = useState<any>(false)
   const { user } = getUserLS()
 
-  const { modalState, openModal, closeModal } = useModal()
+  const { modalState, openModal, closeModal, closeMultipleModals } = useModal()
 
   const {
     data: billData,
@@ -259,7 +259,9 @@ function BillId() {
           {/* ANCHOR SplitBill */}
           <Modal
             isOpen={!!modalState['payment_methods.split_bill']}
-            closeModal={() => closeModal('payment_methods.split_bill')}
+            closeModal={() => {
+              closeMultipleModals(['payment_methods.split_bill', 'payment_methods'])
+            }}
             title="Dividir cuenta"
           >
             <ModalPadding>

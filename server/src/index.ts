@@ -4,6 +4,7 @@ import express from 'express'
 import http from 'http'
 import path from 'path'
 import { Server } from 'socket.io'
+import sql, { ConnectionPool } from 'mssql'
 
 declare global {
   namespace Express {
@@ -18,7 +19,10 @@ declare global {
 import stripeRouter from './routes/Stripe.routes'
 import venueRouter from './routes/Venues.routes'
 import authRouter from './routes/Auth.routes'
+import dashboardRouter from './routes/Dashboard.routes'
 import adminRouter from './routes/Admin.routes'
+
+import dbConfig from './config/DbConfig'
 
 const app = express()
 
@@ -96,7 +100,24 @@ app.use((req, res, next) => {
 
 // ANCHOR ROUTES
 
+app.get('/', async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig)
+
+    const queryExperimental = await pool
+      .request()
+      .query(
+        'Select Distinct tempcheqdet.foliodet,tempcheqdet.cantidad, tempcheqdet.precio, tempcheqdet.hora, tempcheqdet.modificador, tempcheqdet.movimiento, productos.descripcion, productos.nombrecorto FROM tempcheqdet LEFT JOIN productos On tempcheqdet.idproducto=productos.idproducto WHERE tempcheqdet.foliodet=1 Order By movimiento ',
+      )
+    // console.log(queryExperimental.recordset)
+    res.json(queryExperimental.recordset)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 app.use('/v1/admin', adminRouter)
+app.use('/v1/dashboard', dashboardRouter)
 app.use('/v1/auth', authRouter)
 app.use('/v1/venues', venueRouter)
 app.use('/v1/stripe', stripeRouter)

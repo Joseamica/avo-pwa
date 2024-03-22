@@ -1,31 +1,24 @@
-import useHotKeysDialog from '@/store/hotkeys'
-import useNotifications from '@/store/notifications'
-import useSidebar from '@/store/sidebar'
-import useTheme from '@/store/theme'
-
-import Person from '@mui/icons-material/Person'
-import { FaInstagram } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
-import { getRandomJoke } from './utils'
-import { MdMenu } from 'react-icons/md'
-import { Fragment, useState } from 'react'
 import Drawer from '@/components/Drawer'
-import { AnimatePresence } from 'framer-motion'
+import Person from '@mui/icons-material/Person'
+import { Fragment, useState } from 'react'
+import { FaInstagram } from 'react-icons/fa'
+import { MdMenu } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 
 function HeaderAvo({ iconColor, venueInfo }: { iconColor: string; venueInfo: any }) {
   const [showDrawer, setShowDrawer] = useState(false)
 
-  const [, sidebarActions] = useSidebar()
-  const [, themeActions] = useTheme()
-  const [, notificationsActions] = useNotifications()
-  const [, hotKeysDialogActions] = useHotKeysDialog()
+  // const [, sidebarActions] = useSidebar()
+  // const [, themeActions] = useTheme()
+  // const [, notificationsActions] = useNotifications()
+  // const [, hotKeysDialogActions] = useHotKeysDialog()
 
-  const showNotification = () => {
-    notificationsActions.push({
-      options: { variant: 'customNotification' },
-      message: getRandomJoke(),
-    })
-  }
+  // const showNotification = () => {
+  //   notificationsActions.push({
+  //     options: { variant: 'customNotification' },
+  //     message: getRandomJoke(),
+  //   })
+  // }
 
   return (
     <Fragment>

@@ -110,7 +110,12 @@ const Success: React.FC = () => {
               <H5 bold="semibold">{data.id.slice(-8)}</H5>
             </Flex>
             <div className="flex space-x-2">
-              <Link to={data.receipt_url} className="flex flex-row items-center pl-4 space-x-2 border rounded-full">
+              <Link
+                to={data.receipt_url}
+                className="flex flex-row items-center pl-4 space-x-2 border rounded-full"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <span>Ver</span>
                 <div className="flex items-center justify-center w-10 h-10 p-2 bg-white border rounded-full">
                   <FaEye />

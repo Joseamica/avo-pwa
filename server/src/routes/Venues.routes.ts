@@ -5,60 +5,209 @@ const venueRouter = express.Router()
 
 //ANCHOR ENDPOINTS
 //NOTE ESTE ENDPOINT SOLO SE EJECUTARA UNA VES Y SOLO CUANDO EN EL POS SE ABRA UNA MESA
-venueRouter.post('/order', async (req, res) => {
-  const { venueId, orden, mesa, total, status } = req.body
-  const billStatus =
-    status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
-  const date = new Date()
-  const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 7))
+// venueRouter.post('/order', async (req, res) => {
+//   const { venueId, orden, mesa, total, status } = req.body
+//   console.log('req.body', req.body)
+//   try {
+//     const venue = await prisma.venue.findUnique({
+//       where: {
+//         id: venueId,
+//       },
+//     })
+//     const date = new Date()
+//     const fiveHoursAgo = new Date(date.setUTCHours(date.getUTCHours() - 7))
 
-  const isBillFromToday = await prisma.bill.findFirst({
+//     const isBillFromToday = await prisma.bill.findFirst({
+//       where: {
+//         tableNumber: parseInt(mesa),
+//         table: {
+//           some: {
+//             venueId: venueId,
+//           },
+//         },
+//         updatedAt: {
+//           gte: fiveHoursAgo,
+//         },
+//       },
+//     })
+//     switch (venue.posName) {
+//       case 'WANSOFT':
+//         const billStatus =
+//           status === '4' ? 'OPEN' : status === '1' ? 'CANCELED' : status === '2' ? 'COURTESY' : status === '0' ? 'PAID' : 'PENDING'
+//         if (!isBillFromToday) {
+//           console.log('🧾❌ bill no existe')
+//           const bill = await prisma.bill.create({
+//             data: {
+//               key: `O${orden}-T${mesa}`,
+//               tableNumber: parseInt(mesa),
+//               posOrder: parseInt(orden),
+//               status: billStatus,
+//               total: total * 100,
+//               table: {
+//                 connect: {
+//                   tableId: {
+//                     venueId: venueId,
+//                     tableNumber: parseInt(mesa),
+//                   },
+//                 },
+//               },
+//             },
+//           })
+//           console.log('✅ Bill nueva creada:', bill)
+//           return res.status(200).send('Bill nueva creada')
+//         } else {
+//           console.log('🔎 billExiste')
+//           if (billStatus === 'PAID' || billStatus === 'CANCELED') {
+//             const updatedBill = await prisma.bill.update({
+//               where: {
+//                 id: isBillFromToday.id,
+//               },
+//               data: {
+//                 posOrder: parseInt(orden),
+//                 total: total * 100,
+//                 status: billStatus,
+//                 //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
+//                 table: {
+//                   disconnect: {
+//                     tableId: {
+//                       venueId: venueId,
+//                       tableNumber: parseInt(mesa),
+//                     },
+//                   },
+//                 },
+//               },
+//               include: {
+//                 payments: true,
+//               },
+//             })
+//             const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+
+//             const roomId = `venue_${venueId}_table_${mesa}`
+//             req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
+//             return res.status(200).send('Bill actualizada con exito desconectando mesa')
+//           } else {
+//             const updatedBill = await prisma.bill.update({
+//               where: {
+//                 id: isBillFromToday.id,
+//               },
+//               data: {
+//                 posOrder: parseInt(orden),
+//                 total: total * 100,
+//                 status: billStatus,
+//                 //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
+//               },
+//               include: {
+//                 payments: true,
+//               },
+//             })
+//             const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
+
+//             const roomId = `venue_${venueId}_table_${mesa}`
+//             req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
+//             return res.status(200).send('Bill actualizada con exito')
+//           }
+//         }
+
+//       case 'SOFTRESTAURANT':
+//         //TODO - SOFTRESTAURANT
+//         const billStatusSR =
+//           status === 'Abierta'
+//             ? 'OPEN'
+//             : status === 'Cerrada'
+//               ? 'CLOSED'
+//               : status === 'Cancelada'
+//                 ? 'CANCELED'
+//                 : status === 'Pagada'
+//                   ? 'PAID'
+//                   : 'PENDING'
+//         if (!isBillFromToday) {
+//           console.log('🧾❌ bill no existe')
+//           const bill = await prisma.bill.create({
+//             data: {
+//               key: `O${orden}-T${mesa}`,
+//               tableNumber: parseInt(mesa),
+//               posOrder: parseInt(orden),
+//               status: billStatusSR,
+
+//               total: parseInt(total) ?? 0 * 100,
+//               // table: {
+//               //   connect: {
+//               //     tableId: {
+//               //       venueId: venueId,
+//               //       tableNumber: parseInt(mesa),
+//               //     },
+//               //   },
+//               // },
+//             },
+//           })
+//           await prisma.table.update({
+//             where: {
+//               tableId: {
+//                 venueId: venueId,
+//                 tableNumber: parseInt(mesa),
+//               },
+//             },
+//             data: {
+//               billId: bill.id,
+//             },
+//           })
+
+//           console.log('✅ Bill nueva creada:', bill)
+//           return res.status(200).send('Bill nueva creada')
+//         }
+//         return res.status(200).send('SOFTRESTAURANT')
+//         break
+//     }
+//   } catch (error) {
+//     console.error('Error al crear cuenta:', error)
+//     res.status(500).json({ error: 'Error interno en /order' })
+//   }
+// })
+
+venueRouter.post('/order', async (req, res) => {
+  console.log(req.body)
+  const { orden, mesa, total, status, impreso, venueId } = req.body
+  const venue = await prisma.venue.findUnique({
     where: {
-      tableNumber: parseInt(mesa),
-      table: {
-        some: {
-          venueId: venueId,
-        },
-      },
-      updatedAt: {
-        gte: fiveHoursAgo,
-      },
+      id: venueId,
     },
   })
-
-  if (!isBillFromToday) {
-    console.log('🧾❌ bill no existe')
-    const bill = await prisma.bill.create({
-      data: {
-        key: `O${orden}-T${mesa}`,
+  const pos = venue.posName
+  const table = await prisma.table.findUnique({
+    where: {
+      tableId: {
+        venueId: venueId,
         tableNumber: parseInt(mesa),
-        posOrder: parseInt(orden),
-        status: billStatus,
-        total: total * 100,
-        table: {
-          connect: {
-            tableId: {
-              venueId: venueId,
-              tableNumber: parseInt(mesa),
-            },
-          },
-        },
       },
-    })
-    console.log('✅ Bill nueva creada:', bill)
-    return res.status(200).send('Bill nueva creada')
-  } else {
-    console.log('🔎 billExiste')
-    if (billStatus === 'PAID' || billStatus === 'CANCELED') {
+    },
+    //TODO - necesito por medio de un trigger de la base de datos de softrestaurant, saber el conteo de orden es nuevo, y como lo tengo que hacer
+    // es tal ves comparar un valor antiguo de turno o algo asi, para saber si la orden es del dia de hoy
+    include: {
+      bill: true,
+    },
+  })
+  const bill = table?.bill
+  console.log('bill', bill)
+  if (pos === 'SOFTRESTAURANT') {
+    const billStatusSR =
+      status === 'Abierta'
+        ? 'OPEN'
+        : status === 'Cerrada'
+          ? 'CLOSED'
+          : status === 'Cancelada'
+            ? 'CANCELED'
+            : status === 'Pagada'
+              ? 'PAID'
+              : 'PENDING'
+    if (bill && (billStatusSR === 'PAID' || billStatusSR === 'CANCELED')) {
+      console.log('CUENTA EXISTE Y ESTA PAGADA O CANCELADA')
+      //TODO - update bill state y desconectar de la mesa
       const updatedBill = await prisma.bill.update({
         where: {
-          id: isBillFromToday.id,
+          id: bill.id,
         },
         data: {
-          posOrder: parseInt(orden),
-          total: total * 100,
-          status: billStatus,
-          //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
+          status: billStatusSR,
           table: {
             disconnect: {
               tableId: {
@@ -72,33 +221,9 @@ venueRouter.post('/order', async (req, res) => {
           payments: true,
         },
       })
-      const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
-      const roomId = `venue_${venueId}_table_${mesa}`
-      req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
-      return res.status(200).send('Bill actualizada con exito desconectando mesa')
-    } else {
-      const updatedBill = await prisma.bill.update({
-        where: {
-          id: isBillFromToday.id,
-        },
-        data: {
-          posOrder: parseInt(orden),
-          total: total * 100,
-          status: billStatus,
-          //FIXME si la cuenta esta PAID o CANCELED se debe desconectar la cuenta de la mesa
-        },
-        include: {
-          payments: true,
-        },
-      })
-      const amount_left = Number(updatedBill.total) - updatedBill.payments.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
-      const roomId = `venue_${venueId}_table_${mesa}`
-      req.io.to(roomId).emit('updateOrder', { ...updatedBill, amount_left, pos_order: orden })
-      return res.status(200).send('Bill actualizada con exito')
     }
   }
+  return res.status(200).json({ message: 'ok' })
 })
 
 //ANCHOR ENDPOINTS
@@ -147,7 +272,7 @@ venueRouter.post('/comanda', async (req, res) => {
             key,
             name: nombre.replace('.,', ''),
             price: precio * 100,
-            quantity: cantidad,
+            quantity: parseInt(cantidad),
             // modifier: modificador,
           },
         },
@@ -429,8 +554,8 @@ venueRouter.get('/:venueId/bills/:billId', async (req, res) => {
       },
     })
 
-    const amount_left = Number(bill.total) - bill.payments?.reduce((acc, payment) => acc + Number(payment.amount), 0)
-
+    const amount_left = Number(bill?.total) - bill.payments?.reduce((acc, payment) => acc + Number(payment.amount), 0)
+    console.log('amount_left', amount_left)
     return res.json({ ...bill, amount_left })
   } catch (error) {
     console.error('Error al obtener información de la cuenta:', error)

@@ -31,9 +31,12 @@ import Success from './pages/Stripe/Success'
 import { PublicRoute } from './PublicRoute'
 
 import asyncComponentLoader from '@/utils/loader'
+import { AdminRoute } from './AdminRoute'
+import VenueListAdmin from './pages/Admin/Venues/VenueList.admin'
+import VenueDetailsAdmin from './pages/Admin/Venues/VenueDetails.admin'
 
 const Login = asyncComponentLoader(() => import('./pages/Auth/Login'))
-const Admin = asyncComponentLoader(() => import('./pages/Venues/Bills/Admin'))
+const Admin = asyncComponentLoader(() => import('./pages/Admin/Admin'))
 const Menus = asyncComponentLoader(() => import('./pages/Venues/Menus/Menus'))
 const Dashboard = asyncComponentLoader(() => import('./pages/Dashboard/Dashboard'))
 const VenueDetails = asyncComponentLoader(() => import('./pages/Dashboard/Venues/VenueDetails.dashboard'))
@@ -44,6 +47,8 @@ const DashboardVenues = asyncComponentLoader(() => import('./pages/Dashboard/Ven
 const BillListDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillList.dashboard'))
 const BillDetailsDashboard = asyncComponentLoader(() => import('./pages/Dashboard/Venues/Bills/BillDetails.dashboard'))
 const TableNumber = asyncComponentLoader(() => import('./pages/Venues/Tables/TableNumber'))
+
+const ChainDetails = asyncComponentLoader(() => import('./pages/Admin/ChainDetails.admin'))
 
 function App() {
   if ('serviceWorker' in navigator) {
@@ -207,7 +212,45 @@ function App() {
               }
             />
           </Route>
-
+          {/* ANCHOR ADMIN */}
+          <Route element={<ProtectedRoutes />}>
+            <Route
+              path="admin"
+              element={
+                <AdminRoute>
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <Admin />
+                  </Suspense>
+                </AdminRoute>
+              }
+            >
+              <Route
+                path="chains/:chainId"
+                element={
+                  <Suspense fallback={<div>Cargando...</div>}>
+                    <ChainDetails />
+                  </Suspense>
+                }
+              >
+                <Route
+                  path="venues"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <VenueListAdmin />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="venues/:venueId"
+                  element={
+                    <Suspense fallback={<div>Cargando...</div>}>
+                      <VenueDetailsAdmin />
+                    </Suspense>
+                  }
+                />
+              </Route>
+            </Route>
+          </Route>
           <Route path="success" element={<Success />} />
           <Route path="*" element={<NotFound />} />
         </Route>

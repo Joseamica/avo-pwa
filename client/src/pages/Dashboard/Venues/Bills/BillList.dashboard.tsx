@@ -19,14 +19,14 @@ export default function BillListDashboard() {
   } = useQuery({
     queryKey: ['bills_details', venueId],
     queryFn: async () => {
-      const response = await api.get(`/v1/admin/${venueId}/get-bills`)
+      const response = await api.get(`/v1/dashboard/${venueId}/get-bills`)
       return response.data
     },
   })
 
   const deleteBillMutation = useMutation({
     mutationFn: (billId: any) =>
-      api.delete(`/v1/admin/${venueId}/delete-bill`, {
+      api.delete(`/v1/dashboard/${venueId}/delete-bill`, {
         headers: {
           // Importante: No establecer 'Content-Type': 'multipart/form-data' manualmente.
           // Dejar que el navegador lo haga automáticamente para asegurar que el boundary se añada correctamente.

@@ -11,7 +11,7 @@ export default function TableDetailsDashboard() {
   } = useQuery({
     queryKey: ['table_details'],
     queryFn: async () => {
-      const response = await api.post(`/v1/admin/${venueId}/get-table`, { tableNumber })
+      const response = await api.post(`/v1/dashboard/${venueId}/get-table`, { tableNumber })
       return response.data
     },
   })
